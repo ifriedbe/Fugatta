@@ -1,0 +1,51 @@
+GRANADA ACCOMMODATION SEARCH
+Dates: Arrive Aug 26 - Depart Sep 1 (6 nights)
+Status: IN PROGRESS - direct booking-site scraping blocked (see notes)
+
+=== SUMMARY OF FINDINGS (general/aggregated, not date-specific yet) ===
+
+General hostel price ranges in Granada:
+- Dorm beds: from ~€4-8/night (cheapest), average ~€7-16/night
+- Private rooms in hostels: average ~€60-71/night
+- Average hostel overall: ~€35-42/night
+- Average hotel: ~€115-126/night
+- September is noted as one of the cheapest months to visit Granada (avg ~$13/night for hostels per one source)
+- Tuesday/Friday check-in tends to have lower rates
+
+Airbnb (Granada, Spain):
+- Average nightly rate: ~$86 (entire homes)
+- Median (mixing private rooms): ~$60/night
+
+City-center hotels (general, not for these dates):
+- Palacio de Santa Inés: from ~$175/night
+- Barceló Carmen Granada: ~$207/night
+- Hotel Granada Center: ~$222/night
+(These are too expensive for "cheapest" goal - listed for reference only)
+
+=== NAMED BUDGET OPTIONS TO CHECK MANUALLY (cheapest mentioned) ===
+- El Granado Hostel (eco-friendly, private rooms + dorms) - flagged as cheapest on Booking.com
+- Posada De La Luna - small cozy hostel, traditional Andalusian house - flagged as cheapest on Booking.com
+- Granada Old Town Hostel - flagged as most affordable
+- Oasis Backpackers' Hostel Granada (Albaicín area) - popular, but pricier (~$58-107/night range historically)
+- Hostel Cascabel
+- Oripando Hostel
+- Urban Cube Hostel
+
+=== BLOCKER ===
+WebFetch returned HTTP 403 Forbidden for ALL booking aggregator sites attempted:
+- booking.com, hostelworld.com, hostelz.com, kayak.com, trivago.com,
+  guestreservations.com, thebrokebackpacker.com, oasisgranada.com
+This appears to be either bot-blocking by these sites or a network policy
+restriction in this environment. Only WebSearch (snippet-based) results
+were obtainable - these do not include exact prices for the specific
+Aug 26 - Sep 1 dates.
+
+=== RECOMMENDED NEXT STEPS ===
+1. Manually check these direct links (open in browser):
+   - https://www.booking.com/searchresults.html?ss=Granada&checkin=2026-08-26&checkout=2026-09-01
+   - https://www.hostelworld.com/hostels/europe/spain/granada/?date_from=2026-08-26&date_to=2026-09-01
+   - Search "El Granado Hostel Granada", "Posada De La Luna Granada", "Granada Old Town Hostel"
+     directly on Booking.com for Aug 26-Sep 1 pricing.
+2. If WebFetch access to these domains becomes available, re-run search
+   with the URLs above to get live prices.
+3. Update this file with confirmed prices and names once obtained.
