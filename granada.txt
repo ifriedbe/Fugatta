@@ -24,12 +24,25 @@ City-center hotels (general, not for these dates):
 
 === NAMED BUDGET OPTIONS TO CHECK MANUALLY (cheapest mentioned) ===
 - El Granado Hostel (eco-friendly, private rooms + dorms) - flagged as cheapest on Booking.com
-- Posada De La Luna - small cozy hostel, traditional Andalusian house - flagged as cheapest on Booking.com
+  - Approx from $39/night (Kayak) -> ~6 nights = ~$234 (rough, not date-specific)
+  - https://www.booking.com/hotel/es/apartamentos-el-granado.html
+- Posada De La Luna - small cozy hostel, traditional Andalusian house, near Albaicín - flagged as cheapest on Booking.com
+  - From €8.38/night low end; "season deals from €18/night" -> 6 nights ~ €108 (rough estimate, likely higher for late Aug high season)
+  - https://www.booking.com/hotel/es/posada-de-la-luna-granada.html
 - Granada Old Town Hostel - flagged as most affordable
+  - From $16/night (Kayak), average ~€14/night -> 6 nights ~ €84-96 (rough, not date-specific, likely higher in Aug)
+  - https://www.booking.com/hotel/es/granada-old-twon-hostel.html
 - Oasis Backpackers' Hostel Granada (Albaicín area) - popular, but pricier (~$58-107/night range historically)
 - Hostel Cascabel
 - Oripando Hostel
 - Urban Cube Hostel
+
+NOTE: All prices above are "from" rates / averages found via search snippets,
+NOT confirmed quotes for Aug 26 - Sep 1, 2026 (high season, likely higher than averages).
+Direct site access (booking.com etc.) is blocked by this environment's
+network egress allowlist - see BLOCKER section. To get exact totals, the
+allowlist needs booking.com (and similar) added, then this script/agent
+can fetch real-time prices.
 
 === BLOCKER ===
 WebFetch returned HTTP 403 Forbidden for ALL booking aggregator sites attempted:
