@@ -1,3 +1,22 @@
+## 2026-06-17T20:30:00Z
+### Ukraine & Russia
+- **Moscow Intensifies Aerial Bombing as Battlefield Advances Stall** — Russian forces have escalated aerial attacks on Ukrainian cities even as ground offensives slow; over the last four weeks (May 12–June 9) Russia suffered a net loss of 1 square mile after gaining 41 square miles in the prior period.
+- **Ukrainian Drones Strike Crimea Museum, Mariupol Port, and Russian Oil Refineries** — Ukraine's long-range drone campaign hit a historic museum in annexed Crimea, the port in occupied Mariupol, and oil refineries deep inside Russia, continuing pressure on Russian infrastructure.
+- **Russia's Domestic Weapons Production Now Eclipsing NATO Output** — Analysts say Russia has rebuilt its long-range strike manufacturing capacity from import dependency and depleted stocks to a rate now surpassing NATO's combined production output.
+- **Ukraine Seeks to Reinvigorate Diplomacy After Positive G7-Adjacent Talks** — President Zelensky described talks with US envoys and European leaders at the Évian G7 summit as "very positive," signaling a renewed push for a negotiated resolution alongside continued military pressure.
+
+### Israel
+- **Critics Say Netanyahu's Iran War Left Israel Weaker and Strained US Ties** — Analysts and opposition figures argue Israel emerged from Operation Epic Fury in a diminished position, with US-Israel relations under strain and Iran's regional influence not significantly reduced.
+- **Israel Refuses to End Lebanon Occupation Despite US-Iran Deal; Thousands Return Home** — PM Netanyahu declared Israel will not withdraw from southern Lebanon even as thousands of displaced residents return following the US-Iran ceasefire; Qatar is mediating to prevent further Israeli escalation.
+- **IDF Kills Two Hamas Operatives Tied to October 7 Massacre** — Israeli forces eliminated two senior Hamas terrorists directly involved in the October 7, 2023 attacks; one had held numerous hostages throughout the conflict.
+
+### Iran
+- **Trump Confirms US-Iran MoU Signed; Formal Signing Ceremony Set for June 19 in Switzerland** — President Trump announced the memorandum of understanding with Iran has been signed electronically, with a formal ceremony planned for Switzerland on June 19 to lift the US port blockade, reopen the Strait of Hormuz, and start 60 days of nuclear negotiations.
+- **G7 Leaders at Évian Endorse US-Iran Nuclear Agreement** — All G7 nations voiced support for the US-Iran deal, calling it "an historic opportunity to prevent Iran from acquiring a nuclear weapon"; Trump vowed to release the full text "in a couple of days."
+- **China Pledges New Humanitarian Aid for Lebanon and Iran After Ceasefire** — Beijing announced new humanitarian assistance packages for both Lebanon and Iran in the aftermath of Operation Epic Fury, as post-conflict reconstruction needs mount across the region.
+
+---
+
 # News Feed - 2026-06-17 20:00 UTC
 
 ## Geopolitics
