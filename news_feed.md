@@ -1,3 +1,22 @@
+## 2026-06-17T18:30:00Z
+### Ukraine & Russia
+- **Putin Admits Ukrainian Attacks Are Damaging Russia's Economy and Society** — President Putin publicly acknowledged on June 12 that the surge in Ukrainian drone and missile strikes is inflicting measurable harm on Russia's economy and society, a rare Kremlin admission of the war's domestic toll.
+- **Russia Launches Overnight Missile and Drone Barrage on Kyiv, Kharkiv, and Zaporizhzhia** — Large-scale Russian aerial attacks struck multiple Ukrainian cities overnight, with drone blast footage captured on surveillance cameras in Zaporizhzhia amid intensifying bombardment.
+- **Ukraine's 'FP-5 Flamingo' Cruise Missiles Strike Oil Refineries and Ports Deep Inside Russia** — Ukrainian-made Flamingo cruise missiles hit targets deep within Russian territory including oil refineries, fuel depots, and a port in occupied Mariupol, expanding Kyiv's long-range strike campaign.
+- **Russia's Domestic Weapons Production Now Eclipsing NATO Output** — Russia has rebuilt its long-range strike capacity from import dependency and depleted stocks to a domestic manufacturing rate analysts say now surpasses NATO's combined production output.
+
+### Israel
+- **Israel Strikes Hezbollah Targets in Beirut After Drone Attacks; One Killed** — Israeli forces struck Hezbollah positions in Beirut following drone attacks, killing at least one person and wounding four others, even as Washington urges Netanyahu to show restraint.
+- **Iran Threatens Retaliation If Israel Continues Southern Lebanon Offensive** — Iran's military command issued a direct warning of retaliation against Israel if IDF operations in southern Lebanon continue, raising fears of escalation despite the US-Iran MoU.
+- **Netanyahu Refuses to Confirm Ceasefire; Israel Will Not End Lebanon Occupation** — PM Netanyahu stopped short of acknowledging a ceasefire with Iran and declared Israel will not withdraw from its occupation of southern Lebanon, even as thousands of residents return home following the US-Iran deal.
+
+### Iran
+- **Trump and Vance Sign US-Iran MoU; Strait of Hormuz to Reopen and Nuclear Talks Begin** — President Trump and VP Vance virtually signed a memorandum of understanding with Iran to lift the US port blockade, reopen the Strait of Hormuz, and begin 60 days of nuclear negotiations with international inspectors returning to the country.
+- **G7 Leaders Voice Support for US-Iran Nuclear Agreement at Évian Summit** — G7 nations endorsed the US-Iran deal, calling it "an historic opportunity to prevent Iran from acquiring a nuclear weapon"; Qatar is actively mediating to prevent a return to hostilities before the formal signing.
+- **Funeral of Iran's Supreme Leader Khamenei Set for July 4–9 in Tehran and Mashhad** — State funeral ceremonies for the late Supreme Leader Ali Khamenei will begin July 4 in Tehran with burial in Mashhad on July 9, marking a pivotal leadership transition for the Islamic Republic.
+
+---
+
 # News Feed - 2026-06-17 18:00 UTC
 
 ## Geopolitics
