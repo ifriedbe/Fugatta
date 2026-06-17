@@ -1,3 +1,57 @@
+# News Feed - 2026-06-17 20:00 UTC
+
+## Geopolitics
+
+- **17:00 UTC** | https://www.consilium.europa.eu/en/press/press-releases/2026/06/17/g7-leaders-joint-statements-evian-france-16-17-june-2026/ | G7 leaders concluded their 52nd summit in Évian, France on June 17. The joint declarations cover global peace and security, economic stability, and a coordinated call on the Bundibugyo Ebola outbreak. Invited countries included Brazil, India, Kenya, South Korea, and Syria. The summit tested transatlantic unity on trade, AI governance, and the Ukraine conflict.
+
+- **16:30 UTC** | https://www.deccanherald.com/world/middle-east/us-naval-blockade-on-ports-lifted-says-iran-ahead-of-planned-signing-of-deal-to-end-war-4041493 | Iran's Deputy Foreign Minister Majid Takht-Ravanchi confirmed that the two-month US naval blockade on Iranian ports has been lifted ahead of a formal peace deal signing scheduled for June 19 in Switzerland. The deal also covers reopening the Strait of Hormuz and would extend a ceasefire for a 60-day negotiation period. The blockade had been in place since April 13, 2026, following the collapse of the Islamabad Talks.
+
+- **15:00 UTC** | https://www.nbcnews.com/world/iran/live-blog/live-updates-trump-iran-deal-end-war-reopen-hormuz-markets-israel-rcna350076 | The US and Iran reached a tentative deal to end their war and reopen the Strait of Hormuz, with a formal memorandum of understanding signing set for June 19 in Switzerland. The agreement is being closely watched by global energy markets and Gulf states. Experts noted that questions remain about the timeline for full Hormuz reopening and implementation details.
+
+- **14:00 UTC** | https://ukraina.ru/20260617/itogi-17062026-evropa-torguetsya-s-ssha-po-ukraine-a-ttsk-slovili-odnogo-iz-propagandistov-bankovoy-1080326285.html | At the G7 summit, European leaders pushed for a stronger US stance on Russia over Ukraine. (Итоги 17.06.2026: Европа торгуется с США по Украине.) Russia's Deputy Foreign Minister stated Moscow does not expect the UN to play a mediating role in settling the Ukraine conflict. Fighting continues on the Zaporizhzhia and Kupyansk fronts.
+
+- **13:00 UTC** | https://vz.ru/news/2026/6/16/1427773.html | Russia's Ministry of Defence confirmed that the frigate *Admiral Grigorovich* fired warning shots in the English Channel after a British yacht, *Bright Future*, sailed on a dangerous heading toward the vessel on June 16. (Минобороны: «Адмирал Григорович» открыл огонь в Ла-Манше по международным правилам.) The Russian Navy said it acted in accordance with international maritime rules. The incident is expected to raise tensions with the UK.
+
+- **12:00 UTC** | https://gulfnews.com/world/mena/usiran-mou-sparks-big-question-when-does-hormuz-fully-reopen-and-is-the-us-naval-blockade-on-iran-really-ending-1.500574352 | Analysts questioned whether the US-Iran MoU would lead to a full and permanent reopening of the Strait of Hormuz, pointing to unresolved issues over enrichment timelines and Israeli concerns. Energy experts warned that high oil prices may persist regardless of the ceasefire due to infrastructure damage. (Эксперты предрекли сохранение высоких мировых цен после конфликта с Ираном.)
+
+## Technology & Business
+
+- **16:00 UTC** | https://www.cnbc.com/2026/06/16/spacex-spcx-cursor-acquisition-ipo.html | SpaceX announced it is acquiring AI coding startup Cursor for $60 billion in stock, just two trading days after its blockbuster IPO. The deal, structured as a call option agreed in April, makes this the largest-ever acquisition of a VC-backed startup outside of Musk's own xAI deal. Cursor (made by startup Anysphere) had crossed $1 billion in annualized revenue and will become a wholly owned SpaceX subsidiary when the deal closes in Q3.
+
+- **15:30 UTC** | https://techcrunch.com/2026/06/16/spacex-to-acquire-cursor-for-60b-in-stock-days-after-blockbuster-ipo/ | SpaceX's surging post-IPO stock effectively paid for the $60 billion Cursor acquisition within hours of trading, according to Fortune analysis. The acquisition is seen as Musk's bid to give SpaceX a competitive edge against Anthropic and OpenAI in AI development tooling. The deal is contingent on regulatory clearance.
+
+- **15:00 UTC** | https://www.cnbc.com/2026/06/16/qualcomm-ceo-ai-devices-agents.html | Qualcomm's CEO declared that AI agents will replace traditional mobile apps as the next computing platform, and announced the company is developing over 40 new AI-powered devices including smart jewelry, watches, wearable pins, and earbuds with cameras. "Those agents are going to be the new app," CEO Cristiano Amon said. The move is part of a broader industry shift from app stores to on-device AI assistants capable of carrying out complex, multi-step tasks.
+
+- **14:30 UTC** | https://us.diplomatie.gouv.fr/en/g7-priorities-evian-summit | France and Germany are expected to jointly announce their own definition of "sovereign technology" at VivaTech in Paris (June 17-20). The EU nations are seeking to reduce dependence on US and Chinese tech firms. The announcement comes amid rising transatlantic tensions over EU digital regulations that Washington sees as targeting American companies.
+
+- **13:30 UTC** | https://techstartups.com/2026/06/16/top-tech-news-today-june-16-2026/ | SpaceX's post-IPO shares surged toward overtaking Amazon in market cap as the Cursor acquisition news fueled investor enthusiasm. Hyperscalers continue to scramble for power, with Microsoft building fusion-powered data centers and Meta deploying tent-style compute farms to accelerate AI infrastructure buildout. Anthropic warned that the industry may need a coordinated pause if AI systems begin self-improving too quickly.
+
+## Health & Science
+
+- **17:00 UTC** | https://www.gov.uk/government/news/g7-leaders-call-for-a-coordinated-response-to-the-bundibugyo-ebola-outrbreak-16-june-2026 | G7 leaders issued an emergency call for a coordinated global response to the re-emerging Bundibugyo strain Ebola outbreak affecting the Democratic Republic of Congo and Uganda. The outbreak is centered in an isolated, conflict-affected area in eastern DRC where existing vaccines and treatments show limited effectiveness against this rare strain. G7 members have contributed over two-thirds of humanitarian funding raised so far in 2026 for the OCHA humanitarian response.
+
+- **14:00 UTC** | https://www.who.int/emergencies/disease-outbreak-news/item/2026-DON606 | The WHO confirmed the ongoing Ebola disease outbreak caused by the Bundibugyo virus in DRC and Uganda, with contact tracing and cross-border preparedness measures being key challenges due to the conflict-affected terrain. The G7 statement warns the outbreak could last another year without rapid coordinated action.
+
+- **13:00 UTC** | http://www.sciencedaily.com/releases/2026/06/260615033837.htm | A new large real-world study presented at ENDO 2026 (the Endocrine Society's annual meeting in Chicago) found that semaglutide (Ozempic/Wegovy) is linked to a 15% lower risk of bone fractures in people with type 2 diabetes compared with other weight-loss medications. The finding is considered unexpected given the greater weight loss associated with GLP-1 drugs. Researchers said additional prospective studies are needed to confirm the association.
+
+- **12:30 UTC** | https://www.sciencedaily.com/releases/2026/06/260614011841.htm | A Fitbit-based study presented at ENDO 2026 found that people taking GLP-1 weight loss drugs like Ozempic walk an average of 560 fewer steps per day after starting the medication. The reduction in physical activity raises questions about whether the metabolic benefits of GLP-1 drugs could be partially offset by decreased movement. Researchers called for guidelines encouraging exercise alongside GLP-1 therapy.
+
+## Sports
+
+- **18:00 UTC** | https://www.espn.com/soccer/story/_/id/49091004/world-cup-2026-today-blog-17-06-2026-live-updates-news-fixtures-schedule-results-lionel-messi | The 2026 FIFA World Cup continues today with four matches: Portugal vs. DR Congo (13:00 ET), England vs. Croatia (16:00 ET), Ghana vs. Panama (19:00 ET), and Uzbekistan vs. Colombia (22:00 ET). Harry Kane and Cristiano Ronaldo are both in action for the first time in this tournament. Uzbekistan makes its historic World Cup debut today coached by Italy legend Fabio Cannavaro.
+
+- **01:30 UTC** | https://www.aljazeera.com/sports/2026/6/17/messi-fires-argentina-to-win-against-algeria-in-world-cup-defence-opener | Lionel Messi scored a hat trick on his 200th Argentina appearance to lead the defending champions to a 3-0 win over Algeria, tying Miroslav Klose's all-time World Cup scoring record with 16 goals. Messi became the first player to appear in six World Cups. His first goal was a long-range strike, the second a tap-in, and the third a curled effort into the bottom corner.
+
+- **00:30 UTC** | https://www.foxnews.com/sports/lionel-messis-greatness-shines-world-cup-hat-trick-algeria | Alongside Messi's heroics on June 16, Kylian Mbappé scored twice as France won their opener, and Erling Haaland also netted twice for Norway. The opening week of the 48-team World Cup — the first to be co-hosted across the US, Canada, and Mexico — has already delivered several memorable performances.
+
+## Other
+
+- **10:00 UTC** | https://www.5-tv.ru/news/5074342/bespilotnye-taksi-planiruut-zapustit-vnovyh-rajonah-moskvy/ | Moscow plans to expand its fleet of autonomous taxis to 200 vehicles in 2026, rolling them out to new districts of the city. (Сколько беспилотных такси выйдут на дороги Москвы в 2026.) The initiative is part of Russia's smart city push, with existing robotaxi zones proving popular. Full city coverage remains years away, officials said.
+
+- **09:00 UTC** | https://www.zerofox.com/intelligence/monthly-geopolitical-report-june-2026/ | The June 2026 ZeroFox Geopolitical Risk Report flags elevated threats across the Middle East following the Iran-US war, ongoing AI-driven disinformation campaigns targeting Western elections, and supply chain disruptions tied to Hormuz closure. The report notes that the re-opening of trade routes through the strait could stabilize energy markets within weeks if the ceasefire holds.
+
+---
+
 ## 2026-06-17T20:00:00Z
 ### Ukraine & Russia
 - **Russia Launches Overnight Missile and Drone Barrage on Kyiv, Kharkiv, and Zaporizhzhia** — Large-scale Russian aerial attacks struck multiple Ukrainian cities overnight, with drone blasts captured on surveillance cameras in Zaporizhzhia; two killed in Russia's Bryansk, one in Ukraine's Sumy.
