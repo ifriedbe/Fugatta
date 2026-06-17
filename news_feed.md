@@ -1,3 +1,57 @@
+# News Feed - 2026-06-17 18:00 UTC
+
+## Geopolitics
+
+- **18:00 UTC** | https://www.elysee.fr/en/G7evian/2026/06/17/g7-leaders-statement-on-geopolitical-issues | The G7 Évian Summit (June 15–17) concluded with a joint statement committing to strengthen sanctions on Russia's oil and gas sectors and pledging further support for Ukraine's energy resilience heading into winter. All G7 members, including the US, signed the communiqué — a notable outcome given recent transatlantic tensions.
+
+- **17:45 UTC** | https://www.nbcnews.com/politics/donald-trump/live-blog/live-updates-trump-g7-summit-iran-deal-russia-ukraine-war-iran-israel-rcna350404 | G7 leaders welcomed the US-Iran memorandum of understanding, calling it "an historic opportunity to prevent Iran from acquiring a nuclear weapon." The deal is set to be formally signed June 19 in Switzerland; Qatar said it is actively mediating to prevent a return to hostilities before then.
+
+- **17:30 UTC** | https://researchbriefings.files.parliament.uk/documents/CBP-10342/CBP-10342.pdf | The UK designated 11 individuals and 32 entities under Russia sanctions on June 16, targeting those involved in procuring dual-use goods and entities tied to Russia's defence, energy, financial, and transport sectors — part of ongoing allied pressure on Russia's war economy.
+
+- **17:00 UTC** | https://www.euronews.com/my-europe/2026/05/08/after-20-rounds-of-sanctions-the-eu-finally-sees-cracks-in-the-russian-economy | After 20 rounds of EU sanctions, economists now see early signs of strain on the Russian economy. The IMF estimates 1.1% growth for Russia in 2026, but analysts warn the country may slide into outright stagnation, with recovery unlikely before 2027.
+
+## Technology & Business
+
+- **18:00 UTC** | https://www.thestreet.com/stock-market-today/stock-market-jones-sp-500-nasdaq-updates-june-16-2026 | US markets are trading cautiously ahead of the Federal Reserve's first policy decision under Chairman Kevin Warsh. Rates are expected to hold steady, but investors are watching Warsh's press conference for future guidance. May retail sales beat expectations, rising 0.9% vs. a forecast of 0.5%.
+
+- **17:30 UTC** | https://finance.yahoo.com/markets/stocks/articles/70-stock-market-warning-signals-143409069.html | Multiple market warning signals are flashing ahead of Warsh's inaugural press conference as Fed Chair. Global equity and bond markets had rallied after the US-Iran deal, but 70% of tracked market warning indicators are now active, keeping stocks in a cautious range.
+
+- **16:30 UTC** | https://techcrunch.com/ | Meta is cutting approximately 8,000 employees — roughly 10% of its workforce — and reassigning 7,000 others to AI-focused teams as part of a major restructuring. The move reflects the broader industry shift toward AI-augmented operations and leaner headcounts across big tech.
+
+- **16:00 UTC** | https://techcrunch.com/ | President Trump abruptly canceled a scheduled Oval Office signing ceremony for a new AI executive order, citing concerns the text could undermine America's competitive lead over China in artificial intelligence. The move leaves US AI policy in flux and has drawn criticism from industry and policy experts.
+
+- **15:30 UTC** | https://www.businesswire.com/newsroom/industry/technology/artificial-intelligence | Cadence Design Systems and NVIDIA announced an expanded partnership combining Cadence's multiphysics simulation engines with NVIDIA's Isaac robotics libraries and Cosmos world models. The collaboration targets the "sim-to-real" gap in robotics with an end-to-end AI agent workflow for training, simulation, and deployment.
+
+- **15:00 UTC** | https://ria.ru/20260519/buduschee-2093194009.html | Russia's IT market is projected to reach 4.5 trillion rubles in 2026, with its share of GDP rising from 1.7% to 1.9%. (Россия стоит на пороге новой революции — цифровой.) Russian companies are prioritizing generative AI adoption, data infrastructure investment, and IT outsourcing as a new digital transformation wave accelerates.
+
+## Health & Science
+
+- **17:00 UTC** | https://www.medscape.com/ | New clinical findings show Dupilumab significantly outperforms Omalizumab in patients with high-biomarker asthma. A separate study found remibrutinib effectively resolves chronic inducible urticaria. Researchers also identified hypotension as a leading cardiovascular factor linked to Alzheimer's disease risk.
+
+- **16:30 UTC** | https://scitechdaily.com/news/health/ | Stanford researchers developed a treatment blocking an aging-related protein that restored lost cartilage in old mice and prevented arthritis after knee injuries — a potential path to new human therapies for degenerative joint disease.
+
+- **16:00 UTC** | https://www.sciencedaily.com/news/health_medicine/ | Ozempic (semaglutide) and similar GLP-1 drugs were linked to a 30% reduction in breast cancer incidence in a new large-scale study. A separate AI tool was also shown to accurately analyze speech patterns to flag early cognitive impairment, offering a low-cost screening approach.
+
+- **15:00 UTC** | https://www.sciencedaily.com/news/health_medicine/ | Mutations linked to blood cancers may trigger Alzheimer's by creating overly inflammatory immune cells in the brain, according to new research. The finding bridges cancer biology and neurodegeneration, potentially opening new prevention and treatment avenues.
+
+## Sports
+
+- **17:30 UTC** | https://www.espn.com/soccer/story/_/id/49091004/world-cup-2026-today-blog-17-06-2026-live-updates-news-fixtures-schedule-results-lionel-messi | FIFA World Cup 2026 Day 7 features several major Group Stage openers: England vs. Croatia in Dallas, Portugal vs. DR Congo in Houston, Colombia vs. Uzbekistan in Mexico City, and Ghana vs. Panama in Toronto. Harry Kane and Cristiano Ronaldo are both in action today.
+
+- **16:00 UTC** | https://www.sbs.com.au/news/article/fifa-world-cup-2026-results-june-16/i9qjp4lto | June 16 World Cup results: Spain 0–0 Cabo Verde; Belgium 1–1 Egypt; Saudi Arabia 1–1 Uruguay; Iran 2–2 New Zealand. (ЧМ 16 июня: Испания — Кабо-Верде 0:0, Бельгия — Египет 1:1, Саудовская Аравия — Уругвай 1:1, Иран — Новая Зеландия 2:2.)
+
+- **15:00 UTC** | https://sports.yahoo.com/tennis/ | Coco Gauff and Alexandra Eala begin their singles campaigns at the Berlin Tennis Open today, part of the grass-court season buildup ahead of Wimbledon.
+
+## Other
+
+- **17:00 UTC** | https://earth.org/this-week-in-climate-news-june-2026-week-2/ | Scientists say it is "virtually certain" that 2026 will rank among the 10 warmest years on record, and the year is on pace to finish in the top five. May continued the trend of extreme global warmth; urgent climate action was a key theme at the G7 summit.
+
+- **16:30 UTC** | https://earth.org/this-week-in-climate-news-june-2026-week-2/ | A new report reveals the AI boom's environmental cost: global data centers consumed 448 TWh of electricity in 2025 alone. The Trump administration also moved to dismantle a decade-old deep-ocean climate observation network, drawing criticism from oceanographers and climate scientists.
+
+- **15:30 UTC** | https://www.unep.org/news-and-stories/press-release/planet-swelters-world-environment-day-2026-focuses-urgent-climate | A new study offers cautious hope: some coral reefs still have a meaningful chance to survive and recover from climate impacts, provided they are protected from additional human stressors. World Environment Day 2026 centered on urgent, immediate action.
+
+---
+
 ## 2026-06-17T17:15:00Z
 ### Ukraine & Russia
 - **Russia Intensifies Bombing of Ukrainian Cities, Strikes Kyiv Pechersk Lavra** — UNESCO condemned a Russian aerial attack that damaged the historic Kyiv Pechersk Lavra monastery as Moscow escalated strikes amid stalled battlefield advances.
