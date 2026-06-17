@@ -1,3 +1,47 @@
+# News Feed - 2026-06-17 19:00 UTC
+
+## Geopolitics
+
+- **19:00 UTC** | https://www.npr.org/2026/06/17/nx-s1-5860782/trumps-iran-agreement-dominates-g7-but-big-questions-remain | The G7 summit in Évian concluded with Trump holding a closing press conference laying out key terms of the US-Iran MOU: Iran will "work closely" with the US to transfer enriched material, 60-day formal nuclear negotiations begin immediately, and a formal treaty signing is planned for Switzerland on June 19. Trump defended the deal by saying resuming military action against Iran would have caused "economic catastrophe." G7 allies signed a joint communiqué praising the deal and pledging tougher Russia sanctions.
+
+- **18:45 UTC** | https://www.bloomberg.com/news/articles/2026-06-17/finland-lifts-nuclear-weapons-ban-as-security-risks-grow | Finland's parliament (Eduskunta) voted 125 to 61 to lift a 39-year ban on the import, transportation, storage, and possession of nuclear weapons on its territory. The government said the change is aimed at improving deterrence in a more unpredictable security environment and deepening Finland's integration into NATO defense structures, while maintaining no immediate plans to host nuclear weapons. Russia's Embassy in Helsinki warned Moscow will factor even the theoretical possibility of nuclear weapons in Finland into its military planning.
+
+- **18:30 UTC** | https://www.themoscowtimes.com/2026/06/17/ukrainian-drone-strike-targets-bus-carrying-belarusian-youth-soccer-team-in-bryansk-region-killing-1-a93036 | Russia accused Ukraine of striking a bus in Bryansk Oblast carrying a Belarusian children's football team traveling from Gomel to Gelendzhik, killing one adult escort and wounding seven people including five children. Russia's Investigative Committee opened a terrorism probe and Putin directed the Health Minister to assist victims. Ukraine's General Staff flatly denied responsibility, saying no Ukrainian drones were operating in the region at the time. (Украина отрицает атаку на автобус с белорусскими детьми в Брянской области.)
+
+- **18:20 UTC** | https://kyivindependent.com/ | Ukraine confirmed drone strikes on a major oil refinery in Moscow and an oil depot in Russia's Krasnodar Krai, with President Zelensky calling the attacks "a just response to Russian strikes." Meanwhile, Russian forces continued advancing in Donetsk Oblast, exerting increased pressure on Ukrainian defenses near Kostyantynivka, Sloviansk, and Dobropillia on day 1,574 of the war.
+
+- **18:10 UTC** | https://www.timesofisrael.com/liveblog-june-17-2026/ | At the G7 closing press conference, Trump also pushed back on Israeli Prime Minister Netanyahu's skepticism of the Iran deal, saying the agreement will prevent a nuclear-armed Iran. Trump reiterated his call for Israel to show restraint in Lebanon, where IDF operations continue despite ceasefire appeals. Zelensky attended the G7 summit and lobbied allies for continued military and financial support.
+
+## Technology & Business
+
+- **19:00 UTC** | https://www.kiplinger.com/news/live/fed-meeting-updates-and-commentary-june-2026 | The Federal Reserve held interest rates unchanged at 3.50%–3.75% at its June meeting, and new Fed Chair Kevin Warsh held his first post-meeting press conference at 2:30 PM ET. Markets were closely watching Warsh's language on inflation and forward guidance, with May CPI at 4.2% annually — the highest since April 2023 — driven partly by energy price pressure following the US-Iran conflict. The updated dot plot was also released, potentially signaling the path to future hikes.
+
+- **18:30 UTC** | https://www.cnbc.com/2026/06/17/g7-trump-ai-tech-leaders-openai-anthropic-google.html | AI lab CEOs Sam Altman (OpenAI), Dario Amodei (Anthropic), and Demis Hassabis (Google DeepMind) were all present at the G7 summit in Évian — the first time all three appeared before world leaders simultaneously. The occasion highlighted the extraordinary influence of AI companies in shaping global policy, with participants discussing AI governance, national security implications, and export controls for advanced models.
+
+- **18:15 UTC** | https://llm-stats.com/ai-news | OpenAI previewed GPT-5.6, codenamed "Kindle," described as a "meaningful improvement" over GPT-5.5 with advances in reasoning, coding, and vision processing, with a late-June launch expected. The announcement comes amid a price war with Anthropic and regulatory scrutiny: the Trump administration is considering controls on Anthropic's Mythos model, and state attorneys general have opened a formal process against OpenAI. Dario Amodei met with Trump administration officials over Mythos export controls with no resolution reached.
+
+- **18:00 UTC** | https://www.kommersant.ru/doc/8740210 | Russia's Helicopters of Russia holding (part of Rostec) signed a contract to supply 21 civilian Mi-171 helicopters to Iran's Red Crescent Society. The signing took place in Moscow between Rostec head Nikolai Kolesov and Iranian Red Crescent chief Pirhoussein Kolivand. Deliveries are set to begin in 2027 and will support medical evacuations and humanitarian transport operations. (Россия поставит Ирану 21 вертолёт Ми-171 для Красного Полумесяца.)
+
+## Health & Science
+
+- **18:30 UTC** | https://www.sciencedaily.com/news/health_medicine/ | A major clinical trial showed a new oral GLP-1 receptor agonist significantly improved blood sugar control and drove meaningful weight loss in people with type 2 diabetes — potentially broadening the class beyond injectable options like Ozempic. Separately, a new study found semaglutide also provides stronger bone fracture protection compared with other diabetes treatments, adding another benefit to the already-widely-used drug class.
+
+- **18:00 UTC** | https://www.sciencedaily.com/news/health_medicine/ | Scientists are investigating what they call "nutritional dark matter" — thousands of bioactive food chemicals that go far beyond the nutrients listed on standard nutrition labels and may hold clues to disease risk and healthy aging. Researchers say current dietary science captures only a fraction of the compounds people consume, and mapping this hidden chemical landscape could revolutionize nutritional medicine.
+
+## Sports
+
+- **19:00 UTC** | https://www.espn.com/soccer/story/_/id/49096146/portugal-dr-congo-live-world-cup-2026-latest-updates-commentary-score-result | Portugal's Group K opener against DR Congo is underway in Houston, with 41-year-old Cristiano Ronaldo starting — his 6th World Cup and what may be his last, becoming only the second player in history (alongside Messi) to appear in six separate tournaments. DR Congo returns to the World Cup stage for the first time in 52 years.
+
+- **19:00 UTC** | https://www.foxsports.com/soccer/fifa-world-cup-men-england-vs-croatia-jun-17-2026-game-boxscore-647637 | England vs. Croatia kicks off at 20:00 UTC at AT&T Stadium in Arlington, Texas in what promises to be a marquee Group L clash. Harry Kane leads England's attack while Luka Modrić captains Croatia in a rematch of the 2018 World Cup semifinal. Colombia vs. Uzbekistan (22:00 UTC, Azteca, Mexico City) and Ghana vs. Panama (23:00 UTC, BMO Field, Toronto) also take place tonight.
+
+## Other
+
+- **18:30 UTC** | https://lenta.ru/news/2026/06/17/rossiya-nachala-postavki-belorussii-modernizirovannyh-supercam-s350/ | Russia has begun deliveries of modernized Supercam S350 reconnaissance UAVs to Belarus, with upgraded rear-facing optics giving the drone enhanced situational awareness in contested airspace. The deliveries mark the latest expansion of Russia-Belarus military-technical cooperation amid the ongoing war in Ukraine. (Россия начала поставки Белоруссии модернизированных беспилотников Supercam S350.)
+
+- **18:00 UTC** | https://www.ria.ru/20260617/zapad-2099340801.html | Russian state media (RIA Novosti) reported with sardonic commentary that Western experts who had previously predicted Russia's imminent economic collapse are now revising timelines, amid signs the Russian economy managed to grow 0.2% in the first four months of 2026 despite 20 rounds of EU sanctions. IMF projects 1.1% growth for Russia in 2026, though independent analysts expect stagnation by 2027. ("Пробил дно": на Западе поразились произошедшему на саммите G7 во Франции.)
+
+---
+
 ## 2026-06-17T18:30:00Z
 ### Ukraine & Russia
 - **Putin Admits Ukrainian Attacks Are Damaging Russia's Economy and Society** — President Putin publicly acknowledged on June 12 that the surge in Ukrainian drone and missile strikes is inflicting measurable harm on Russia's economy and society, a rare Kremlin admission of the war's domestic toll.
