@@ -1,0 +1,11 @@
+## 2026-06-17T16:35:47Z
+- **Russia Launches Large-Scale Attack on Ukraine** — A major Russian strike killed 5 rescuers in Kharkiv, wounded 20 in Kyiv, and set apartment buildings ablaze while sparking a fire at one of Ukraine's most significant religious landmarks.
+- **FIFA World Cup 2026 Underway** — The expanded 48-team tournament is in full swing across Mexico, Canada, and the United States, with several surprising results in the opening matches.
+- **Elon Musk Becomes World's First US-Dollar Trillionaire** — Musk's net worth crossed the $1 trillion mark after SpaceX debuted on the Nasdaq stock market with a record-shattering $75 billion IPO.
+- **SpaceX Acquires AI Coding Startup Cursor for $60 Billion** — SpaceX purchased the popular AI coding assistant Cursor in one of the largest AI startup acquisitions to date.
+- **New York Knicks Win Third NBA Championship** — The Knicks defeated the San Antonio Spurs in five games, with Jalen Brunson named Finals MVP, ending a decades-long title drought for New York.
+- **UK Defence Secretary Resigns Over Military Funding** — John Healey stepped down as the UK's Secretary of State for Defence in protest at what he described as insufficient government funding for British Armed Forces.
+- **Anthropic Files Confidential IPO** — AI safety company Anthropic filed confidentially for an initial public offering amid a sweeping wave of AI infrastructure investment.
+- **Breakthrough Drug Doubles Pancreatic Cancer Survival** — Daraxonrasib, presented at ASCO 2026, roughly doubles survival rates for patients with late-stage pancreatic cancer, offering significant new hope.
+- **First In-Vivo Gene Editing Therapy Cures Rare Swelling Disorder** — A single injection has permanently edited away hereditary angioedema, marking a landmark milestone for in-vivo gene editing medicine.
+- **UN Chief Visits Haiti Amid Relentless Gang Violence** — UN Secretary-General António Guterres traveled to Port-au-Prince as gang violence continues to ravage the country, with 2,300 people killed and 100 kidnapped so far this year.
