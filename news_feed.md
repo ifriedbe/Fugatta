@@ -1,3 +1,20 @@
+## 2026-06-17T17:15:00Z
+### Ukraine & Russia
+- **Russia Intensifies Bombing of Ukrainian Cities, Strikes Kyiv Pechersk Lavra** — UNESCO condemned a Russian aerial attack that damaged the historic Kyiv Pechersk Lavra monastery as Moscow escalated strikes amid stalled battlefield advances.
+- **Russian Forces Post Net Territorial Loss Over Past Month** — Russian forces suffered a net loss of 1 square mile (May 12–June 9) after gaining 41 square miles the prior four-week period, as Ukraine increasingly targets Russian fuel infrastructure and Crimea supply lines.
+- **Russia Rebuilds Long-Range Strike Capacity Now Eclipsing NATO Production** — Russia has shifted from import dependency to domestic manufacturing of long-range strike weapons at a rate that now surpasses NATO's combined production output.
+
+### Israel
+- **Trump Says US-Iran Deal Signed; Israel Skeptical and Will Not End Lebanon Occupation** — The Trump administration confirmed the Iran MoU is electronically signed, but Israel expressed deep skepticism and said it will not end its occupation of southern Lebanon despite thousands already returning home.
+- **IDF Eliminates Two Hamas Commanders Tied to October 7 Massacre** — Israeli forces killed two senior Hamas operatives directly linked to the October 7 attacks, one of whom had held numerous hostages throughout the conflict.
+- **FBI Arrests Five Suspects in Alleged Plot Targeting Trump, Vance, and Netanyahu** — Five individuals were arrested for allegedly planning attacks on President Trump, Vice President Vance, and other senior officials, with PM Netanyahu also named as a potential target in the indictment.
+
+### Iran
+- **Trump Pledges to Release Iran Nuclear Deal Text Within Days at G7** — Attending the G7 summit, President Trump vowed to make the full text of the US-Iran nuclear agreement public "in a couple of days" as the deal's details remain closely guarded.
+- **CIA Director and Acting NSA Rubio Reportedly Doubted Iran Would Accept Nuclear Terms** — Intelligence officials including CIA Director Ratcliffe and acting NSA Marco Rubio had expressed doubts, based on US intelligence, that Iran would agree to the nuclear concessions Washington demanded before the deal was struck.
+- **China Pledges Humanitarian Aid for Lebanon and Iran After Conflict** — Beijing announced new humanitarian aid packages for both Lebanon and Iran in the aftermath of Operation Epic Fury, the US-Israeli military campaign against Iran that concluded on May 5.
+- **Qatar Mediating to Prevent Return to War After US-Iran MoU Signed** — Qatar said it is actively working to prevent a return to hostilities following the signing of the memorandum of understanding between the United States and Iran.
+
 ## 2026-06-17T16:40:18Z
 - **Trump and Iran Reach Agreement to End War, Reopen Strait of Hormuz** — President Trump and Iranian officials announced a deal to cease hostilities and reopen the strategically vital Strait of Hormuz to international shipping.
 - **Russia Strikes Ukraine in Large-Scale Attack** — A major Russian assault killed 5 rescuers in Kharkiv, wounded 20 in Kyiv, set apartment buildings ablaze, and sparked a fire at one of Ukraine's most significant religious landmarks.
