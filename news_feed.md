@@ -1,3 +1,22 @@
+## 2026-06-17T20:00:00Z
+### Ukraine & Russia
+- **Russia Launches Overnight Missile and Drone Barrage on Kyiv, Kharkiv, and Zaporizhzhia** — Large-scale Russian aerial attacks struck multiple Ukrainian cities overnight, with drone blasts captured on surveillance cameras in Zaporizhzhia; two killed in Russia's Bryansk, one in Ukraine's Sumy.
+- **Putin Admits Ukrainian Attacks Are Damaging Russian Economy and Society** — In a rare public acknowledgment, President Putin stated that the surge in Ukrainian strikes is inflicting measurable harm on Russia's economy and social fabric.
+- **Ukraine Strikes Russian Oil Infrastructure; SBU Claims Tamanneftegaz Terminal Fire** — Ukraine continued targeting refineries, depots, and pipelines, with the SBU security service claiming responsibility for a fire at Russia's Tamanneftegaz oil terminal in the Krasnodar region.
+- **UK Armed Forces Intercept Russian Shadow Fleet Oil Tanker** — British naval forces seized a tanker believed to be part of Russia's sanctioned "shadow fleet," used to circumvent Western oil price caps and export restrictions.
+
+### Israel
+- **Israel Strikes Hezbollah Targets in Beirut After Drone Attacks** — Israeli forces hit Hezbollah positions in Beirut following drone attacks, killing at least one person, even as Washington urges Netanyahu to exercise restraint amid the nascent US-Iran deal.
+- **Iran's Military Command Threatens Retaliation If Israel Continues Southern Lebanon Offensive** — Iran's military command issued a direct warning on June 16 of retaliation against Israel if IDF operations in southern Lebanon persist despite the US-Iran memorandum of understanding.
+- **Netanyahu Privately Tells US Officials Iran Deal Would Be a "Home Run"** — Senior US officials at the G7 summit reported PM Netanyahu privately described the US-Iran memorandum as a potential "home run" for regional security, despite Israel's public skepticism about the agreement.
+
+### Iran
+- **Trump and Vance Virtually Sign US-Iran MoU; Strait of Hormuz to Reopen** — President Trump and VP Vance signed a memorandum of understanding to lift the US port blockade on Iran, reopen the Strait of Hormuz, and begin 60 days of formal nuclear negotiations with international inspectors returning.
+- **G7 Leaders Endorse US-Iran Nuclear Agreement at Évian Summit** — G7 nations voiced collective support for the US-Iran deal on June 17, calling it "an historic opportunity to prevent Iran from acquiring a nuclear weapon"; Qatar is actively mediating to prevent a return to hostilities before the formal signing on June 19.
+- **Iran Deal Draft: Oil Exports Resume on Signing; Tehran May Access $300B Development Fund** — The MoU text shows Iran can restart oil exports immediately upon signing and may unlock a $300 billion development fund contingent on meeting nuclear commitments during the 60-day negotiations.
+
+---
+
 # News Feed - 2026-06-17 19:00 UTC
 
 ## Geopolitics
