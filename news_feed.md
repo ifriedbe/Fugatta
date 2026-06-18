@@ -15,6 +15,33 @@
 - **Iran's Highly Enriched Uranium to Be Diluted on Iranian Soil Under IAEA Supervision** — A key MoU provision requires Iran's stockpile of highly enriched uranium to be diluted domestically under international monitoring; Iran declared transferring enriched material out of the country "unacceptable."
 - **$300 Billion Development Fund for Iran Contingent on Nuclear Compliance** — The MoU includes a $300 billion economic development plan for Iran, conditional on meeting nuclear obligations during the 60-day post-signing negotiation period.
 
+
+---
+
+# News Feed - 2026-06-18 15:00 UTC
+
+## Technology & Business
+
+- **08:00 UTC** | https://www.foxcorporation.com/news/corp-press-releases/2026/fox-corporation-to-acquire-roku-inc/ | Fox Corporation announced a $22 billion deal to acquire Roku, paying $96 per share in cash plus 0.9693 Fox Class A shares per Roku share. The deal combines Fox's sports, news, and Tubi streaming with Roku's 100+ million streaming households, creating the third-largest US TV entity by viewing share. Roku will continue as a standalone platform; closing expected in the first half of 2027.
+
+- **09:00 UTC** | https://www.zerofox.com/intelligence/monthly-geopolitical-report-june-2026/ | On June 3, the European Commission unveiled a "Tech Sovereignty Package" including the Cloud and AI Development Act and Chips Act 2, aimed at strengthening the EU's domestic digital infrastructure and reducing dependency on non-European technology providers.
+
+- **10:00 UTC** | https://techstartups.com/2026/06/17/top-tech-news-today-june-17-2026/ | A senior Google executive stated that AI adoption among UK businesses has reached a tipping point, with large-scale deployment across customer service, software development, and marketing. MIT researchers also unveiled a new spatial memory system enabling robots to efficiently navigate and recall objects in complex real-world environments.
+
+## Health & Science
+
+- **07:00 UTC** | https://lifesciencedaily.news/weekly-news-roundup-15-june-2026/ | A three-year study of nearly 4,000 adults aged 19–94 found that brain health can improve at any age, directly challenging the assumption that cognitive decline is inevitable. Separately, a copper-based compound was shown to restore the brain's ability to clear toxic Alzheimer's proteins, dramatically reducing amyloid buildup and improving memory in laboratory experiments.
+
+- **08:00 UTC** | https://www.statnews.com/ | GSK agreed to acquire precision oncology company Nuvalent for $10.6 billion, adding two late-stage lung cancer drugs currently under FDA review. Separately, a clinical trial showed a new oral GLP-1 receptor agonist significantly improved blood sugar control, potentially broadening the class beyond injectables like Ozempic.
+
+- **06:00 UTC** | https://www.sciencenews.org/ | Scripps Research developed an experimental vaccine that could prevent fentanyl overdoses by stopping the drug before it reaches the brain. Separately, researchers used AI to design a universal COVID vaccine that has been successfully tested in humans.
+
+## Sports
+
+- **13:00 UTC** | https://sports.yahoo.com/college-sports/live/college-world-series-2026-bracket-schedule-scores-live-updates-ncaa-baseball-tournament-170000356.html | The College World Series championship series is set: No. 5 seed North Carolina defeated West Virginia 12–7, while Oklahoma beat No. 3 Georgia 11–4 with five home runs. The best-of-three Oklahoma vs. UNC series begins Saturday in Omaha.
+
+- **13:00 UTC** | https://www.sportbusy.com/calendar/2026/june/ | The 126th US Open Golf Championship tees off today at Shinnecock Hills in Southampton, New York — one of the most storied venues in American golf.
+
 ---
 
 ## 2026-06-18T14:00:00Z
