@@ -1,3 +1,22 @@
+## 2026-06-18T12:05:01Z
+### Ukraine & Russia
+- **Ukraine's Deep Strikes Depleting Russia's S-300 Interceptors at "Unsustainable Rate"** — Ukraine's long-range strike success rate at depths exceeding 900 km rose from 6% in early 2025 to 45% in 2026 as Moscow's S-300 stockpile faces depletion due to sanctions-driven component shortages, potentially shifting the air war in Kyiv's favor.
+- **Germany Pledges $500M in US Weapons and Patriot Missiles for Ukraine; Russian Advance Stalls** — Germany will finance $300M in additional US weapons deliveries and $200M for PAC-3 Patriot missiles; Russian ground forces recorded only a net 10 sq mile advance over four weeks (May 19–June 16), a sharp deceleration.
+- **UK Navy Seizes Russian Shadow Fleet Oil Tanker *Smyrtos* in English Channel Operation** — British armed forces intercepted and captured the vessel *Smyrtos*, believed to be part of Russia's sanctioned shadow fleet used to circumvent Western oil price caps and export restrictions.
+- **Ukraine Strikes Moscow Oil Refinery Again and Rostov Oil Depot; SBU Claims Tamanneftegaz Terminal Fire** — Ukraine hit the Moscow Oil Refinery for the second time in one week and an oil depot in Rostov Oblast, with Ukraine's SBU also claiming responsibility for a fire at Russia's Tamanneftegaz terminal in Krasnodar.
+
+### Israel
+- **Netanyahu Vows Indefinite South Lebanon Occupation Despite US-Iran Deal; Trump Rebukes Israel at G7** — PM Netanyahu declared Israeli troops will remain in southern Lebanon indefinitely even as the US-Iran MoU takes effect; Trump publicly criticized Israeli Lebanon operations at the G7 summit, straining the alliance further.
+- **Over 1,000 Palestinians Killed in Gaza Since US-Brokered Ceasefire Was Agreed** — More than 1,000 people have been killed in Gaza since the formal agreement of the US-brokered Hamas-Israel ceasefire, raising serious questions about the deal's durability and international enforcement.
+- **Iran Warns of "Harsh Response" If Israel Continues Southern Lebanon Offensive** — Tehran threatened retaliation over ongoing IDF operations in southern Lebanon, testing the durability of the US-Iran MoU and straining Trump-Netanyahu relations ahead of the June 19 formal signing in Switzerland.
+
+### Iran
+- **US-Iran 14-Point MoU Signed; Hormuz Reopens Immediately, Naval Blockade Lifted Within 30 Days, 60-Day Nuclear Talks Begin** — Trump and Pezeshkian signed the "Islamabad Memorandum of Understanding" ending over 100 days of US-Iran war; Iran immediately reopened the Strait of Hormuz as the US committed to lifting its naval blockade within 30 days and releasing $24B in frozen assets.
+- **Oil Prices Fall ~5%, Markets Rally as Hormuz Supply Fears Ease; Formal Signing Ceremony Set June 19 in Switzerland** — Brent crude dropped nearly 5% and the S&P 500 rose 1.9% on the MoU news; Trump pointed to record stock market levels and falling oil prices as early economic indicators of the deal's impact.
+- **Nuclear Enrichment Levels and Weapons Threshold Left Unresolved; Core Issues Deferred to 60-Day Follow-On Talks** — The signed agreement does not fix Iran's uranium enrichment ceiling or the fate of its highly enriched uranium stockpile; those remain the central unresolved issues for negotiations beginning after the June 19 ceremony.
+
+---
+
 # News Feed - 2026-06-18 11:45 UTC
 
 ## Geopolitics
