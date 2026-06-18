@@ -1,3 +1,22 @@
+## 2026-06-18T20:00:00Z
+### Ukraine & Russia
+- **Russia's S-300 Interceptors Depleting at "Unsustainable Rate" as Ukraine Deep Strike Success Rate Hits 45%** — Ukraine's long-range strike success rate at depths exceeding 900 km rose from 6% in early 2025 to 45% in 2026, as Moscow's S-300 stockpile faces depletion due to sanctions-driven shortages of guidance seekers and control modules.
+- **Russian Ground Advance Stalls; Net 10 Square Miles Gained Over Four Weeks as City Bombing Escalates** — Russian forces recorded a net 10 sq mile advance from May 19–June 16 as Moscow intensifies aerial bombardment of Ukrainian cities while battlefield momentum decelerates sharply.
+- **Zelensky Meets Trump at G7 Summit; US House Passes Bipartisan Ukraine Aid and Russia Sanctions Bill** — Ukrainian President Zelensky met Trump on June 17 at the G7 in Évian; the US House passed a bipartisan bill imposing new sanctions on Russia and providing Ukraine aid, though Senate passage remains uncertain.
+- **Russia's Oil Refining Capacity Down 13% Year-on-Year; 700,000 bpd Offline Across 16 Facilities** — Ukraine's sustained campaign against Russian energy infrastructure has knocked 700,000 barrels per day offline across 16 refineries; total Russian refining fell to 4.58 mbpd in May 2026, down 13% from May 2025.
+
+### Israel
+- **Trump Rebukes Israel at G7; Defense Minister Katz Vows Troops Will Stay in Southern Lebanon Indefinitely** — President Trump publicly criticized Israeli military operations in Lebanon at the G7 summit; Israeli Defense Minister Katz declared troops will remain in southern Lebanon indefinitely, complicating the US-Iran ceasefire framework.
+- **Over 1,000 Killed in Gaza Since US-Brokered Ceasefire Agreed** — More than 1,000 Palestinians have been killed in Gaza since the US-brokered Hamas-Israel ceasefire was formally agreed, raising serious questions about the deal's durability and international enforcement.
+- **Netanyahu Holds First Official Session with New Mossad Chief Roman Gofman** — Israeli PM Netanyahu met newly installed Mossad director Roman Gofman in their first formal working session as Israel simultaneously manages crises in Gaza and Lebanon.
+
+### Iran
+- **US-Iran MoU Agreed; Formal Geneva Signing June 19 — Hormuz Reopens, $24B in Frozen Assets Released** — The US and Iran agreed a Pakistan- and Qatar-mediated MoU ending over 100 days of war; terms include reopening the Strait of Hormuz, lifting the naval blockade within 30 days, releasing $24B in frozen assets, and suspending oil sanctions during a 60-day nuclear negotiation window.
+- **Markets Rally on US-Iran Deal: S&P 500 Up 1.9%, Oil Prices Drop ~5%** — Global markets welcomed the peace agreement with a broad equity rally and oil price decline, as investors anticipate the gradual restoration of Iranian oil exports and Hormuz shipping lanes.
+- **Nuclear Terms Unresolved in MoU; Enrichment Levels and Weapons Threshold to Be Settled in 60-Day Talks** — The signed MoU does not fix Iran's uranium enrichment ceiling; the weapons-grade threshold and long-term nuclear program structure remain the central unresolved issues for follow-on negotiations beginning after the June 19 signing.
+
+---
+
 # News Feed - 2026-06-18 09:06 UTC
 
 ## Geopolitics
