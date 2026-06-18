@@ -1,3 +1,22 @@
+## 2026-06-18T22:00:00Z
+### Ukraine & Russia
+- **Ukraine Strikes Moscow Oil Refinery for Second Time in a Week; All Moscow Airports Close** — Overnight drone strikes hit the Kapotnya and Moscow oil refineries, closing all four Moscow airports and forcing Aeroflot to cancel over 170 flights, with debris striking residential buildings across the capital's suburbs.
+- **Russia's S-300 Interceptors Depleting at "Unsustainable Rate" as Ukraine's Deep Strike Success Rate Hits 45%** — Ukraine's long-range strike success rate at depths exceeding 900 km rose from 6% in early 2025 to 45% in 2026, as Moscow's S-300 stockpile faces depletion due to sanctions-driven component shortages.
+- **Germany Pledges $500M in US Weapons and Patriot Missiles for Ukraine** — Germany will finance $300 million in additional US weapons deliveries for Ukraine and allocate a further $200 million for PAC-3 missiles for Patriot air defense systems.
+- **Putin Dismisses Zelensky's Call for Direct Talks; Russian Advance Stalls at Net 10 Sq Miles in 4 Weeks** — Russia's president declared direct negotiations "pointless"; over May 19–June 16 Russian forces recorded a net advance of only 10 square miles, a sharp deceleration underscoring the war's grinding stalemate.
+
+### Israel
+- **Netanyahu Vows Indefinite South Lebanon Occupation Despite US-Iran Deal; Trump Rebukes Israel at G7** — PM Netanyahu declared Israeli troops will remain in southern Lebanon indefinitely even after the US-Iran MoU; Trump publicly criticized Israeli operations at the G7 summit, further straining the alliance over the Lebanon issue.
+- **Over 1,000 Killed in Gaza Since US-Brokered Ceasefire Was Agreed** — More than 1,000 Palestinians have been killed in Gaza since the formal agreement of the US-brokered Hamas-Israel ceasefire, raising serious questions about the deal's durability and international enforcement.
+- **Somaliland Opens Embassy in Israel on "Historic" Presidential Visit** — Somaliland's President visited Israel, opened an embassy, and addressed the Knesset, seeking expanded cooperation on economic development, natural resources, and security.
+
+### Iran
+- **US-Iran MoU Signed; Hormuz Reopens, 60-Day Nuclear Talks Begin, $300B Fund Tied to Compliance** — Trump and Pezeshkian signed the MoU ending over 100 days of US-Iran war; the Strait of Hormuz will fully reopen as the US lifts its naval blockade within 30 days, with a $300 billion development fund for Iran conditional on nuclear compliance.
+- **Iran Exports First Oil in Two Months; Brent Crude Falls ~5% as Markets Rally on Ceasefire** — Iran resumed oil exports immediately following the MoU signing as Trump pointed to record stock market levels and a sharp drop in Brent crude as early indicators of the deal's economic impact.
+- **Iran Warns of "Harsh Response" Over Continued Israeli Operations in Lebanon** — Tehran threatened retaliation over ongoing Israeli military operations in southern Lebanon, testing the durability of the US-Iran MoU and straining Trump-Netanyahu relations ahead of the formal June 19 signing in Switzerland.
+
+---
+
 # News Feed - 2026-06-18 10:06 UTC
 
 ## Geopolitics
