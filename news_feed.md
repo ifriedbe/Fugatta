@@ -1,3 +1,49 @@
+# News Feed - 2026-06-18 09:06 UTC
+
+## Geopolitics
+
+- **04:00 UTC** | https://www.bloomberg.com/news/articles/2026-06-18/ukraine-hits-moscow-with-record-drone-strike-targeting-refinery | Ukraine launched its largest-ever drone attack on Moscow overnight, with Russia's Ministry of Defense reporting 555 drones intercepted across 19 regions. The Moscow Oil Refinery (МНПЗ), supplying roughly a third of Moscow's gasoline, was set ablaze for the second time in a week. All major Moscow airports suspended operations; Aeroflot cancelled over 170 flights. Zelensky called the strikes "a fully justified response to Russian attacks on our cities."
+
+- **04:30 UTC** | https://meduza.io/en/news/2026/06/18/a-fully-justified-response-to-russian-attacks-on-our-cities-zelensky-on-ukrainian-drone-attack-on-moscow | Moscow Oblast Governor Andrey Vorobyov confirmed collateral damage across the capital's suburbs, including a multistory apartment building in Zhukovsky district and a fitness center and shopping complex in Lyubertsy. Sheremetyevo Airport evacuated passengers during the barrage. (Meduza / Медуза)
+
+- **03:00 UTC** | https://lenta.ru/news/2026/06/18/v-minoborony-sdelali-zayavlenie-posle-ataki-bolee-polutysyachi-bespilotnikov-na-rossiyu/ | Russia's Ministry of Defense issued a statement after Ukrainian drones struck more than 19 regions overnight (В Минобороны сделали заявление после атаки более полутысячи беспилотников на Россию). The 555-drone assault was the largest coordinated attack on Russian territory in over two years, according to Lenta.ru.
+
+- **20:00 UTC (Jun 17)** | https://www.nbcnews.com/world/iran/strait-hormuz-reopen-us-lift-iran-sanctions-14-point-deal-seeking-end-rcna350513 | Trump and Iranian President Pezeshkian digitally signed a 14-point MOU on June 17 to end the US-Iran war and reopen the Strait of Hormuz. Trump signed his copy at dinner with Macron at Versailles. The 60-day window for a final deal begins on formal signing in Switzerland; Iran reaffirmed it will not develop nuclear weapons. A $300 billion development fund for Iran is contingent on nuclear compliance.
+
+- **03:00 UTC** | https://news.rambler.ru/army/56623194-rossiyskie-voyska-nanesli-udar-po-energoobektam-ukrainy/ | Russian armed forces struck Ukrainian energy infrastructure overnight June 17-18 (Российские войска нанесли удар по энергообъектам Украины). The strikes continued an ongoing pattern that has cut power, heat, and water to hundreds of thousands of Ukrainian civilians throughout 2026.
+
+## Technology & Business
+
+- **14:00 UTC (Jun 16)** | https://techcrunch.com/2026/06/16/spacex-to-acquire-cursor-for-60b-in-stock-days-after-blockbuster-ipo/ | SpaceX agreed to acquire AI coding tool maker Anysphere (Cursor) for $60 billion in stock, exercising a call option just two trading days after its blockbuster IPO. With roughly $2.6 billion in annualized revenue, Cursor is the largest VC-backed startup acquisition on record outside Musk's own deals. The transaction is expected to close Q3 2026 pending regulatory review.
+
+- **13:00 UTC (Jun 15)** | https://www.hollywoodreporter.com/business/business-news/fox-acquires-roku-streaming-tech-deal-lachlan-murdoch-1236621853/ | Fox Corporation announced a $22 billion deal to acquire Roku at $160 per share in cash and stock, combining Fox's sports, news, and Tubi streaming with Roku's 100 million+ connected TV households. Fox shareholders will own ~73% of the combined company; the deal is expected to close in H1 2027 with ~$400 million in projected annual synergies.
+
+- **10:00 UTC (Jun 3)** | https://commission.europa.eu/news-and-media/news/strengthening-europes-tech-sovereignty-2026-06-03_en | The European Commission unveiled its Tech Sovereignty Package on June 3, comprising the Cloud and AI Development Act (CADA) and Chips Act 2.0. CADA aims to triple EU data center capacity within 5-7 years and reduce reliance on non-EU cloud providers. Officials said the goal was to ensure "nobody has a kill switch" over European digital infrastructure.
+
+## Health & Science
+
+- **06:00 UTC** | https://www.sciencedaily.com/news/health_medicine/ | A Rutgers University study found GLP-1 receptor agonists such as Ozempic and Wegovy may weaken the link between impulsive tendencies and violent behavior, suggesting potential psychiatric benefits beyond metabolic conditions.
+
+- **06:00 UTC** | https://www.sciencedaily.com/ | New research reinforces a bidirectional link between diabetes and dementia: insulin resistance and glucose dysregulation damage the brain's energy supply, increase neuroinflammation, and harm blood vessels critical for memory — suggesting aggressive diabetes management may reduce dementia risk.
+
+- **06:00 UTC** | https://www.sciencenews.org/ | A small clinical trial found daily probiotic supplementation produced meaningful improvement in depressive symptoms in older adults, adding to growing evidence linking the gut-brain axis to late-life mental health. Researchers cautioned larger trials are needed.
+
+## Sports
+
+- **14:00 UTC** | https://www.cbsnews.com/newyork/news/knicks-parade-canyon-of-heroes-2026-nba-champions/ | New York City held a ticker-tape parade through the Canyon of Heroes for the NBA champion Knicks — the franchise's first title parade ever and first championship since 1973. The Knicks defeated the San Antonio Spurs 4-1; Jalen Brunson scored 45 points in the series-clinching Game 5. Millions of fans lined Broadway from Battery Park to City Hall for what may be the largest parade in New York history.
+
+- **13:00 UTC** | https://www.espn.com/golf/story/_/page/USopengolf2026/us-open-2026-all-news-analysis-shinnecock-hills | The 126th U.S. Open Championship teed off at Shinnecock Hills Golf Club in Southampton, New York (June 18–21). World No. 1 Scottie Scheffler is chasing the career Grand Slam after Rory McIlroy won the Masters and Aaron Rai the PGA Championship. Shinnecock Hills last hosted the U.S. Open in 2018, when no player finished under par.
+
+- **01:00 UTC** | https://www.kp.ru/sports/futbol/chempionat-mira-po-futbolu-2026/chm-2026-ronaldu-sbezhal-s-polya-ego-sestra-raznesla-partnerov-moshchnyj-start-anglii-no-tuhel-nedovolen-chto-sluchilos-na-chempionate-mira-k-utru-18-iyunya/ | At the 2026 FIFA World Cup, former CSKA Moscow player Abbosbek Fayzullaev scored the first-ever World Cup goal in Uzbekistan's history (исторический гол экс-игрока ЦСКА). Portugal drew 1-1 with DR Congo as Ronaldo faced sharp criticism; England beat Croatia 4-2 with a Harry Kane brace plus goals from Bellingham and Rashford.
+
+- **02:00 UTC** | https://sports.yahoo.com/college-sports/live/college-world-series-2026-bracket-schedule-scores-live-updates-ncaa-baseball-tournament-170000356.html | The College World Series championship series is set: #5 seed North Carolina vs. #1 Oklahoma. UNC defeated West Virginia 12-7; Oklahoma hit five home runs in an 11-4 win over #3 Georgia. The best-of-three series begins this weekend in Omaha.
+
+## Other
+
+- **07:00 UTC** | https://news.rambler.ru/community/56622008-vtsiom-v-rossii-priznaki-prestizha-smestilis-s-brendov-na-sotsialnye-garantii/ | A new ВЦИОМ survey finds that luxury brands and expensive cars no longer define social status in Russia (В России признаки престижа сместились с брендов на социальные гарантии). Russians now say status is measured by providing children a good education, maintaining health, and ensuring family stability — a shift attributed to prolonged wartime economic pressure.
+
+---
+
 ## 2026-06-18T18:00:00Z
 ### Ukraine & Russia
 - **Ukraine Deep Strike Success Rate Hits 45% at 900+ km as Russian Interceptor Stocks Deplete** — Ukraine's long-range strike success rate climbed from 6% to 45% since early 2025 as Russia's S-300 interceptor stockpile faces depletion at an "unsustainable rate" due to sanctions-driven component shortages.
