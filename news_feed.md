@@ -158,6 +158,46 @@
 
 ---
 
+# News Feed - 2026-06-18 09:00 UTC
+
+## Geopolitics
+
+- **04:30 UTC** | https://www.bloomberg.com/news/articles/2026-06-18/ukraine-hits-moscow-with-record-drone-strike-targeting-refinery | Ukraine launched a record overnight drone attack on Russia, with the Russian Defense Ministry reporting 555 Ukrainian drones intercepted across multiple regions. At least 194 were downed over the Moscow area, and some drones struck the Moscow oil refinery — a key supplier of road fuel to the capital — for the second time this week. Ukrainian President Zelensky confirmed the strike; Russia's air defense operations caused widespread road closures and airport disruptions.
+
+- **07:00 UTC** | https://www.cbsnews.com/live-updates/iran-war-us-trump-peace-deal-israel/ | Analysts note the US-Iran MOU leaves many critical details unresolved, including Iran's uranium enrichment program, its ballistic missile arsenal, and long-term administration of the Strait of Hormuz. The Council on Foreign Relations assesses the deal "reopens the Strait" but cautions "much remains to be done" before a durable peace is established.
+
+- **08:00 UTC** | https://www.nbcnews.com/politics/trump-administration/fbi-foils-alleged-plot-attack-white-house-ufc-event-patel-says-rcna350248 | The FBI arrested five people in a foiled plot to attack the UFC Freedom 250 event held on the South Lawn of the White House on June 14. Suspects allegedly planned to use explosive-laden drones to force an evacuation and then funnel crowds toward a pre-staged sniper team, followed by a storming of the White House gate. Suspects reportedly targeted "capitalist elites" and politicians with AIPAC ties; investigators identified a broader network of 23 potential plotters.
+
+## Technology & Business
+
+- **03:30 UTC** | https://www.foxnews.com/us/austin-tech-leader-joshua-baer-identified-victim-texas-plane-crash-after-jet-caught-fire-along-highway | Joshua Baer, CEO and founder of Capital Factory — the largest startup accelerator in Texas — was killed when a Cessna Citation Latitude business jet crash-landed on a highway in Laredo, Texas late Tuesday night. The jet, operated by NetJets (owned by Berkshire Hathaway), departed Los Cabos, Mexico en route to Austin when pilots reported mechanical problems. Five others onboard survived, as did a motorist struck by the aircraft on Loop 20.
+
+- **06:00 UTC** | https://vz.ru/news/2026/6/18/1428100.html | Russia's external obligations fell by a record $4.2 billion in April 2026 (Внешний долг России рекордно сократился), reducing total external liabilities to $58.9 billion — the steepest monthly decline recorded in at least 15 years. Finance Minister Siluanov has signaled Russia intends to fully repay the external component of its state debt in the near term.
+
+- **07:00 UTC** | https://www.androidcentral.com/accessories/smart-home/google-home-speaker-launched | Google announced its new Gemini-powered Home Speaker, priced at $99.99 and available for pre-order, with shipping starting June 25. The device is designed around Gemini from the ground up, featuring 360-degree audio, an underglow light ring, and Google Home Premium integration (including Gemini Live conversational AI and Camera History Search). It comes in four colors and features a driver twice as large as the Nest Mini, with 2.5x stronger bass.
+
+## Health & Science
+
+- **06:00 UTC** | https://www.cbsnews.com/news/tropical-storm-arthur-first-hurricane-season-texas-gulf-coast/ | Tropical Storm Arthur — the first named storm of the 2026 Atlantic hurricane season — made landfall on the Texas coast on June 17 and weakened as it moved inland. The storm prompted flood watches for over 16 million people from South Texas to Central Mississippi. Governor Greg Abbott declared a state of emergency for 101 Texas counties. Houston largely escaped the worst flooding scenarios, though portions of the Gulf Coast recorded over 8 inches of rainfall.
+
+- **05:00 UTC** | https://www.sciencedaily.com/news/health_medicine/ | Researchers are mapping thousands of food chemicals that appear in the human diet but are absent from nutrition labels — dubbed "nutritional dark matter." Scientists estimate tens of thousands of such compounds exist in common foods, and their health effects remain largely unknown. The work could reshape how regulators and consumers think about dietary risk.
+
+## Sports
+
+- **22:00 UTC (Jun 17)** | https://www.nbcnews.com/sports/soccer/live-blog/fifa-world-cup-games-2026-live-updates-rcna350496 | World Cup 2026 group-stage results from June 18: **England 4–2 Croatia** (Harry Kane brace, Bellingham and Rashford also scored; Baturina and Musa for Croatia); **Colombia 3–1 Uzbekistan** (Luis Díaz goal and assist); **Portugal 1–1 DR Congo** (João Neves scored early, Yoane Wissa equalized just before halftime); **Ghana 1–0 Panama** (Caleb Yirenkyi stoppage-time winner).
+
+- **14:00 UTC** | https://www.espn.com/golf/story/_/page/USopengolf2026/us-open-2026-all-news-analysis-shinnecock-hills | The 126th U.S. Open Championship teed off Thursday at Shinnecock Hills Golf Club in Southampton, New York. Scottie Scheffler is pursuing the career Grand Slam. Rory McIlroy seeks his second US Open title alongside Tommy Fleetwood and Ludvig Åberg. The tournament runs through June 21.
+
+- **08:00 UTC** | https://sports.yahoo.com/college-sports/live/college-world-series-2026-bracket-schedule-scores-live-updates-ncaa-baseball-tournament-170000356.html | The Men's College World Series championship series is set: Oklahoma vs. North Carolina. No. 5 seed UNC defeated West Virginia 12–7, while Oklahoma beat No. 3 Georgia 11–4 with five home runs.
+
+## Other
+
+- **05:00 UTC** | https://news.rambler.ru/community/56622008-vtsiom-v-rossii-priznaki-prestizha-smestilis-s-brendov-na-sotsialnye-garantii/ | A new ВЦИОМ (Russian Public Opinion Research Center) study finds that luxury brands and expensive cars no longer define social status for Russians (ВЦИОМ: в России признаки престижа сместились с брендов на социальные гарантии). Today, Russians say status is measured by providing children a good start in life, maintaining health, and family stability — a shift attributed to prolonged economic pressure from sanctions and the war.
+
+- **02:00 UTC** | https://eadaily.com/ru/news/2026/06/18/gidrometcentr-18-iyunya-v-moskve-do-17-gradusov-dozhd | Moscow is experiencing cool, rainy conditions on June 18 with temperatures reaching only +17°C (Гидрометцентр: 18 июня в Москве до +17 градусов, дождь), according to Russia's Hydrometeorological Center.
+
+---
+
 ## 2026-06-17T20:30:00Z
 ### Ukraine & Russia
 - **Moscow Intensifies Aerial Bombing as Battlefield Advances Stall** — Russian forces have escalated aerial attacks on Ukrainian cities even as ground offensives slow; over the last four weeks (May 12–June 9) Russia suffered a net loss of 1 square mile after gaining 41 square miles in the prior period.
