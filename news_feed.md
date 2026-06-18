@@ -1,3 +1,22 @@
+## 2026-06-18T14:00:00Z
+### Ukraine & Russia
+- **Russia Running Low on Air Defense Interceptors at "Unsustainable Rate"** — Ukraine's deep strike campaign is depleting Russia's S-300 missile stockpile; Moscow lacks key components including guidance seekers and control modules to produce replacements, potentially shifting the air war in Kyiv's favor.
+- **Russian Airstrike on Kyiv Apartment Complex Kills 24** — A Russian strike on a residential building killed at least 24 people in Kyiv; Ukraine retaliated with strikes on a Ryazan oil refinery, underscoring the conflict's continued civilian toll with no resolution in sight.
+- **Ukraine Drones Destroy Crimea Radar Stations and Weapons Depots Overnight** — Ukrainian Unmanned Systems Forces hit an Osa SAM system, five coastal radar stations in Crimea, weapons depots, and a drone workshop across occupied territories in a coordinated overnight operation.
+- **Putin Dismisses Zelensky's Call for Face-to-Face Talks** — Russian president declared there is "no point" in direct negotiations; Russia recorded 1,260 personnel losses in a single day, pushing total losses since February 2022 to approximately 1.39 million.
+
+### Israel
+- **Trump Slams Israel at G7, Calls It "Very Small Partner"** — At the G7 closing press conference, Trump sharply criticized Israel's handling of Lebanon operations and suggested Syria should "take care of" Hezbollah, further straining US-Israel relations amid the Iran deal.
+- **Haredi Anti-Draft Protesters Block Tel Aviv Highways; Police Use Stun Grenades** — Thousands protesting IDF conscription laws blocked major roads near Tel Aviv; police arrested 5 and used batons and stun grenades in a violent dispersal that drew rare criticism from far-right minister Ben Gvir.
+- **IDF Drone Strike Wounds Five Soldiers in Lebanon** — An explosive drone hit an IDF position in Lebanon, wounding five soldiers including one severely; all were evacuated for medical treatment as Israeli operations continue despite ceasefire appeals.
+
+### Iran
+- **US-Iran 14-Point MoU Signed; Formal Ceremony in Switzerland on June 19** — The memorandum of understanding ending hostilities, reopening the Strait of Hormuz, and launching 60 days of nuclear talks has been remotely signed by both sides; Trump confirmed no immediate sanctions relief but said the matter will be addressed in negotiations.
+- **Iran's Highly Enriched Uranium to Be Diluted on Iranian Soil Under IAEA Supervision** — A key term of the MoU requires Iran's HEU stockpile to be diluted domestically under international monitoring, with the full 14-point text released publicly by a US official.
+- **$300 Billion Development Fund for Iran Contingent on Meeting Nuclear Commitments** — The MoU includes an economic development plan valued at $300 billion for Iran, conditional on compliance with nuclear obligations during the 60-day post-signing negotiation period.
+
+---
+
 # News Feed - 2026-06-18 13:00 UTC
 
 ## Geopolitics
