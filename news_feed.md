@@ -1,3 +1,63 @@
+# News Feed - 2026-06-18 10:06 UTC
+
+## Geopolitics
+
+- **07:00 UTC** | https://abcnews.com/International/ukraine-strikes-moscow-oil-refinery-amid-large-scale/story?id=133990719 | Ukraine launched its largest-ever drone attack on Moscow overnight, sending some 555 drones at Russian targets across more than a dozen regions. The strikes hit the Kapotnya Oil Refinery in Moscow's southeast — a Gazprom-owned facility supplying roughly a third of the capital's fuel — for the second time in one week. Sheremetyevo Airport evacuated passengers and Aeroflot canceled over 170 flights; 17 people in the Moscow region were injured. President Zelenskyy called it "a fully justified response to Russian attacks on our cities."
+
+- **07:30 UTC** | https://lenta.ru/news/2026/06/18/v-minoborony-sdelali-zayavlenie-posle-ataki-bolee-polutysyachi-bespilotnikov-na-rossiyu/ | Russia's Ministry of Defense said its air defenses shot down all 555 Ukrainian drones in the early-morning attack, including roughly 180 approaching Moscow. (Lenta.ru: «В Минобороны сделали заявление после атаки более полутысячи беспилотников на Россию».) Debris from intercepted drones struck the Sadovod shopping center in southeastern Moscow and residential buildings in Elektrostal, Lyubertsy, Chekhov, and Pavlovsky Posad.
+
+- **08:00 UTC** | https://meduza.io/feature/2026/06/18/voyna | Independent Russian outlet Meduza reported this is the 1,576th day of the war, and the Kapotnya refinery had already been hit on June 16 — making it the third strike in a month. (Meduza: «Война. 1576-й день. Москва под ударом украинских дронов — и это очередная крупнейшая атака с начала войны».) Ukrainian drone debris also fell on a freight locomotive at Gukovo station in Rostov Oblast, killing one person.
+
+- **06:00 UTC** | https://www.npr.org/2026/06/17/nx-s1-5860782/trump-iran-agreement-g7 | President Trump signed a US-Iran memorandum of understanding on June 17, declaring an "immediate and permanent termination of military operations on all fronts." The deal opens a 60-day negotiating window for a final agreement, requires the US to lift its naval blockade of Iran within 30 days, and commits Iran not to develop nuclear weapons. Trump warned the US military could resume bombing if no broader deal is struck within 60 days.
+
+- **06:30 UTC** | https://www.cbsnews.com/news/trump-iran-g7-news-conference/ | G7 leaders at the summit in France threw unified support behind the US-Iran ceasefire deal. French President Macron called it "a very good deal" that halts instability with severe economic consequences. The summit also addressed the war in Ukraine, increased sanctions pressure on Russia, and AI regulation. Trump declared the summit a "Great Success" and said the Strait of Hormuz would be fully reopened within two days.
+
+- **05:30 UTC** | https://www.10things.news/p/10-things-global-news-18th-june-2026 | Trump and Indian PM Modi held their first in-person meeting in over a year, signaling a thaw despite recent strains. Trump said the US and India were "very close" to finalizing a long-awaited trade agreement. The meeting followed tensions over tariffs, Pakistan policy, the Iran war, and a US strike on Indian-crewed vessels in the Gulf of Oman that killed at least three Indian sailors.
+
+- **04:00 UTC** | https://lenta.ru/news/2026/06/18/raskryty-podrobnosti-o-podgotovke-pokusheniya-na-vladimira-saldo/ | Details emerged about a foiled assassination attempt on Volodymyr Saldo, the Russian-appointed governor of Kherson Oblast. Investigators said a homemade explosive device was constructed from a disassembled fire extinguisher packed with 1.5 kg of explosives. (Lenta.ru: «Раскрыты подробности о подготовке покушения на Владимира Сальдо».)
+
+- **03:00 UTC** | https://lenta.ru/news/2026/06/18/stalo-izvestno-o-problemah-vsu-bliz-krasnogo-limana/ | Russian military sources said Russian forces created two "fire pockets" trapping Ukrainian troops near Krasny Liman in eastern Ukraine. Separately, a Russian field commander alleged that Ukrainian forces near Kostiantynivka have been attacking their own soldiers attempting to surrender and mining the bodies of fallen troops. (Lenta.ru: «Стало известно о проблемах ВСУ близ Красного Лимана».)
+
+## Technology & Business
+
+- **18:00 UTC (Jun 17)** | https://www.cnbc.com/2026/06/17/fed-interest-rate-decision-june-2026.html | In his first FOMC meeting as Fed Chair, Kevin Warsh voted unanimously to hold the benchmark rate steady at 3.5%–3.75%. However, the Fed's "dot plot" removed any expectation of a rate cut this year and now signals a possible quarter-point hike. The Fed raised its 2026 inflation forecast to 3.6% headline / 3.3% core, and dropped forward guidance from its policy statement — Warsh said it was not "well suited" to the current moment.
+
+- **09:00 UTC** | https://www.cnbc.com/amp/2026/06/17/kevin-warsh-fed-interest-rates-risk-analysis.html | Warsh announced a sweeping review of Federal Reserve operations, launching task forces to examine the central bank's balance sheet, communications strategy, data sources, and inflation framework. The move signals a significant departure from the Powell-era approach and has raised questions about the Fed's independence and future policy trajectory.
+
+- **08:00 UTC** | https://www.artificialintelligence-news.com/ | A Munich court ruled that Google can be held liable for false claims generated by its AI Overviews feature, treating them as Google's own statements rather than third-party search results. The ruling sets a significant precedent for AI search liability across the EU and may force major changes to how AI-generated summaries are presented and disclaimed.
+
+- **07:00 UTC** | https://blog.mean.ceo/ai-news-june-2026/ | Meta began implementing layoffs of approximately 8,000 employees — roughly 10% of its total workforce — as part of a restructuring focused on accelerating AI development. An additional 7,000 employees were reassigned to AI-focused teams, reflecting a broader industry pivot toward AI-centric organizational models.
+
+- **06:00 UTC** | https://lenta.ru/news/2026/06/18/china/ | The market share of Chinese car brands in Russia fell from 55% in early 2026 to 41% in May, according to new sales data. The drop reflects increased competition from Russian-assembled vehicles, consumer concerns about service networks, and shifting affordability amid fluctuating exchange rates. (Lenta.ru: «Интерес к китайским машинам в России стал снижаться».)
+
+- **05:00 UTC** | https://www.whitehouse.gov/presidential-actions/2026/06/promoting-advanced-artificial-intelligence-innovation-and-security/ | The White House issued a new presidential action titled "Promoting Advanced Artificial Intelligence Innovation and Security," outlining federal priorities for AI development and deployment. The action emphasizes national security applications and positions the US as a global leader in AI governance ahead of the UNIDIR Global Conference on AI, Security and Ethics on June 18–19.
+
+## Health & Science
+
+- **17:00 UTC (Jun 17)** | https://www.washingtonpost.com/world/2026/06/17/norway-crown-princess-mettemarit-lung-transplant/ | Norway's Crown Princess Mette-Marit successfully underwent a double lung transplant at Rikshospitalet in Oslo, announced by the royal palace on June 17. The 52-year-old crown princess was diagnosed with progressive pulmonary fibrosis in 2018 and was placed on the transplant waiting list on June 5 after her condition deteriorated sharply. She is expected to remain hospitalized for several weeks.
+
+- **17:00 UTC (Jun 17)** | https://www.sciencedaily.com/news/health_medicine/ | Researchers announced that mammals may retain a dormant capacity for complex bodily regeneration — once thought permanently lost in evolution. Scientists showed the ability to rebuild complex tissue appears not to be absent, but simply switched off, opening potential avenues for regenerative medicine.
+
+- **17:00 UTC (Jun 17)** | https://www.sciencedaily.com/news/health_medicine/ | Scientists published research mapping thousands of previously unstudied food chemicals beyond the basic nutrients listed on nutrition labels, identifying compounds that may significantly influence human metabolism, immunity, and gut health. The findings could reshape how regulatory agencies approach food safety assessment.
+
+- **09:00 UTC** | https://unidir.org/event/global-conference-on-ai-security-and-ethics-2026/ | The UN Institute for Disarmament Research (UNIDIR) convened its Global Conference on AI, Security and Ethics (#AISE26) in Geneva on June 18–19. The two-day event brings together diplomats, policymakers, researchers, civil society organizations, and tech industry representatives to assess AI's implications for international peace and security.
+
+## Sports
+
+- **05:00 UTC** | https://www.espn.com/soccer/story/_/id/49104390/world-cup-2026-today-blog-18-06-2026-live-updates-news-fixtures-schedule-results-england-beat-croatia | England defeated Croatia at the FIFA World Cup 2026, with Harry Kane scoring twice and goals from Jude Bellingham and Marcus Rashford in a dominant performance. England top Group L after the win. Bellingham's goal placed him in the company of Pelé and Michael Owen for World Cup milestones at this stage.
+
+- **04:00 UTC** | https://sports.yahoo.com/soccer/live/world-cup-2026-scores-results-schedule-live-updates-135432982.html | South Korea beat Czechia 2-1 and hosts Mexico defeated South Africa 2-0 (who had two players sent off) in Group stage action on June 18. Colombia also picked up a 2-goal win against Uzbekistan. Portugal and DR Congo drew; Cristiano Ronaldo continued his difficult World Cup run — 0 goals in 10 shots — though manager Roberto Martínez defended keeping him on the pitch.
+
+- **04:00 UTC** | https://www.golfchannel.com/watch/usga/epic-sports-day-awaits-new-york-on-june-18-2026 | The 126th US Open golf championship teed off at Shinnecock Hills on Long Island on June 18, coinciding with the New York Knicks' championship parade in Manhattan — creating an extraordinary sports day for New York City. Scottie Scheffler and Rory McIlroy are among the top contenders; J.J. Spaun is the defending champion.
+
+## Other
+
+- **06:00 UTC** | https://www.cbsnews.com/news/tropical-storm-arthur-first-hurricane-season-texas-gulf-coast/ | Tropical Storm Arthur, the first named storm of the 2026 Atlantic hurricane season, weakened as it moved inland but continued to pose a flash flooding threat to parts of Texas and the Gulf Coast. Authorities in affected counties urged residents to avoid low-lying areas and monitor water levels.
+
+- **04:00 UTC** | https://www.10things.news/p/10-things-global-news-18th-june-2026 | French President Macron warned that the US's ability to "turn off the switch" on AI tools from American companies could damage the global AI race and fracture trust among democratic allies. His remarks came amid a broader European debate over AI sovereignty and regulatory autonomy following the Anthropic controversy.
+
+---
+
 ## 2026-06-18T20:00:00Z
 ### Ukraine & Russia
 - **Russia's S-300 Interceptors Depleting at "Unsustainable Rate" as Ukraine Deep Strike Success Rate Hits 45%** — Ukraine's long-range strike success rate at depths exceeding 900 km rose from 6% in early 2025 to 45% in 2026, as Moscow's S-300 stockpile faces depletion due to sanctions-driven shortages of guidance seekers and control modules.
