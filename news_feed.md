@@ -1,3 +1,79 @@
+# News Feed - 2026-06-18 13:00 UTC
+
+## Geopolitics
+
+- **06:00 UTC** | https://www.nbcnews.com/news/us-news/deal-reached-united-states-iran-war-rcna350039 | The US and Iran have reached a framework peace agreement (memorandum of understanding) to end their 15-week war and reopen the Strait of Hormuz. The deal establishes a 60-day ceasefire and launches nuclear negotiations; key issues including uranium enrichment levels remain unresolved. Oil prices dropped more than 4.5% on the news, with Brent crude falling to $83/barrel.
+
+- **09:00 UTC** | https://www.bloomberg.com/news/live-blog/2026-06-17/g7-summit-evian-france-live-updates-ai-ceos-iran | The G7 summit in Évian-les-Bains, France (June 15–17) concluded with Trump defending the Iran deal as allies pressed for details. The summit was the first G7 since the start of the US-Iran war and addressed Strait of Hormuz stability, Ukraine support, and Middle East tensions.
+
+- **05:00 UTC** | https://kyivindependent.com/russian-oil-depot-in-rostov-oblast-hit-by-drones-locals-say/ | Ukraine launched a massive drone offensive in the early hours of June 18, targeting more than ten Russian regions. Russian air defense shot down 52 drones bound for Moscow; several reached the Kapotnya oil refinery, setting fires. Residential damage was reported in Zhukovsky, Elektrostal, and Lyubertsy — Moscow Oblast Governor confirmed evacuations but no fatalities.
+
+- **03:00 UTC** | https://ura.news/articles/1053102503 | Ukrainian air defense and Russian air defense continued overnight exchanges: Moscow Mayor Sobyanin confirmed drones hit the Kapotnya oil refinery and struck a building at the Sadovod shopping mall, with additional debris hitting a fitness center and an industrial zone in Lyubertsy. (Карта дронов 18 июня 2026: атака на Москву, последние новости.)
+
+- **10:00 UTC** | https://www.russiamatters.org/news/russia-ukraine-war-report-card/russia-ukraine-war-report-card-june-17-2026 | Ukrainian President Zelenskyy published an open letter to Putin proposing a direct meeting to negotiate an end to the war. The US House passed a bipartisan bill imposing new sanctions on Russia and providing aid to Ukraine, though the Senate is unlikely to vote on it. Over the past four weeks (May 19–June 16) Russian forces gained a net 10 square miles of Ukrainian territory.
+
+- **11:00 UTC** | https://www.kommersant.ru/doc/8740592 | Russia's FSB detained three alleged Ukrainian intelligence agents in Tyumen Oblast, Krasnodar Krai, and Adygea who were accused of preparing terrorist attacks. G7 participants reaffirmed readiness to escalate pressure on Russia over Ukraine. (Главные новости к утру 18 июня – Коммерсантъ.)
+
+- **08:00 UTC** | https://www.pbs.org/newshour/world/massive-russian-attack-on-kyiv-and-other-ukrainian-cities-kills-22-people-officials-says-as-moscow-escalates-fighting | Russia launched one of its largest aerial assaults of the war, firing 656 drones and 73 missiles at Kyiv, Dnipro, Poltava, Kharkiv, and Zaporizhzhia, killing at least 18 civilians and wounding more than 100 in recent days, as Moscow escalated attacks following Ukrainian strikes on Russian oil infrastructure.
+
+- **07:00 UTC** | https://www.npr.org/sections/news | UN Secretary-General António Guterres visited Port-au-Prince as gang violence persists in Haiti. UN data shows 2,300 people have been killed this year and another 100 kidnapped, underscoring the severity of the ongoing humanitarian crisis.
+
+## Technology & Business
+
+- **19:00 UTC (Jun 17)** | https://www.cnbc.com/2026/06/17/fed-interest-rate-decision-june-2026.html | The Federal Reserve under new chair Kevin Warsh voted unanimously 12-0 to hold interest rates steady at 3.5%–3.75% at Warsh's first FOMC meeting. The updated "dot plot" removed the prior outlook for a rate cut and indicated a quarter-point hike is possible this year — a reversal from March expectations.
+
+- **19:30 UTC (Jun 17)** | https://www.cnbc.com/2026/06/17/fed-meeting-today-live-updates.html | Warsh announced task forces to overhaul major Federal Reserve operations and pledged to use monetary policy to bring US inflation back to the 2% target. The Consumer Price Index reached 4.2% annual rate in May — the highest since April 2023 — fueled by higher oil and gas prices from the Iran war.
+
+- **08:00 UTC** | https://tradingeconomics.com/commodity/gold | Gold held below $4,300 per ounce as the Federal Reserve signaled growing support for interest rate hikes this year, with half of FOMC members indicating core inflation will be higher than expected due to the ongoing Middle East conflict.
+
+- **10:00 UTC** | https://techcrunch.com/ | Google announced an upgrade to Search integrating Gemini 3.5 Flash, adding intelligent agents that monitor information and make automatic bookings on users' behalf, plus new "Antigravity" technology capable of generating personalized interfaces.
+
+- **09:00 UTC** | https://techstartups.com/2026/06/01/top-tech-news-today-june-1-2026/ | Nvidia unveiled its RTX Spark Superchip, combining Blackwell RTX graphics with Grace CPU technology in a compact form factor designed for Windows AI-powered PCs, announced at Computex in Taipei.
+
+- **12:00 UTC** | https://finance.mail.ru/article/oficialnyj-kurs-dollara-na-18-iyunya-2026-69213573/ | Russia's Central Bank raised the official dollar rate from 72.14 to 72.75 rubles and the euro rate from 83.73 to 84.34 rubles. (Официальный курс доллара на 18 июня 2026 г.)
+
+## Health & Science
+
+- **11:00 UTC** | https://www.sciencedaily.com/news/health_medicine/ | A Rutgers University study finds that GLP-1 drugs such as Ozempic and Wegovy may weaken the link between impulsive tendencies and violent behavior, suggesting potential psychiatric applications beyond weight loss and diabetes management.
+
+- **10:00 UTC** | https://www.sciencedaily.com/ | Scientists have shown that the ability to regenerate complex body parts in mammals may not be permanently lost — it may simply be switched off. The finding opens new avenues for regenerative medicine research.
+
+- **09:00 UTC** | https://www.sciencedaily.com/ | A small clinical trial finds that probiotics may offer a meaningful mental health boost for older adults suffering from depression, adding to a growing body of research on the gut-brain connection.
+
+- **08:00 UTC** | https://www.sciencedaily.com/ | A minimally invasive treatment that blocks inflammation-driving blood vessels in the knee provided significant pain relief and improved function for osteoarthritis patients, with benefits lasting at least one year, a new study reports.
+
+- **07:00 UTC** | https://www.cbsnews.com/news/tropical-storm-arthur-first-hurricane-season-texas-gulf-coast/ | Tropical Storm Arthur has weakened as it moves off Texas's Gulf Coast, offering some relief but prompting continued weather advisories. The storm was the first named storm of the 2026 Atlantic hurricane season.
+
+- **06:00 UTC** | https://www.npr.org/sections/news | An El Niño has formed amid warmer-than-normal waters in the tropical Pacific. Scientists are monitoring how intense the phenomenon may become and which regions will see its signature effects of heat, drought, and altered precipitation patterns.
+
+## Sports
+
+- **02:00 UTC** | https://www.nbcnews.com/sports/soccer/live-blog/fifa-world-cup-games-2026-live-updates-rcna350496 | England defeated Croatia 4-2 in the 2026 FIFA World Cup group stage. Harry Kane scored twice, equaling the all-time English record for World Cup goals; Jude Bellingham and Marcus Rashford also scored.
+
+- **02:00 UTC** | https://sports.yahoo.com/soccer/live/world-cup-2026-scores-results-schedule-live-updates-135432982.html | Colombia beat World Cup debutant Uzbekistan 3-1 at Estadio Azteca in Mexico City. Ghana edged Panama 1-0 on a Caleb Yirenkyi goal in stoppage time, while Portugal and DR Congo drew 1-1.
+
+- **00:00 UTC** | https://www.aljazeera.com/sports/2026/6/17/lionel-messi-rewrites-history-books-at-record-sixth-world-cup | Lionel Messi became the oldest player in Men's FIFA World Cup history to score a brace, netting twice for Argentina in their match against Algeria and extending his record appearance at a sixth World Cup tournament.
+
+- **12:00 UTC** | https://sports.yahoo.com/soccer/article/2026-world-cup-results-and-schedule-live-scores-group-stage-updates-and-how-to-watch-050724193.html | Today's World Cup matches: Czechia vs. South Africa at Mercedes-Benz Stadium (Atlanta) at 12:00 ET, and Mexico vs. Korea Republic at Estadio Akron (Guadalajara) at 9:00 PM ET. Both games broadcast on Fox.
+
+- **01:00 UTC** | https://www.championat.com/football/news-6511050-rezultaty-matchej-chm-po-futbolu-2026-na-18-iyunya-2026.html | Iran drew 2-2 with New Zealand in a politically charged World Cup group stage match. The result carries additional symbolism amid the ongoing US-Iran ceasefire negotiations. (Результаты матчей ЧМ по футболу 2026 на 18 июня 2026.)
+
+## Other
+
+- **08:00 UTC** | https://www.foxnews.com/politics/fbi-disrupts-alleged-explosive-drone-plot-targeting-white-house-ufc-event-officials-say | The FBI disrupted an alleged plot to use explosive drones targeting a UFC event at the White House. Officials described the threat as credible and said arrests were made in connection with the plot.
+
+- **10:00 UTC** | https://www.foxnews.com/politics/deadly-b-52-crash-puts-focus-engines-controllability-investigators-hunt-answers | Investigators are focusing on engine failure and controllability issues following a deadly B-52 bomber crash. The crash has raised renewed questions about the aging aircraft fleet and safety protocols.
+
+- **09:00 UTC** | https://www.nbcnews.com/politics/donald-trump/trump-delays-jay-clayton-nomination-intel-director-fisa-save-america-rcna350470 | The Senate has delayed a vote on Jay Clayton's nomination as intelligence director following a Trump social media post raising questions about the FISA reauthorization process, creating uncertainty around the intelligence community's leadership.
+
+- **07:00 UTC** | https://www.npr.org/sections/news | The US military struck a vessel in the eastern Pacific Ocean accused of drug smuggling, killing one person and leaving two survivors, bringing the total number of people killed in boat strikes under the current naval interdiction policy to at least 208.
+
+---
+
+*Auto-generated news feed. All times in UTC. Sources linked per item.*
+
+---
+
 ## 2026-06-17T20:30:00Z
 ### Ukraine & Russia
 - **Moscow Intensifies Aerial Bombing as Battlefield Advances Stall** — Russian forces have escalated aerial attacks on Ukrainian cities even as ground offensives slow; over the last four weeks (May 12–June 9) Russia suffered a net loss of 1 square mile after gaining 41 square miles in the prior period.
