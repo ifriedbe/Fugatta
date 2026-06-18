@@ -1,3 +1,63 @@
+# News Feed - 2026-06-18 11:45 UTC
+
+## Geopolitics
+
+- **06:00 UTC** | https://www.bloomberg.com/news/articles/2026-06-18/ukraine-hits-moscow-with-record-drone-strike-targeting-refinery | Ukraine launched its largest-ever drone attack on Moscow overnight, sending nearly 200 drones toward the capital (with 555 drones intercepted across all of Russia) that struck the Moscow Oil Refinery — a Gazprom-owned facility supplying roughly a third of Moscow's fuel. Huge fires broke out at the refinery and nearby Sadovod market; 17 people were injured in the Moscow region including two children. All major Moscow airports temporarily suspended flights, with Sheremetyevo evacuating passengers.
+
+- **06:30 UTC** | https://www.themoscowtimes.com/2026/06/18/ukraine-sets-major-oil-refinery-ablaze-in-largest-ever-drone-attack-on-moscow-a93043 | This was the second strike on the Moscow Oil Refinery within a week, with President Zelensky confirming Kyiv deliberately targeted the facility. The attack eclipsed the previous Moscow record set in March 2026, when 74 drones were intercepted. (Украина установила рекорд по масштабу атаки беспилотников на Москву, поджегла крупнейший нефтеперерабатывающий завод.)
+
+- **05:00 UTC** | https://vz.ru/news/2026/6/18/1428161.html | Russian forces struck Ukrainian energy infrastructure overnight, hitting a fuel terminal near Boryspil Airport in Kyiv Oblast and the Zaturino oil refinery in Poltava region. (ВС России поразили склад ГСМ под Киевом и НПЗ в Полтавской области.) The Russian Defense Ministry said the strikes targeted facilities used to supply Ukrainian military operations.
+
+- **07:00 UTC** | https://lenta.ru/news/2026/06/18/v-minoborony-sdelali-zayavlenie-posle-ataki-bolee-polutysyachi-bespilotnikov-na-rossiyu/ | Russia's Defense Ministry announced that 555 Ukrainian drones were shot down overnight across 19 Russian regions, calling it the largest single-night drone barrage of the war. Air defense systems were activated across a wide arc from western border regions to the Moscow metropolitan area. (За ночь над Россией уничтожили 555 украинских дронов.)
+
+- **08:00 UTC** | https://lenta.ru/news/2026/06/18/stalo-izvestno-o-problemah-vsu-bliz-krasnogo-limana/ | Russian forces reportedly created two encirclement pockets for Ukrainian troops near Krasny Lyman in eastern Ukraine. Separate assault groups advanced up to 500 meters in forest fighting near Petro-Ivanovka in Kharkiv region. (Стало известно о проблемах ВСУ близ Красного Лимана.)
+
+- **10:00 UTC** | https://www.npr.org/2026/06/15/nx-s1-5858590/us-iran-deal-updates | The US and Iran announced an initial ceasefire agreement to end three months of war and reopen the Strait of Hormuz, with Trump declaring "the deal's all signed" at the G7 summit in France. The 14-point memorandum of understanding extends the ceasefire 60 days and calls for nuclear negotiations, while lifting the US naval blockade. A formal signing ceremony is scheduled in Switzerland on June 19.
+
+- **10:30 UTC** | https://www.aljazeera.com/news/2026/6/17/read-the-us-account-of-unreleased-14-point-iran-ceasefire-memorandum | Al Jazeera published the US account of the 14-point Iran ceasefire memorandum revealing that critical issues — including Iran's nuclear enrichment program and the fate of its highly enriched uranium stockpile — remain unresolved pending follow-on negotiations. Markets reacted positively: S&P 500 up 1.9%, oil prices down nearly 5%.
+
+- **09:00 UTC** | https://www.elysee.fr/en/G7evian/2026/06/17/the-outcomes-of-the-evian-g7-summit | The 52nd G7 Summit concluded in Évian-les-Bains, France on June 17, with nine joint declarations covering Ukraine, AI governance, and global health. Leaders pledged increased military support for Ukraine including additional air defense systems and long-range capabilities, and committed over $1 billion to address a potential Ebola crisis.
+
+- **09:30 UTC** | https://www.aljazeera.com/news/2026/6/16/g7-leaders-meet-in-france-with-iran-and-ukraine-high-on-agenda | Ukrainian President Zelensky attended the G7 in Évian, where Trump told reporters he would "push for peace in Ukraine." G7 nations reaffirmed Ukraine's sovereignty and territorial integrity while acknowledging divergences remain on NATO commitments and relations with China.
+
+## Technology & Business
+
+- **08:00 UTC** | https://www.artificialintelligence-news.com/ | A Munich court ruled that Google can be held liable for false or misleading claims in its AI Overviews feature, treating AI-generated summaries as Google's own editorial statements rather than neutral search results. The ruling has significant implications for AI content liability across the EU and could force major changes to how AI-generated summaries are presented and disclaimed.
+
+- **07:00 UTC** | https://www.weforum.org/stories/2026/06/uncertainty-around-us-iran-ceasefire-and-other-geopolitical-stories-to-know-this-month/ | Analysis warns that 30–50% of roughly 140 planned US data centers targeting 16 GW of combined capacity may miss their 2026 build-out timelines or be canceled entirely. Primary bottlenecks include multi-year procurement delays for high-voltage transformers, grid connection queues, and growing local opposition over energy and water consumption.
+
+- **09:00 UTC** | https://commission.europa.eu/news-and-media/news/strengthening-europes-tech-sovereignty-2026-06-03_en | The European Commission's "Tech Sovereignty Package" — including the Cloud and AI Development Act and Chips Act 2.0 — is drawing significant industry comment as implementation timelines approach. The package aims to reduce EU reliance on non-European cloud, semiconductor, and digital infrastructure providers, with compliance requirements expected to affect US hyperscalers operating in Europe.
+
+- **10:00 UTC** | https://techcrunch.com/ | Companies across sectors continue announcing AI-driven layoffs while simultaneously reporting record profits and revenues, intensifying political scrutiny in both the US and Europe. Several major technology firms are facing congressional inquiries over whether workforce reductions are genuinely driven by productivity gains or used as cover for margin expansion.
+
+## Health & Science
+
+- **07:30 UTC** | https://www.sciencedaily.com/news/health_medicine/ | Scientists published findings showing a surprising step toward unlocking regeneration in mammals, demonstrating that biological pathways for rebuilding complex body parts may not be permanently lost in higher animals — they may simply be epigenetically silenced. The research opens new avenues toward potential regenerative therapies for human tissues.
+
+- **08:00 UTC** | https://www.sciencedaily.com/ | A Rutgers University study found that GLP-1 receptor agonist drugs including Ozempic and Wegovy may significantly weaken the relationship between impulsive personality traits and violent behavior. Researchers suggest the drugs' effects on dopamine signaling could have broader behavioral implications beyond weight loss and diabetes management.
+
+- **08:30 UTC** | https://scitechdaily.com/news/health/ | A small clinical trial reported that probiotic supplementation provided a measurable mental health benefit for older adults diagnosed with depression, with reduced depressive symptoms after an eight-week course. Researchers noted the findings add to growing evidence for a gut-brain axis in mood disorders but called for larger studies.
+
+- **09:00 UTC** | https://www.sciencedaily.com/news/top/health/ | A minimally invasive procedure using targeted embolization to block inflammation-driving micro-blood-vessels in arthritic knees delivered significant pain relief and improved function for osteoarthritis patients, with benefits persisting at least 12 months. The technique could offer an alternative for patients not suitable for knee replacement surgery.
+
+## Sports
+
+- **04:00 UTC** | https://www.espn.com/soccer/story/_/id/49104390/world-cup-2026-today-blog-18-06-2026-live-updates-news-fixtures-schedule-results-england-beat-croatia | England opened their 2026 FIFA World Cup campaign with a 4–2 victory over Croatia, with Harry Kane scoring a brace and Jude Bellingham and Marcus Rashford also on the scoresheet. England top Group L; Bellingham's goal placed him in the company of Pelé and Michael Owen for World Cup milestones at this stage.
+
+- **03:00 UTC** | https://www.espn.com/soccer/story/_/id/49100616/uzbekistan-colombia-live-world-cup-2026-latest-updates-commentary-score-result | Colombia defeated Uzbekistan 3–1, with Abbosbek Fayzullayev — a former CSKA Moscow player — scoring Uzbekistan's first-ever goal in FIFA World Cup history. (Исторический гол экс-игрока ЦСКА — первый в истории Узбекистана на чемпионатах мира.) Colombia's win puts them at the top of their group.
+
+- **02:00 UTC** | https://www.olympics.com/en/news/fifa-world-cup-2026-every-match-result-thursday-18-june-live-scores | Mexico defeated South Africa 2–0 in Group A, with South Africa finishing with nine men after two red cards. South Korea beat Czechia 2–1. Portugal was held to a surprise draw by DR Congo, with Cristiano Ronaldo drawing criticism for his performance.
+
+- **05:00 UTC** | https://www.golfchannel.com/watch/usga/epic-sports-day-awaits-new-york-on-june-18-2026 | The 126th US Open golf championship teed off at Shinnecock Hills Golf Club in Southampton, New York, running through June 21. The event coincides with the New York Knicks NBA championship parade in Manhattan, making June 18 a historic convergence of major sporting events in New York.
+
+## Other
+
+- **07:00 UTC** | https://www.cbsnews.com/news/tropical-storm-arthur-first-hurricane-season-texas-gulf-coast/ | Tropical Storm Arthur, the first named storm of the 2026 Atlantic hurricane season, weakened as it moved inland but continues to pose a flash flooding risk along the Texas Gulf Coast. Emergency management officials urged residents in low-lying coastal areas to remain vigilant as the storm's remnants drift north.
+
+- **09:30 UTC** | https://www.zerofox.com/intelligence/monthly-geopolitical-report-june-2026/ | The June 2026 geopolitical risk environment remains elevated across multiple simultaneous flashpoints — the Iran ceasefire, the Russia-Ukraine war, and 2026 FIFA World Cup security logistics. Analysts warn any ceasefire breakdown in the Gulf could rapidly reverse the recent oil price decline and rattle global markets heading into the second half of the year.
+
+---
+
 ## 2026-06-18T22:00:00Z
 ### Ukraine & Russia
 - **Ukraine Strikes Moscow Oil Refinery for Second Time in a Week; All Moscow Airports Close** — Overnight drone strikes hit the Kapotnya and Moscow oil refineries, closing all four Moscow airports and forcing Aeroflot to cancel over 170 flights, with debris striking residential buildings across the capital's suburbs.
