@@ -1,3 +1,22 @@
+## 2026-06-18T18:00:00Z
+### Ukraine & Russia
+- **Ukraine Deep Strike Success Rate Hits 45% at 900+ km as Russian Interceptor Stocks Deplete** — Ukraine's long-range strike success rate climbed from 6% to 45% since early 2025 as Russia's S-300 interceptor stockpile faces depletion at an "unsustainable rate" due to sanctions-driven component shortages.
+- **Russian Ground Advance Stalls; Net 10-Square-Mile Gain in Four Weeks as Aerial Bombing Intensifies** — Russian forces recorded a net 10-square-mile gain over May 19–June 16 — a sharp deceleration — as Moscow escalates bombardment of Ukrainian cities while battlefield momentum stalls.
+- **Russian Airstrike on Kyiv Apartment Kills 24; Ukraine Retaliates Against Ryazan Oil Refinery** — A Russian strike on a residential building killed at least 24 civilians in Kyiv; Ukraine hit back at a Ryazan refinery and continues striking oil infrastructure and targets deep inside Russia.
+- **Putin Rebuffs Zelensky's Face-to-Face Talks Proposal, Says "No Point"** — Russia's president dismissed Ukrainian calls for direct peace negotiations; Russia's domestic long-range weapons production now reportedly eclipses NATO's combined output.
+
+### Israel
+- **Trump Rebukes Israel at G7; Netanyahu Declares War Goals Met but Refuses Lebanon Withdrawal** — President Trump publicly criticized Israeli operations in Lebanon at the G7 summit; Netanyahu simultaneously declared war objectives achieved while refusing to end the occupation of southern Lebanon.
+- **Over 1,000 Killed in Gaza Since US-Brokered Ceasefire Was Agreed** — More than 1,000 Palestinians have been killed in Gaza since the US-brokered Hamas-Israel ceasefire was formally agreed, raising serious questions about the deal's durability.
+- **Netanyahu Holds First Official Meeting with New Mossad Chief Roman Gofman** — Israeli PM Netanyahu met the newly installed Mossad director in a formal working session as Israel navigates simultaneous crises in Gaza and Lebanon amid the shifting regional order following the US-Iran deal.
+
+### Iran
+- **US-Iran MoU Formally Signed; Ceremony in Switzerland June 19 — Hormuz to Reopen, $24B Unfrozen** — Presidents Trump and Pezeshkian electronically signed a Pakistan- and Qatar-mediated memorandum of understanding ending the US-Iran war; the deal reopens the Strait of Hormuz, lifts the naval blockade within 30 days, and releases $24 billion in frozen Iranian assets during a 60-day nuclear negotiation window.
+- **Iran Nuclear Enrichment Levels Left Unresolved in MoU; 60-Day Talks to Decide Fate** — The signed MoU does not fix Iran's uranium enrichment thresholds; the weapons-grade material ceiling and long-term nuclear program structure remain the central issues for post-signing negotiations.
+- **Israel Continues Lebanon Offensive Despite Deal; Iran Warns Retaliation If Operations Persist** — Despite the ceasefire framework, Israel presses ahead in southern Lebanon; Iran insists full Israeli withdrawal is a prerequisite for a durable long-term agreement and has threatened retaliation if operations continue.
+
+---
+
 ## 2026-06-18T17:00:00Z
 ### Ukraine & Russia
 - **Ukraine Deep Strike Success Rate Soars to 45% at 900+ km as Russian Air Defenses Deplete** — Ukraine's long-range strike success rate at depths exceeding 900 km rose from 6% in early 2025 to 45% in early 2026, as Russia's S-300 interceptor stockpile is depleted at what analysts call "an unsustainable rate" due to component shortages caused by Western sanctions.
