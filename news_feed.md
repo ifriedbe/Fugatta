@@ -1,3 +1,22 @@
+## 2026-06-18T15:30:00Z
+### Ukraine & Russia
+- **Russia Running Low on S-300 Interceptors at "Unsustainable Rate"** — Ukraine's deep strike campaign is depleting Russia's S-300 missile interceptor stockpile; Moscow lacks key components including guidance seekers and control modules to produce replacements, potentially shifting the air war in Kyiv's favor.
+- **Putin Dismisses Zelensky's Call for Face-to-Face Talks, Says "No Point"** — Russian president rebuffed Ukraine's request for direct negotiations; over the past four weeks (May 19–June 16) Russian forces gained a net 10 square miles of Ukrainian territory with no resolution in sight.
+- **Putin Admits Ukrainian Attacks Are Damaging Russia's Economy and Society** — In a rare public acknowledgment, Putin stated the surge in Ukrainian drone and missile strikes on Russian oil infrastructure and cities is inflicting measurable harm on both Russia's economy and social fabric.
+- **Russia's Domestic Weapons Production Now Eclipsing NATO Output** — Russia has rebuilt its long-range strike manufacturing capacity from import dependency and depleted stocks to a domestic production rate analysts say now surpasses NATO's combined output.
+
+### Israel
+- **Trump Slams Israel at G7, Calls It a "Very Small Partner"** — At the G7 closing press conference in Évian, Trump sharply criticized Israel's handling of Lebanon operations and suggested Syria should "take care of" Hezbollah, further straining US-Israel relations amid the nascent Iran deal.
+- **Netanyahu Claims War Goals Achieved; Israel Will Not End Lebanon Occupation** — PM Netanyahu declared Israel's war goals have been achieved but refused to withdraw from southern Lebanon despite the US-Iran ceasefire and mounting US pressure, as thousands of Lebanese residents return home.
+- **Over 1,000 Killed in Gaza Since US-Brokered Ceasefire Was Agreed** — More than 1,000 Palestinians have been killed in Gaza since the US-brokered ceasefire between Hamas and Israel was formally agreed, raising serious questions about the deal's durability.
+
+### Iran
+- **Trump Signs US-Iran 14-Point MoU; Formal Ceremony Set for June 19 in Switzerland** — President Trump physically signed the memorandum of understanding at Versailles ending hostilities, reopening the Strait of Hormuz, and launching 60 days of nuclear negotiations; Iran reaffirmed its NPT commitment against developing nuclear weapons.
+- **Iran's Highly Enriched Uranium to Be Diluted on Iranian Soil Under IAEA Supervision** — A key MoU provision requires Iran's stockpile of highly enriched uranium to be diluted domestically under international monitoring; Iran declared transferring enriched material out of the country "unacceptable."
+- **$300 Billion Development Fund for Iran Contingent on Nuclear Compliance** — The MoU includes a $300 billion economic development plan for Iran, conditional on meeting nuclear obligations during the 60-day post-signing negotiation period.
+
+---
+
 ## 2026-06-18T14:00:00Z
 ### Ukraine & Russia
 - **Russia Running Low on Air Defense Interceptors at "Unsustainable Rate"** — Ukraine's deep strike campaign is depleting Russia's S-300 missile stockpile; Moscow lacks key components including guidance seekers and control modules to produce replacements, potentially shifting the air war in Kyiv's favor.
