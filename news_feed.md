@@ -1,3 +1,22 @@
+## 2026-06-18T17:00:00Z
+### Ukraine & Russia
+- **Ukraine Deep Strike Success Rate Soars to 45% at 900+ km as Russian Air Defenses Deplete** — Ukraine's long-range strike success rate at depths exceeding 900 km rose from 6% in early 2025 to 45% in early 2026, as Russia's S-300 interceptor stockpile is depleted at what analysts call "an unsustainable rate" due to component shortages caused by Western sanctions.
+- **Russia Loses 700,000 Barrels/Day of Refining Capacity in 2026 — Double the 2025 Figure** — Ukraine's sustained campaign against Russian oil infrastructure has knocked 700,000 bpd offline across 16 refineries; Russian refining fell to 4.58 mbpd in May 2026, down 13% from May 2025.
+- **Russian Airstrike on Kyiv Apartment Kills 24; Ukraine Retaliates Against Ryazan Oil Refinery** — A Russian strike on a residential building in Kyiv killed at least 24 civilians; Ukraine struck back at a Ryazan oil refinery, with Ukrainian attacks on Russian territory now dominating domestic Russian public awareness.
+- **Zelenskyy Proposes Direct Talks with Putin in Open Letter; Kremlin Rebuffs "No Point"** — President Zelenskyy published an open letter calling for a face-to-face meeting with Putin to negotiate an end to the war; Moscow flatly rejected the proposal as Russian forces recorded a net 10 square-mile gain over the past four weeks.
+
+### Israel
+- **Trump Publicly Rebukes Israel at G7; Netanyahu Claims War Goals Met but Refuses Lebanon Withdrawal** — At the G7 closing press conference in Évian, Trump criticized Israel's Lebanon operations and suggested Syria should "take care of" Hezbollah; Netanyahu simultaneously declared war objectives achieved while refusing to withdraw from southern Lebanon.
+- **Over 1,000 Palestinians Killed in Gaza Since US-Brokered Ceasefire Agreed** — More than 1,000 people in Gaza have been killed since the US-brokered Hamas-Israel ceasefire was formally agreed, raising serious questions about the deal's durability and enforcement.
+- **Palestinian Authority Announces First Presidential Election Since 2005 — Slated for 2027** — PA President Mahmoud Abbas announced Palestinian presidential elections will be held in 2027, amid international discussions about post-war governance and the political future of Gaza.
+
+### Iran
+- **US-Iran MoU Key Terms Confirmed: Blockade Lifted, Hormuz Reopens, $24B Unfrozen in 60-Day Window** — The signed MoU mandates the naval blockade lifted within 30 days, full reopening of the Strait of Hormuz, suspension of oil sanctions, and release of $24 billion in frozen Iranian assets during the 60-day nuclear negotiation period.
+- **Iran's Nuclear Fate Left Open: Enrichment Levels and Bomb Threshold to Be Negotiated** — The MoU does not resolve Iran's uranium enrichment levels; the threshold for weapons-grade material and the long-term fate of Tehran's nuclear program remain the central issues to be decided in 60-day follow-on talks.
+- **Pakistan and Qatar Credited as Key Mediators Behind US-Iran Peace Framework** — Pakistan and Qatar are recognized as the primary mediators who brokered the MoU ending over 100 days of US-Iran conflict; Qatar continues working to prevent renewed Israeli escalation that could derail the fragile deal ahead of the June 19 formal signing in Switzerland.
+
+---
+
 ## 2026-06-18T15:30:00Z
 ### Ukraine & Russia
 - **Russia Running Low on S-300 Interceptors at "Unsustainable Rate"** — Ukraine's deep strike campaign is depleting Russia's S-300 missile interceptor stockpile; Moscow lacks key components including guidance seekers and control modules to produce replacements, potentially shifting the air war in Kyiv's favor.
