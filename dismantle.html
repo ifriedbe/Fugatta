@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DISMANTLE — Audio-Driven Pixel Dissolution</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#000; overflow:hidden; font-family:monospace; color:#fff; }
+canvas#c { display:block; width:100vw; height:100vh; }
+
+#ui {
+  position:fixed; top:0; right:0; width:255px; height:100vh;
+  background:rgba(0,0,0,0.88); border-left:1px solid rgba(255,255,255,0.07);
+  padding:13px; overflow-y:auto; z-index:10; font-size:11px;
+  transition:transform .3s;
+}
+#ui.hidden { transform:translateX(100%); }
+#tog {
+  position:fixed; top:10px; right:10px; z-index:20;
+  background:rgba(0,0,0,0.65); border:1px solid rgba(255,255,255,0.2);
+  color:#fff; padding:5px 9px; cursor:pointer; font-family:monospace; font-size:11px;
+}
+#tog.open { right:265px; }
+
+#title { font-size:13px; letter-spacing:4px; margin-bottom:2px; }
+#sub { font-size:9px; color:#444; margin-bottom:12px; line-height:1.8; }
+
+.sec { margin-bottom:13px; border-top:1px solid rgba(255,255,255,0.07); padding-top:9px; }
+.sec:first-child { border-top:none; }
+h3 { margin-bottom:6px; font-size:9px; letter-spacing:2px; color:#555; text-transform:uppercase; }
+
+label { display:flex; justify-content:space-between; margin-bottom:3px; align-items:center; }
+label span { color:#999; }
+.v { color:#fff; min-width:34px; text-align:right; font-size:10px; }
+input[type=range] { width:100%; margin:2px 0; accent-color:#fa0; }
+
+select {
+  width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
+  color:#fff; padding:4px; font-family:monospace; font-size:11px; margin-top:2px;
+}
+button {
+  width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
+  color:#888; padding:5px; cursor:pointer; font-family:monospace; font-size:11px; margin-top:3px;
+}
+button:hover { background:rgba(255,255,255,0.12); color:#fff; }
+button.on { background:rgba(255,160,0,0.2); border-color:#fa0; color:#fb0; }
+button.danger { border-color:rgba(255,80,80,0.4); color:#f88; }
+button.danger:hover { background:rgba(255,80,80,0.2); }
+
+#cam-overlay {
+  position:fixed; top:0; left:0; width:100vw; height:100vh;
+  display:flex; align-items:center; justify-content:center;
+  z-index:5; pointer-events:none;
+}
+#cam-preview {
+  position:fixed; top:0; left:0; width:100vw; height:100vh;
+  object-fit:cover; display:none; z-index:2;
+}
+#snap-btn {
+  position:fixed; bottom:40px; left:50%; transform:translateX(-50%);
+  z-index:6; background:rgba(255,160,0,0.15); border:2px solid #fa0;
+  color:#fa0; padding:12px 36px; cursor:pointer; font-family:monospace;
+  font-size:14px; letter-spacing:3px; display:none;
+}
+#snap-btn:hover { background:rgba(255,160,0,0.3); }
+
+#phase-label {
+  position:fixed; top:20px; left:20px; z-index:6;
+  font-size:11px; letter-spacing:2px; color:#fa0; opacity:0.7;
+}
+
+/* Audio meters */
+#vu { display:flex; gap:2px; height:24px; margin:5px 0; }
+.vu-bar { flex:1; background:rgba(255,255,255,0.07); position:relative; overflow:hidden; }
+.vu-fill { position:absolute; bottom:0; width:100%; background:linear-gradient(to top,#fa0,#fff); transition:height .04s; }
+.vu-lbl { font-size:8px; color:#444; text-align:center; }
+
+#progress-wrap { margin:5px 0; }
+#progress-bar { width:100%; height:4px; background:rgba(255,255,255,0.08); position:relative; }
+#progress-fill { height:100%; background:#fa0; width:0%; transition:width .1s; }
+.prog-lbl { font-size:9px; color:#555; margin-top:2px; }
+
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:3px; margin-top:3px; }
+.mb {
+  padding:6px 2px; font-size:9px; border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.03); color:#666; cursor:pointer; text-align:center; font-family:monospace;
+}
+.mb:hover { color:#ccc; }
+.mb.on { background:rgba(255,160,0,0.15); border-color:#fa0; color:#fb0; }
+</style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+<video id="cam-preview" autoplay playsinline muted></video>
+<button id="snap-btn">CAPTURE &amp; DISMANTLE</button>
+<div id="phase-label">READY</div>
+
+<button id="tog" class="open">DISMANTLE</button>
+
+<div id="ui">
+  <div id="title">DISMANTLE</div>
+  <div id="sub">Photograph the world<br>let music chip it away</div>
+
+  <div class="sec">
+    <h3>Setup</h3>
+    <button id="btn-cam">START CAMERA</button>
+    <button id="btn-mic" style="margin-top:3px;">OPEN MICROPHONE</button>
+    <div id="vu">
+      <div class="vu-bar"><div class="vu-fill" id="vu-b" style="height:0%"></div></div>
+      <div class="vu-bar"><div class="vu-fill" id="vu-m" style="height:0%"></div></div>
+      <div class="vu-bar"><div class="vu-fill" id="vu-t" style="height:0%"></div></div>
+      <div class="vu-bar"><div class="vu-fill" id="vu-a" style="height:0%"></div></div>
+    </div>
+    <div style="display:flex;gap:2px;font-size:8px;color:#333;">
+      <div style="flex:1;text-align:center">BASS</div>
+      <div style="flex:1;text-align:center">MID</div>
+      <div style="flex:1;text-align:center">TRE</div>
+      <div style="flex:1;text-align:center">AMP</div>
+    </div>
+    <select id="cam-sel" style="margin-top:6px;"><option>Loading...</option></select>
+  </div>
+
+  <div class="sec">
+    <h3>Dismantle</h3>
+    <div id="progress-wrap">
+      <div id="progress-bar"><div id="progress-fill"></div></div>
+      <div class="prog-lbl" id="prog-text">0% chipped</div>
+    </div>
+    <button id="btn-retake" class="danger">RETAKE PHOTO</button>
+    <button id="btn-pause" style="margin-top:2px;">PAUSE</button>
+    <button id="btn-reset" class="danger" style="margin-top:2px;">RESET IMAGE</button>
+  </div>
+
+  <div class="sec">
+    <h3>Chip Mode — how music chips</h3>
+    <div class="grid2">
+      <div class="mb on" data-cm="0">FREQUENCY</div>
+      <div class="mb" data-cm="1">SCATTER</div>
+      <div class="mb" data-cm="2">EDGE-IN</div>
+      <div class="mb" data-cm="3">VORONOI</div>
+      <div class="mb" data-cm="4">WAVE FRONT</div>
+      <div class="mb" data-cm="5">GRAVITY</div>
+      <div class="mb" data-cm="6">RESONANCE</div>
+      <div class="mb" data-cm="7">SPIRAL</div>
+    </div>
+    <label style="margin-top:7px;"><span>Chip rate</span><span class="v" id="v-crate">0.40</span></label>
+    <input type="range" id="crate" min="0" max="1" step="0.005" value="0.4">
+    <label><span>Silence erosion</span><span class="v" id="v-sil">0.02</span></label>
+    <input type="range" id="sil" min="0" max="0.2" step="0.001" value="0.02">
+    <label><span>Bass weight</span><span class="v" id="v-bw">1.00</span></label>
+    <input type="range" id="bw" min="0" max="2" step="0.01" value="1.0">
+    <label><span>Mid weight</span><span class="v" id="v-mw">1.00</span></label>
+    <input type="range" id="mw" min="0" max="2" step="0.01" value="1.0">
+    <label><span>Treble weight</span><span class="v" id="v-tw">1.00</span></label>
+    <input type="range" id="tw" min="0" max="2" step="0.01" value="1.0">
+  </div>
+
+  <div class="sec">
+    <h3>Particle Flight</h3>
+    <div class="grid2">
+      <div class="mb on" data-pf="0">EXPLODE</div>
+      <div class="mb" data-pf="1">RISE UP</div>
+      <div class="mb" data-pf="2">FALL DOWN</div>
+      <div class="mb" data-pf="3">VORTEX</div>
+      <div class="mb" data-pf="4">WANDER</div>
+      <div class="mb" data-pf="5">IMPLODE</div>
+    </div>
+    <label style="margin-top:7px;"><span>Fly distance</span><span class="v" id="v-fdist">0.60</span></label>
+    <input type="range" id="fdist" min="0" max="2" step="0.01" value="0.6">
+    <label><span>Particle life</span><span class="v" id="v-plife">1.50</span></label>
+    <input type="range" id="plife" min="0.1" max="5" step="0.05" value="1.5">
+    <label><span>Trail glow</span><span class="v" id="v-tglow">0.80</span></label>
+    <input type="range" id="tglow" min="0" max="2" step="0.01" value="0.8">
+  </div>
+
+  <div class="sec">
+    <h3>Visual</h3>
+    <select id="palette">
+      <option value="0">Original colors</option>
+      <option value="1">Embers</option>
+      <option value="2">Ice shatter</option>
+      <option value="3">Neon dust</option>
+      <option value="4">Ghost</option>
+    </select>
+    <label style="margin-top:6px;"><span>Chip edge glow</span><span class="v" id="v-eglow">1.20</span></label>
+    <input type="range" id="eglow" min="0" max="3" step="0.05" value="1.2">
+    <label><span>Background</span><span class="v" id="v-bg">0.00</span></label>
+    <input type="range" id="bg" min="0" max="1" step="0.01" value="0">
+    <label><span>Spark density</span><span class="v" id="v-spark">1.00</span></label>
+    <input type="range" id="spark" min="0" max="3" step="0.05" value="1.0">
+  </div>
+
+  <div class="sec">
+    <h3>Projection</h3>
+    <label><span>Barrel / Pincushion</span><span class="v" id="val-distort">0.00</span></label>
+    <input type="range" id="distort" min="-2" max="2" step="0.01" value="0">
+    <div style="display:flex;justify-content:space-between;font-size:9px;color:#444;margin-top:1px;"><span>◀ pincushion</span><span>barrel ▶</span></div>
+    <button id="btn-fs" style="margin-top:6px;">FULLSCREEN  [F]</button>
+  </div>
+</div>
+
+<video id="vid" autoplay playsinline muted style="display:none"></video>
+
+<!-- ===== VERTEX ===== -->
+<script id="vert" type="x-shader/v">
+attribute vec2 a_pos;
+varying vec2 v_uv;
+void main(){
+  v_uv=vec2(a_pos.x*.5+.5,.5-a_pos.y*.5);
+  gl_Position=vec4(a_pos,0,1);
+}
+</script>
+
+<!-- ===== EROSION UPDATE PASS ===== -->
+<script id="frag-erode" type="x-shader/f">
+precision highp float;
+varying vec2 v_uv;
+uniform sampler2D u_photo;   // captured image
+uniform sampler2D u_erosion; // prev erosion state (R=amount, G=chip_time_norm, B=vel_angle)
+uniform vec2  u_res;
+uniform float u_time;
+uniform float u_bass;
+uniform float u_mid;
+uniform float u_treble;
+uniform float u_amp;
+uniform float u_crate;
+uniform float u_sil;
+uniform float u_bw;
+uniform float u_mw;
+uniform float u_tw;
+uniform int   u_chipMode;
+uniform int   u_paused;
+uniform int   u_reset;
+uniform float u_dt;          // delta time per frame
+
+float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float hash3(vec3 p){return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453);}
+float noise(vec2 p){
+  vec2 i=floor(p);vec2 f=fract(p);f=f*f*(3.-2.*f);
+  return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),
+             mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);
+}
+float luma(vec3 c){return dot(c,vec3(.299,.587,.114));}
+
+void main(){
+  if(u_reset==1){ gl_FragColor=vec4(0,0,0,1); return; }
+
+  vec2 uv=v_uv;
+  vec4 prev=texture2D(u_erosion,uv);
+  float erosion=prev.r;
+  float chipTime=prev.g;
+  float velAngle=prev.b;
+
+  if(u_paused==1 || erosion>=1.0){
+    gl_FragColor=prev;
+    return;
+  }
+
+  // Sample photo colour at this pixel
+  vec3 col=texture2D(u_photo,uv).rgb;
+  float lum=luma(col);
+  vec3 hsv;
+  { // inline rgb→hsv
+    vec4 K=vec4(0.,-1./3.,2./3.,-1.);
+    vec4 p2=mix(vec4(col.bg,K.wz),vec4(col.gb,K.xy),step(col.b,col.g));
+    vec4 q=mix(vec4(p2.xyw,col.r),vec4(col.r,p2.yzx),step(p2.x,col.r));
+    float d=q.x-min(q.w,q.y);
+    hsv=vec3(abs(q.z+(q.w-q.y)/(6.*d+1e-10)),d/(q.x+1e-10),q.x);
+  }
+
+  // ---- compute chip susceptibility for this pixel ----
+  float suscept=0.;
+
+  if(u_chipMode==0){
+    // FREQUENCY: bass→dark pixels, treble→bright pixels, mid→saturated
+    float bassContrib  = u_bass  * u_bw * (1.-lum);
+    float midContrib   = u_mid   * u_mw * hsv.y;
+    float trebleContrib= u_treble* u_tw * lum;
+    suscept = (bassContrib + midContrib + trebleContrib) / 3.;
+
+  } else if(u_chipMode==1){
+    // SCATTER: random, modulated by amplitude
+    float r=hash(uv+vec2(u_time*.1, u_amp));
+    suscept = r * u_amp * (1.+u_bass*u_bw);
+
+  } else if(u_chipMode==2){
+    // EDGE-IN: erosion from image edges inward, audio speeds it up
+    float edgeDist=min(min(uv.x,1.-uv.x),min(uv.y,1.-uv.y));
+    float wavefront=u_time * u_amp * 0.3 * u_crate;
+    suscept = step(edgeDist, wavefront) * u_amp;
+
+  } else if(u_chipMode==3){
+    // VORONOI: cells collapse on audio beats
+    vec2 cell=floor(uv*12.);
+    float cellHash=hash(cell);
+    float threshold=cellHash;
+    // Cell collapses when audio exceeds its threshold
+    float audioLevel=u_amp*u_bw + u_bass * (1.-lum);
+    suscept = step(threshold*.8, audioLevel) * u_amp;
+
+  } else if(u_chipMode==4){
+    // WAVE FRONT: sine wave sweeping across
+    float wavephase=uv.x*6.2832*4. - u_time*2.*u_amp;
+    suscept = max(0.,sin(wavephase)) * u_amp * (1.+u_bass*u_bw);
+
+  } else if(u_chipMode==5){
+    // GRAVITY: chips fall from bottom up (audio = gravity strength)
+    float gravity=u_amp*(1.+u_bass*u_bw);
+    float fallLevel=gravity * u_time * 0.05;
+    suscept = step(1.-uv.y, fallLevel) * u_amp;
+
+  } else if(u_chipMode==6){
+    // RESONANCE: pixels whose hue matches dominant audio frequency chip first
+    // bass=red, mid=green, treble=blue
+    float resonance=hsv.y*(
+      u_bass*u_bw*max(0.,1.-abs(hsv.x-0.0)*3.) +
+      u_mid *u_mw*max(0.,1.-abs(hsv.x-0.33)*3.) +
+      u_treble*u_tw*max(0.,1.-abs(hsv.x-0.66)*3.)
+    );
+    suscept = resonance * 2. * u_amp;
+
+  } else {
+    // SPIRAL: erosion wavefront spirals outward from center
+    vec2 d2=uv-.5;
+    float r=length(d2);
+    float angle=atan(d2.y,d2.x);
+    float spiral=fract(angle/(6.2832) + r*3. - u_time * u_amp * 0.5);
+    suscept = (1.-spiral) * u_amp * (1.+u_bass*u_bw);
+  }
+
+  // Base erosion rate
+  float rate = u_sil + suscept * u_crate * u_dt * 60.;
+
+  // Noise to break uniformity
+  float n=noise(uv*18. + vec2(u_time*.3));
+  rate *= .6 + .8*n;
+
+  float newErosion = clamp(erosion + rate * .016, 0., 1.);
+
+  // Store chip time (first time it crosses threshold)
+  float newChipTime = chipTime;
+  if(erosion < 0.05 && newErosion >= 0.05){
+    newChipTime = fract(u_time / 3600.); // normalize to 0-1 range
+  }
+
+  // Store velocity angle for this pixel (random per-pixel, set once)
+  float newVelAngle = velAngle;
+  if(velAngle < 0.001 && newErosion > 0.01){
+    newVelAngle = hash(uv) * .998 + .001;
+  }
+
+  gl_FragColor = vec4(newErosion, newChipTime, newVelAngle, 1.);
+}
+</script>
+
+<!-- ===== DISPLAY PASS ===== -->
+<script id="frag-display" type="x-shader/f">
+precision highp float;
+varying vec2 v_uv;
+uniform sampler2D u_photo;
+uniform sampler2D u_erosion;
+uniform float u_time;
+uniform vec2  u_res;
+uniform float u_bass;
+uniform float u_mid;
+uniform float u_treble;
+uniform float u_amp;
+uniform int   u_pfMode;   // particle flight mode
+uniform float u_fdist;
+uniform float u_plife;
+uniform float u_tglow;
+uniform float u_eglow;
+uniform float u_bg;
+uniform float u_spark;
+uniform int   u_palette;
+uniform float u_distort;
+
+vec2 distortUV(vec2 uv){
+  vec2 p=uv-.5; float r2=dot(p,p);
+  return clamp(.5+p*(1.+u_distort*r2),0.,1.);
+}
+
+float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float hash2(vec2 p){return fract(sin(dot(p,vec2(311.7,127.1)))*13758.5453);}
+float noise(vec2 p){
+  vec2 i=floor(p);vec2 f=fract(p);f=f*f*(3.-2.*f);
+  return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),
+             mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);
+}
+float luma(vec3 c){return dot(c,vec3(.299,.587,.114));}
+vec3 hsv2rgb(vec3 c){
+  vec3 p=abs(fract(c.xxx+vec3(1,2./3.,1./3.))*6.-3.);
+  return c.z*mix(vec3(1.),clamp(p-1.,0.,1.),c.y);
+}
+
+// Compute flight displacement for a pixel that started eroding at chipTime
+// velAngle = stored per-pixel random angle (0-1 normalized)
+vec2 flyDisp(vec2 uv, float velAngle, float age, int mode){
+  float angle = velAngle * 6.2832;
+  vec2 dir = vec2(cos(angle), sin(angle));
+  float speed = age * age * u_fdist;
+
+  if(mode==0){ // Explode outward from center
+    vec2 fromCenter = normalize(uv - .5 + vec2(.001));
+    return fromCenter * speed * .5 + dir * speed * .1;
+
+  } else if(mode==1){ // Rise up
+    return vec2(dir.x * .1, -1.) * speed * .5;
+
+  } else if(mode==2){ // Fall down
+    return vec2(dir.x * .1, 1.) * speed * .5;
+
+  } else if(mode==3){ // Vortex
+    float r = length(uv-.5);
+    float a = atan(uv.y-.5, uv.x-.5) + age * 3.;
+    vec2 vort = vec2(cos(a),sin(a)) * r - (uv-.5);
+    return vort * speed + dir * speed * .1;
+
+  } else if(mode==4){ // Wander — noise-driven
+    float nx = noise(uv*5.+vec2(u_time*.2));
+    float ny = noise(uv*5.+vec2(u_time*.2+7.3));
+    return vec2(nx-.5,ny-.5)*speed;
+
+  } else { // Implode — toward center
+    vec2 toCenter = normalize(.5 - uv);
+    return toCenter * speed * .5;
+  }
+}
+
+// Apply colour palette to chipping pixel
+vec3 applyPalette(vec3 originalCol, float erosion, float age, int pal){
+  if(pal==0) return originalCol; // Original colors
+
+  float lum=luma(originalCol);
+  if(pal==1){ // Embers: orange→yellow→white hot
+    float t=clamp(age*1.5,0.,1.);
+    vec3 ember=mix(vec3(1.,.4,.0),vec3(1.,1.,.8),t)*(.8+.2*lum);
+    return mix(originalCol, ember, clamp(erosion*2.,0.,1.));
+
+  } else if(pal==2){ // Ice shatter: blue→white→cyan
+    float t=clamp(age,0.,1.);
+    vec3 ice=mix(vec3(.2,.6,1.),vec3(.9,1.,1.),t)*(1.+lum*.3);
+    return mix(originalCol, ice, clamp(erosion*1.5,0.,1.));
+
+  } else if(pal==3){ // Neon dust: hue shift + saturation boost
+    vec3 hsv;
+    vec4 K=vec4(0.,-1./3.,2./3.,-1.);
+    vec4 p2=mix(vec4(originalCol.bg,K.wz),vec4(originalCol.gb,K.xy),step(originalCol.b,originalCol.g));
+    vec4 q=mix(vec4(p2.xyw,originalCol.r),vec4(originalCol.r,p2.yzx),step(p2.x,originalCol.r));
+    float d=q.x-min(q.w,q.y);
+    hsv=vec3(abs(q.z+(q.w-q.y)/(6.*d+1e-10)),d/(q.x+1e-10),q.x);
+    hsv.x=fract(hsv.x+erosion*.5+u_time*.05);
+    hsv.y=min(1.,hsv.y*2.);
+    return hsv2rgb(hsv);
+
+  } else { // Ghost: desaturate + luminous white fade
+    return mix(originalCol, vec3(1.)*lum*2., clamp(erosion,0.,1.));
+  }
+}
+
+void main(){
+  vec2 uv=distortUV(v_uv);
+  vec4 erosData=texture2D(u_erosion,uv);
+  float erosion=erosData.r;
+  float chipTime=erosData.g * 3600.; // denormalize
+  float velAngle=erosData.b;
+
+  vec3 photoCol=texture2D(u_photo,uv).rgb;
+
+  // Time since this pixel started chipping
+  float chipAge=max(0., u_time - chipTime);
+
+  // ---- INTACT PIXEL ----
+  if(erosion < 0.02){
+    gl_FragColor=vec4(photoCol,1.);
+    return;
+  }
+
+  // ---- CHIP BOUNDARY GLOW ----
+  // Gradient of erosion field = glow at the chipping front
+  vec2 px=1./u_res;
+  float er=texture2D(u_erosion,uv+vec2(px.x,0)).r;
+  float el=texture2D(u_erosion,uv-vec2(px.x,0)).r;
+  float et=texture2D(u_erosion,uv+vec2(0,px.y)).r;
+  float eb=texture2D(u_erosion,uv-vec2(0,px.y)).r;
+  float grad=length(vec2(er-el,et-eb))*6.;
+
+  // ---- FLYING PARTICLE EFFECT ----
+  // For each screen pixel, cast back: what source pixel would be flying HERE?
+  // We sample a small neighbourhood and test if any source pixel's trajectory passes through
+  float particleGlow=0.;
+  vec3 particleCol=vec3(0.);
+  float px_size=length(px)*u_fdist*30.;
+
+  for(int si=0;si<6;si++){
+    // Test source pixels around current UV
+    float a2=float(si)/6.*6.2832;
+    vec2 testOff=vec2(cos(a2),sin(a2))*px_size*(1.+float(si)*.3);
+    vec2 srcUV=uv-testOff;
+    if(srcUV.x<0.||srcUV.x>1.||srcUV.y<0.||srcUV.y>1.) continue;
+
+    vec4 srcEros=texture2D(u_erosion,srcUV);
+    float srcE=srcEros.r;
+    if(srcE<0.3) continue; // not yet chipping enough to fly
+
+    float srcChipTime=srcEros.g*3600.;
+    float srcAge=max(0.,u_time-srcChipTime);
+    float srcVelAngle=srcEros.b;
+
+    // Where would this src pixel be now?
+    vec2 disp=flyDisp(srcUV, srcVelAngle, srcAge, u_pfMode);
+    vec2 predictedUV=srcUV+disp;
+
+    float dist=length(predictedUV-uv);
+    if(dist<px_size*1.5){
+      vec3 srcCol=texture2D(u_photo,srcUV).rgb;
+      float fade=max(0.,1.-srcAge/u_plife) * max(0.,1.-dist/(px_size*1.5));
+      srcCol=applyPalette(srcCol, srcE, srcAge, u_palette);
+      particleCol+=srcCol*fade;
+      particleGlow+=fade;
+    }
+  }
+
+  // ---- SPARKS at eroding frontier ----
+  float sparkVal=0.;
+  if(erosion>0.05 && erosion<0.95 && grad>0.1){
+    float sparkNoise=noise(uv*40.+vec2(u_time*8.))*u_spark;
+    float beatBoost=1.+u_amp*2.+u_bass*1.5;
+    sparkVal=grad*sparkNoise*beatBoost*u_eglow;
+  }
+
+  // ---- COMPOSE ----
+  vec3 bgCol=vec3(u_bg);
+  vec3 col;
+
+  if(erosion<0.95){
+    // Still partially intact: show original but fading
+    float fade=1.-smoothstep(0.2, 0.85, erosion);
+    // Wobble the intact portion before it chips
+    float wobble=erosion*0.012*(1.+u_amp*2.);
+    float wobbleAngle=hash(uv+vec2(u_time*.5))*6.2832;
+    vec2 wobbleUV=uv+vec2(cos(wobbleAngle),sin(wobbleAngle))*wobble;
+    wobbleUV=clamp(wobbleUV,0.,1.);
+    vec3 wobCol=texture2D(u_photo,wobbleUV).rgb;
+    wobCol=applyPalette(wobCol, erosion, chipAge, u_palette);
+    col=mix(bgCol, wobCol, fade);
+  } else {
+    col=bgCol;
+  }
+
+  // Add flying particles
+  if(particleGlow>0.001){
+    col=mix(col, particleCol/(particleGlow+.001), min(1.,particleGlow));
+    col+=particleCol*u_tglow*.3;
+  }
+
+  // Add chip-front glow (edge light)
+  vec3 glowCol=applyPalette(photoCol, erosion, chipAge, u_palette);
+  col+=glowCol*sparkVal*.5;
+  col+=vec3(1.,.8,.4)*grad*erosion*(1.-erosion)*u_eglow*(1.+u_amp*1.5);
+
+  // Subtle audio pulse on intact pixels
+  if(erosion<0.3){
+    col+=photoCol*u_amp*0.15;
+  }
+
+  gl_FragColor=vec4(clamp(col,0.,1.),1.);
+}
+</script>
+
+<!-- ===== PASSTHROUGH (for drawing photo to FBO) ===== -->
+<script id="frag-pass" type="x-shader/f">
+precision mediump float;
+varying vec2 v_uv;
+uniform sampler2D u_tex;
+void main(){ gl_FragColor=texture2D(u_tex,v_uv); }
+</script>
+
+<script>
+// ========== WebGL ==========
+const canvas=document.getElementById('c');
+const gl=canvas.getContext('webgl');
+
+function resize(){
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
+  gl.viewport(0,0,canvas.width,canvas.height);
+}
+window.addEventListener('resize',resize);
+resize();
+
+function mkShader(type,src){
+  const s=gl.createShader(type);
+  gl.shaderSource(s,src); gl.compileShader(s);
+  if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)) throw gl.getShaderInfoLog(s);
+  return s;
+}
+function mkProg(fsrc){
+  const VS=document.getElementById('vert').textContent;
+  const p=gl.createProgram();
+  gl.attachShader(p,mkShader(gl.VERTEX_SHADER,VS));
+  gl.attachShader(p,mkShader(gl.FRAGMENT_SHADER,fsrc));
+  gl.linkProgram(p);
+  if(!gl.getProgramParameter(p,gl.LINK_STATUS)) throw gl.getProgramInfoLog(p);
+  return p;
+}
+
+const progErode  = mkProg(document.getElementById('frag-erode').textContent);
+const progDisp   = mkProg(document.getElementById('frag-display').textContent);
+const progPass   = mkProg(document.getElementById('frag-pass').textContent);
+
+const qbuf=gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER,qbuf);
+gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+function bindQ(prog){
+  gl.bindBuffer(gl.ARRAY_BUFFER,qbuf);
+  const l=gl.getAttribLocation(prog,'a_pos');
+  gl.enableVertexAttribArray(l);
+  gl.vertexAttribPointer(l,2,gl.FLOAT,false,0,0);
+}
+
+function mkTex(w,h,data){
+  const t=gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D,t);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,w,h,0,gl.RGBA,gl.UNSIGNED_BYTE,data);
+  return t;
+}
+function mkFBO(w,h){
+  const tex=mkTex(w,h,null);
+  const fbo=gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER,fbo);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,tex,0);
+  gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+  return{fbo,tex};
+}
+
+let W=canvas.width, H=canvas.height;
+let photoTex = mkTex(1,1,new Uint8Array([0,0,0,255]));
+let erosA = mkFBO(W,H);
+let erosB = mkFBO(W,H);
+let pingpong = 0;
+let photoReady = false;
+
+function getU(prog,names){
+  const U={};
+  names.forEach(n=>U[n]=gl.getUniformLocation(prog,n));
+  return U;
+}
+const Ue=getU(progErode,['u_photo','u_erosion','u_res','u_time','u_bass','u_mid',
+  'u_treble','u_amp','u_crate','u_sil','u_bw','u_mw','u_tw','u_chipMode',
+  'u_paused','u_reset','u_dt']);
+const Ud=getU(progDisp,['u_photo','u_erosion','u_time','u_res','u_bass','u_mid',
+  'u_treble','u_amp','u_pfMode','u_fdist','u_plife','u_tglow','u_eglow',
+  'u_bg','u_spark','u_palette','u_distort']);
+const Up=getU(progPass,['u_tex']);
+
+// ========== Audio ==========
+let analyser=null, audioData=null;
+let bass=0, mid=0, treble=0, amp=0;
+let lastAmp=0;
+
+async function startMic(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    const src=ctx.createMediaStreamSource(stream);
+    analyser=ctx.createAnalyser(); analyser.fftSize=512;
+    src.connect(analyser);
+    audioData=new Uint8Array(analyser.frequencyBinCount);
+    document.getElementById('btn-mic').classList.add('on');
+    document.getElementById('btn-mic').textContent='MIC LIVE';
+  }catch(e){ alert('Mic error: '+e.message); }
+}
+
+function updateAudio(){
+  if(!analyser) return;
+  analyser.getByteFrequencyData(audioData);
+  const n=audioData.length;
+  const avg=(a,b)=>{let s=0;for(let i=a;i<b;i++)s+=audioData[i];return s/(b-a)/255;};
+  bass   = avg(0,Math.floor(n*.08));
+  mid    = avg(Math.floor(n*.08),Math.floor(n*.35));
+  treble = avg(Math.floor(n*.35),Math.floor(n*.7));
+  amp    = avg(0,Math.floor(n*.8));
+  ['b','m','t','a'].forEach((k,i)=>{
+    const v=[bass,mid,treble,amp][i];
+    document.getElementById('vu-'+k).style.height=(v*100)+'%';
+  });
+}
+
+// ========== Camera ==========
+const video=document.getElementById('vid');
+const preview=document.getElementById('cam-preview');
+let camStream=null, camRunning=false;
+
+async function listCams(){
+  const devs=await navigator.mediaDevices.enumerateDevices().catch(()=>[]);
+  const sel=document.getElementById('cam-sel');
+  const cams=devs.filter(d=>d.kind==='videoinput');
+  sel.innerHTML='';
+  cams.forEach((d,i)=>{
+    const o=document.createElement('option');
+    o.value=d.deviceId; o.textContent=d.label||`Camera ${i+1}`; sel.appendChild(o);
+  });
+}
+
+async function startCamera(devId){
+  try{
+    if(camStream) camStream.getTracks().forEach(t=>t.stop());
+    const con={video:devId?{deviceId:{exact:devId},width:{ideal:1920},height:{ideal:1080}}:{width:{ideal:1920},height:{ideal:1080},facingMode:'user'}};
+    camStream=await navigator.mediaDevices.getUserMedia(con);
+    video.srcObject=camStream;
+    preview.srcObject=camStream;
+    await new Promise(r=>video.onloadedmetadata=r);
+    video.play(); preview.play();
+    preview.style.display='block';
+    document.getElementById('snap-btn').style.display='block';
+    document.getElementById('phase-label').textContent='PREVIEW — CAPTURE WHEN READY';
+    camRunning=true;
+    await listCams();
+  }catch(e){ alert('Camera error: '+e.message); }
+}
+
+function capturePhoto(){
+  if(!camRunning) return;
+
+  // Draw video frame to photoTex
+  gl.bindTexture(gl.TEXTURE_2D, photoTex);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,video);
+
+  // Reset erosion buffers
+  S.reset=1;
+
+  // Hide camera preview, show canvas
+  preview.style.display='none';
+  document.getElementById('snap-btn').style.display='none';
+  document.getElementById('phase-label').textContent='DISMANTLING — PLAY MUSIC';
+  photoReady=true;
+}
+
+// ========== State ==========
+const S={
+  chipMode:0, crate:0.4, sil:0.02, bw:1, mw:1, tw:1,
+  pfMode:0, fdist:0.6, plife:1.5, tglow:0.8,
+  eglow:1.2, bg:0, spark:1.0, palette:0,
+  paused:0, reset:0,
+};
+let t0=performance.now(), lastT=0;
+let totalErosion=0;
+
+// ========== Render loop ==========
+function render(now){
+  const t=(now-t0)/1000;
+  const dt=Math.min(t-lastT, 0.05);
+  lastT=t;
+  updateAudio();
+
+  if(!photoReady){
+    gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+    gl.clearColor(0,0,0,1); gl.clear(gl.COLOR_BUFFER_BIT);
+    requestAnimationFrame(render); return;
+  }
+
+  const readFBO  = pingpong===0 ? erosA : erosB;
+  const writeFBO = pingpong===0 ? erosB : erosA;
+
+  // --- EROSION PASS ---
+  gl.bindFramebuffer(gl.FRAMEBUFFER,writeFBO.fbo);
+  gl.viewport(0,0,W,H);
+  gl.useProgram(progErode);
+  bindQ(progErode);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,photoTex);
+  gl.uniform1i(Ue.u_photo,0);
+  gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,readFBO.tex);
+  gl.uniform1i(Ue.u_erosion,1);
+  gl.uniform2f(Ue.u_res,W,H);
+  gl.uniform1f(Ue.u_time,t);
+  gl.uniform1f(Ue.u_dt,dt);
+  gl.uniform1f(Ue.u_bass,bass);
+  gl.uniform1f(Ue.u_mid,mid);
+  gl.uniform1f(Ue.u_treble,treble);
+  gl.uniform1f(Ue.u_amp,amp);
+  gl.uniform1f(Ue.u_crate,S.crate);
+  gl.uniform1f(Ue.u_sil,S.sil);
+  gl.uniform1f(Ue.u_bw,S.bw);
+  gl.uniform1f(Ue.u_mw,S.mw);
+  gl.uniform1f(Ue.u_tw,S.tw);
+  gl.uniform1i(Ue.u_chipMode,S.chipMode);
+  gl.uniform1i(Ue.u_paused,S.paused);
+  gl.uniform1i(Ue.u_reset,S.reset);
+  gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+  S.reset=0;
+  pingpong=pingpong===0?1:0;
+
+  // --- DISPLAY PASS ---
+  gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+  gl.viewport(0,0,canvas.width,canvas.height);
+  gl.useProgram(progDisp);
+  bindQ(progDisp);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,photoTex);
+  gl.uniform1i(Ud.u_photo,0);
+  gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,writeFBO.tex);
+  gl.uniform1i(Ud.u_erosion,1);
+  gl.uniform1f(Ud.u_time,t);
+  gl.uniform2f(Ud.u_res,canvas.width,canvas.height);
+  gl.uniform1f(Ud.u_bass,bass);
+  gl.uniform1f(Ud.u_mid,mid);
+  gl.uniform1f(Ud.u_treble,treble);
+  gl.uniform1f(Ud.u_amp,amp);
+  gl.uniform1i(Ud.u_pfMode,S.pfMode);
+  gl.uniform1f(Ud.u_fdist,S.fdist);
+  gl.uniform1f(Ud.u_plife,S.plife);
+  gl.uniform1f(Ud.u_tglow,S.tglow);
+  gl.uniform1f(Ud.u_eglow,S.eglow);
+  gl.uniform1f(Ud.u_bg,S.bg);
+  gl.uniform1f(Ud.u_spark,S.spark);
+  gl.uniform1i(Ud.u_palette,S.palette);
+  gl.uniform1f(Ud.u_distort,S.distort||0);
+  gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+
+  // Progress estimate
+  if(Math.floor(t*2)%2===0){
+    totalErosion=Math.min(100,(totalErosion+amp*S.crate*0.5));
+    document.getElementById('progress-fill').style.width=totalErosion+'%';
+    document.getElementById('prog-text').textContent=Math.floor(totalErosion)+'% chipped';
+  }
+
+  requestAnimationFrame(render);
+}
+requestAnimationFrame(render);
+
+// ========== UI ==========
+function wire(id,key,vid2){
+  const el=document.getElementById(id);
+  el.addEventListener('input',()=>{
+    S[key]=parseFloat(el.value);
+    document.getElementById(vid2).textContent=S[key].toFixed(2);
+  });
+}
+wire('crate','crate','v-crate');
+wire('sil','sil','v-sil');
+wire('bw','bw','v-bw');
+wire('mw','mw','v-mw');
+wire('tw','tw','v-tw');
+wire('fdist','fdist','v-fdist');
+wire('plife','plife','v-plife');
+wire('tglow','tglow','v-tglow');
+wire('eglow','eglow','v-eglow');
+wire('bg','bg','v-bg');
+wire('spark','spark','v-spark');
+wire('distort','distort','val-distort');
+document.getElementById('palette').addEventListener('change',e=>S.palette=parseInt(e.target.value));
+
+document.querySelectorAll('[data-cm]').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('[data-cm]').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); S.chipMode=parseInt(b.dataset.cm);
+}));
+document.querySelectorAll('[data-pf]').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('[data-pf]').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); S.pfMode=parseInt(b.dataset.pf);
+}));
+
+document.getElementById('btn-cam').addEventListener('click',()=>{
+  const v=document.getElementById('cam-sel').value;
+  startCamera(v==='Loading...'?null:v);
+  document.getElementById('btn-cam').textContent='RECONNECT';
+});
+document.getElementById('cam-sel').addEventListener('change',e=>{if(camRunning)startCamera(e.target.value);});
+document.getElementById('btn-mic').addEventListener('click',startMic);
+document.getElementById('snap-btn').addEventListener('click',capturePhoto);
+
+document.getElementById('btn-retake').addEventListener('click',()=>{
+  preview.style.display='block';
+  document.getElementById('snap-btn').style.display='block';
+  document.getElementById('phase-label').textContent='PREVIEW — CAPTURE WHEN READY';
+  photoReady=false; totalErosion=0;
+  document.getElementById('progress-fill').style.width='0%';
+  document.getElementById('prog-text').textContent='0% chipped';
+});
+document.getElementById('btn-pause').addEventListener('click',function(){
+  S.paused=S.paused?0:1;
+  this.textContent=S.paused?'RESUME':'PAUSE';
+  this.classList.toggle('on',S.paused===1);
+});
+document.getElementById('btn-reset').addEventListener('click',()=>{
+  S.reset=1; totalErosion=0;
+  document.getElementById('progress-fill').style.width='0%';
+  document.getElementById('prog-text').textContent='0% chipped';
+  document.getElementById('phase-label').textContent='DISMANTLING — PLAY MUSIC';
+});
+document.getElementById('btn-fs').addEventListener('click',()=>{
+  if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+});
+const uiEl=document.getElementById('ui');
+const togBtn=document.getElementById('tog');
+togBtn.addEventListener('click',()=>{
+  uiEl.classList.toggle('hidden');
+  togBtn.classList.toggle('open',!uiEl.classList.contains('hidden'));
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='h'){uiEl.classList.toggle('hidden');togBtn.classList.toggle('open',!uiEl.classList.contains('hidden'));}
+  if(e.key==='f') document.getElementById('btn-fs').click();
+  if(e.key==='Enter'&&!photoReady) capturePhoto();
+  if(e.key===' '){e.preventDefault();document.getElementById('btn-pause').click();}
+  if(e.key==='r') document.getElementById('btn-reset').click();
+});
+
+// pre-warm
+navigator.mediaDevices.getUserMedia({video:true})
+  .then(s=>{s.getTracks().forEach(t=>t.stop());listCams();})
+  .catch(()=>listCams());
+</script>
+</body>
+</html>

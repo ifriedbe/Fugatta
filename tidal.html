@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>TIDAL — Wave Color Field</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#000; overflow:hidden; font-family:monospace; color:#fff; touch-action:none; }
+canvas#c { display:block; width:100vw; height:100vh; }
+
+#ui {
+  position:fixed; top:0; right:0; width:260px; height:100vh;
+  background:rgba(0,0,0,0.88); border-left:1px solid rgba(255,255,255,0.07);
+  padding:12px; overflow-y:auto; z-index:10; font-size:11px;
+  transition:transform .3s;
+}
+#ui.hidden { transform:translateX(100%); }
+#tog {
+  position:fixed; top:10px; right:10px; z-index:20;
+  background:rgba(0,0,0,0.65); border:1px solid rgba(255,255,255,0.2);
+  color:#fff; padding:5px 9px; cursor:pointer; font-family:monospace; font-size:11px;
+}
+#tog.open { right:270px; }
+
+#title { font-size:13px; letter-spacing:4px; margin-bottom:2px; }
+#sub   { font-size:9px; color:#444; margin-bottom:11px; line-height:1.8; }
+
+.sec { margin-bottom:13px; border-top:1px solid rgba(255,255,255,0.07); padding-top:8px; }
+.sec:first-child { border-top:none; }
+h3 { margin-bottom:5px; font-size:9px; letter-spacing:2px; color:#555; text-transform:uppercase; }
+
+label { display:flex; justify-content:space-between; margin-bottom:3px; align-items:center; }
+label span { color:#999; }
+.v { color:#fff; min-width:40px; text-align:right; font-size:10px; }
+input[type=range] { width:100%; margin:2px 0; accent-color:#0cf; }
+
+select {
+  width:100%; background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.12); color:#fff;
+  padding:4px; font-family:monospace; font-size:11px; margin-top:2px;
+}
+button {
+  width:100%; background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.12); color:#888;
+  padding:5px; cursor:pointer; font-family:monospace; font-size:11px; margin-top:3px;
+}
+button:hover { background:rgba(255,255,255,0.12); color:#fff; }
+button.on { background:rgba(0,200,255,0.15); border-color:#0cf; color:#0df; }
+
+/* Moon display */
+#moon-panel {
+  text-align:center; padding:8px; background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.08); margin-bottom:6px;
+}
+#moon-glyph { font-size:28px; line-height:1; }
+#moon-name  { font-size:9px; color:#aaa; margin-top:3px; letter-spacing:1px; }
+#moon-data  { font-size:9px; color:#555; margin-top:2px; line-height:1.6; }
+
+/* Audio meters */
+#vu { display:flex; gap:2px; height:20px; margin:4px 0; }
+.vb { flex:1; background:rgba(255,255,255,0.06); position:relative; overflow:hidden; }
+.vf { position:absolute; bottom:0; width:100%; transition:height .04s; }
+#vf-b { background:linear-gradient(to top,#00f,#0af); }
+#vf-m { background:linear-gradient(to top,#0a0,#0f8); }
+#vf-t { background:linear-gradient(to top,#a00,#f80); }
+#vf-a { background:linear-gradient(to top,#0cf,#fff); }
+
+/* Gravity indicator */
+#gravity-box {
+  width:60px; height:60px; margin:6px auto;
+  border:1px solid rgba(255,255,255,0.15); border-radius:50%; position:relative;
+  background:rgba(255,255,255,0.03);
+}
+#gravity-dot {
+  width:8px; height:8px; background:#0cf; border-radius:50%;
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  transition:top .08s, left .08s;
+}
+#grav-lbl { font-size:9px; color:#444; text-align:center; }
+
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:3px; margin-top:3px; }
+.mb {
+  padding:5px 2px; font-size:9px; border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.03); color:#666; cursor:pointer; text-align:center; font-family:monospace;
+}
+.mb:hover { color:#ccc; }
+.mb.on { background:rgba(0,200,255,0.12); border-color:#0cf; color:#0df; }
+
+#phase-bar-wrap { margin:5px 0; }
+#phase-bar { width:100%; height:3px; background:rgba(255,255,255,0.08); }
+#phase-fill { height:100%; background:linear-gradient(to right,#003,#0cf,#fff,#0cf,#003); }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<button id="tog" class="open">TIDAL</button>
+
+<div id="ui">
+  <div id="title">TIDAL</div>
+  <div id="sub">Wave colour fields shaped<br>by moon, gravity &amp; sound</div>
+
+  <!-- MOON -->
+  <div class="sec">
+    <h3>Moon Phase</h3>
+    <div id="moon-panel">
+      <div id="moon-glyph">🌑</div>
+      <div id="moon-name">NEW MOON</div>
+      <div id="moon-data">Phase: 0.000<br>Illumination: 0%<br>Ecliptic long: 0°</div>
+    </div>
+    <div id="phase-bar-wrap">
+      <div id="phase-bar"><div id="phase-fill" style="width:0%"></div></div>
+    </div>
+    <label><span>Moon speed</span><span class="v" id="v-mspeed">1.0×</span></label>
+    <input type="range" id="mspeed" min="1" max="10000" step="1" value="1">
+    <button id="btn-realtime" class="on">REAL TIME</button>
+    <button id="btn-reset-moon" style="margin-top:2px;">RESET TO NOW</button>
+  </div>
+
+  <!-- AUDIO -->
+  <div class="sec">
+    <h3>Microphone</h3>
+    <button id="btn-mic">OPEN MICROPHONE</button>
+    <div id="vu" style="margin-top:5px;">
+      <div class="vb"><div class="vf" id="vf-b" style="height:0%"></div></div>
+      <div class="vb"><div class="vf" id="vf-m" style="height:0%"></div></div>
+      <div class="vb"><div class="vf" id="vf-t" style="height:0%"></div></div>
+      <div class="vb"><div class="vf" id="vf-a" style="height:0%"></div></div>
+    </div>
+    <div style="display:flex;gap:2px;font-size:8px;color:#333;margin-top:2px;">
+      <div style="flex:1;text-align:center">BASS</div>
+      <div style="flex:1;text-align:center">MID</div>
+      <div style="flex:1;text-align:center">TRE</div>
+      <div style="flex:1;text-align:center">AMP</div>
+    </div>
+    <label style="margin-top:6px;"><span>Audio reactivity</span><span class="v" id="v-areact">1.00</span></label>
+    <input type="range" id="areact" min="0" max="3" step="0.01" value="1">
+  </div>
+
+  <!-- GRAVITY -->
+  <div class="sec">
+    <h3>Gravity / Tilt</h3>
+    <button id="btn-gravity">REQUEST MOTION</button>
+    <div id="gravity-box"><div id="gravity-dot"></div></div>
+    <div id="grav-lbl">tilt your device</div>
+    <label><span>Gravity strength</span><span class="v" id="v-gstr">1.00</span></label>
+    <input type="range" id="gstr" min="0" max="3" step="0.01" value="1">
+  </div>
+
+  <!-- WITCH ORBIT -->
+  <div class="sec">
+    <h3>Witch Orbit</h3>
+    <label><span>Orbit speed</span><span class="v" id="v-wspd">0.40</span></label>
+    <input type="range" id="wspd" min="0.02" max="3" step="0.01" value="0.4">
+    <label><span>Orbit radius</span><span class="v" id="v-wrad">0.35</span></label>
+    <input type="range" id="wrad" min="0.05" max="0.48" step="0.01" value="0.35">
+    <label><span>Trail spiral</span><span class="v" id="v-wspi">0.00</span></label>
+    <input type="range" id="wspi" min="-1" max="1" step="0.01" value="0">
+    <label><span>Cycle fade</span><span class="v" id="v-cfade">0.80</span></label>
+    <input type="range" id="cfade" min="0" max="1" step="0.01" value="0.8">
+    <button id="btn-clear">CLEAR / RESET</button>
+    <div id="orbit-disp" style="text-align:center;font-size:9px;color:#444;margin-top:4px;">⟳ 0.00 / 2π</div>
+  </div>
+
+  <!-- WAVE -->
+  <div class="sec">
+    <h3>Wave Physics</h3>
+    <label><span>Wave speed c</span><span class="v" id="v-wc">0.45</span></label>
+    <input type="range" id="wc" min="0.05" max="0.95" step="0.005" value="0.45">
+    <label><span>Damping</span><span class="v" id="v-damp">0.996</span></label>
+    <input type="range" id="damp" min="0.95" max="0.9999" step="0.0001" value="0.996">
+    <label><span>Tidal coupling</span><span class="v" id="v-tcoup">0.60</span></label>
+    <input type="range" id="tcoup" min="0" max="2" step="0.01" value="0.6">
+    <label><span>Nonlinearity</span><span class="v" id="v-nonlin">0.30</span></label>
+    <input type="range" id="nonlin" min="0" max="1" step="0.01" value="0.3">
+    <h3 style="margin-top:8px;">Source Pattern</h3>
+    <div class="grid2">
+      <div class="mb on" data-src="0">POINT</div>
+      <div class="mb" data-src="1">RING</div>
+      <div class="mb" data-src="2">BESSEL</div>
+      <div class="mb" data-src="3">DIPOLE</div>
+      <div class="mb" data-src="4">QUADRUPOLE</div>
+      <div class="mb" data-src="5">INTERFERENCE</div>
+    </div>
+    <label style="margin-top:6px;"><span>Source freq bass</span><span class="v" id="v-sf0">3.0</span></label>
+    <input type="range" id="sf0" min="0.5" max="20" step="0.1" value="3.0">
+    <label><span>Source freq mid</span><span class="v" id="v-sf1">7.0</span></label>
+    <input type="range" id="sf1" min="0.5" max="20" step="0.1" value="7.0">
+    <label><span>Source freq tre</span><span class="v" id="v-sf2">13.0</span></label>
+    <input type="range" id="sf2" min="0.5" max="20" step="0.1" value="13.0">
+  </div>
+
+  <!-- COLOR -->
+  <div class="sec">
+    <h3>Color Field</h3>
+    <select id="palette">
+      <option value="0">Tidal Fire</option>
+      <option value="1">Deep Ocean</option>
+      <option value="2">Aurora Borealis</option>
+      <option value="3">Solar Corona</option>
+      <option value="4">Void Bloom</option>
+      <option value="5">Prismatic</option>
+      <option value="6">Monochrome</option>
+    </select>
+    <label style="margin-top:6px;"><span>Color speed</span><span class="v" id="v-cspeed">1.00</span></label>
+    <input type="range" id="cspeed" min="0" max="5" step="0.05" value="1.0">
+    <label><span>Saturation</span><span class="v" id="v-sat">1.20</span></label>
+    <input type="range" id="sat" min="0" max="3" step="0.01" value="1.2">
+    <label><span>Brightness</span><span class="v" id="v-brt">1.00</span></label>
+    <input type="range" id="brt" min="0" max="2" step="0.01" value="1.0">
+    <label><span>Hue offset</span><span class="v" id="v-hue">0.00</span></label>
+    <input type="range" id="hue" min="0" max="1" step="0.005" value="0">
+    <label><span>Glow radius</span><span class="v" id="v-glow">1.00</span></label>
+    <input type="range" id="glow" min="0" max="3" step="0.05" value="1.0">
+  </div>
+
+  <div class="sec">
+    <h3>Projection</h3>
+    <label><span>Barrel / Pincushion</span><span class="v" id="val-distort">0.00</span></label>
+    <input type="range" id="distort" min="-2" max="2" step="0.01" value="0">
+    <div style="display:flex;justify-content:space-between;font-size:9px;color:#444;margin-top:1px;"><span>◀ pincushion</span><span>barrel ▶</span></div>
+    <button id="btn-fs" style="margin-top:6px;">FULLSCREEN  [F]</button>
+  </div>
+</div>
+
+<video id="vid" style="display:none"></video>
+
+<!-- ===== VERTEX ===== -->
+<script id="vert" type="x-shader/v">
+attribute vec2 a_pos;
+varying vec2 v_uv;
+void main(){ v_uv=a_pos*.5+.5; gl_Position=vec4(a_pos,0,1); }
+</script>
+
+<!-- ===== WAVE SIMULATION ===== -->
+<!-- Two-channel leapfrog: R=displacement, G=velocity -->
+<!-- Three FBOs: red_wave, green_wave, blue_wave (one per audio band) -->
+<!-- Combined here in R=displacement, G=velocity, B=laplacian_cache -->
+<script id="frag-wave" type="x-shader/f">
+precision highp float;
+varying vec2 v_uv;
+
+uniform sampler2D u_wave;     // previous state: R=disp, G=vel
+uniform vec2  u_res;
+uniform float u_dt;
+uniform float u_c;            // wave speed
+uniform float u_damp;         // damping factor per step
+uniform float u_nonlin;       // nonlinear self-interaction
+uniform float u_moon;         // moon phase 0–1 (0=new,1=full)
+uniform float u_moonAngle;    // ecliptic angle of moon (radians)
+uniform float u_tcoup;        // tidal coupling strength
+uniform float u_gx;           // gravity/tilt x component (−1..1)
+uniform float u_gy;           // gravity/tilt y component (−1..1)
+uniform float u_gstr;         // gravity strength
+uniform float u_bass;
+uniform float u_mid;
+uniform float u_treble;
+uniform float u_amp;
+uniform float u_areact;
+uniform float u_time;
+uniform int   u_srcMode;
+uniform float u_sf0;          // source frequency for bass
+uniform float u_sf1;
+uniform float u_sf2;
+uniform int   u_chan;         // which channel (0=R/bass,1=G/mid,2=B/tre)
+uniform vec2  u_srcPos;       // primary source position (orbiting)
+uniform vec2  u_srcPos2;      // secondary source position
+uniform float u_fade;         // per-frame fade multiplier (for cycle reset)
+
+// ---- Tidal potential (simplified gravitational tidal force) ----
+// Moon's tidal potential: Φ = −(GM/d³) r² P₂(cos θ_moon)
+// Simplified: Φ(x,y) ∝ moon_influence * (3cos²θ - 1) / 2
+// where θ is angle from moon direction
+float tidalPotential(vec2 pos){
+  vec2 p = pos - .5;
+  float cosTheta = dot(normalize(vec2(cos(u_moonAngle), sin(u_moonAngle))),
+                       normalize(p + vec2(.0001)));
+  float P2 = (3.*cosTheta*cosTheta - 1.) * .5;
+  // Full moon = max tidal coupling; new moon = moon+sun align differently
+  float moonStrength = u_moon; // 0=new,1=full
+  return P2 * moonStrength * u_tcoup;
+}
+
+// ---- Wave source at position src_pos with amplitude A and freq f ----
+float pointSource(vec2 uv, vec2 src, float A, float f, float t){
+  float d = length((uv - src) * u_res / max(u_res.x, u_res.y));
+  // Retarded wave from point source (Green's function of 2D wave eq.)
+  // u = A * J₀(2π f r / c) * sin(2π f t)  (standing) or
+  // u = A / sqrt(r) * sin(2π f (t - r/c)) (outgoing) — use outgoing
+  float r = max(d, 0.01);
+  float phase = 2.*3.14159*(f*t - r/u_c);
+  return A * sin(phase) * exp(-d*.05);
+}
+
+float bessJ0approx(float x){
+  // Approximation: J₀(x) ≈ (cos(x-π/4))/sqrt(πx/2) for large x
+  if(x < 0.001) return 1.;
+  if(x < 2.5) return 1. - x*x/4. + x*x*x*x/64.; // Taylor
+  return sqrt(2./(3.14159*x)) * cos(x - 3.14159/4.);
+}
+
+float sourceField(vec2 uv, float A, float f, float t, int mode){
+  vec2 src  = u_srcPos;
+  vec2 src2 = u_srcPos2;
+  if(mode==0){ // Orbiting point — primary + secondary
+    return pointSource(uv, src, A, f, t)
+         + pointSource(uv, src2, A*.6, f*1.5, t+0.25);
+
+  } else if(mode==1){ // Ring around moving center
+    float r = length(uv - src);
+    float ring = A * sin(2.*3.14159*(f*t - r/u_c)) * exp(-abs(r-.25)*18.);
+    float r2 = length(uv - src2);
+    float ring2 = A*.5 * sin(2.*3.14159*(f*1.3*t - r2/u_c)) * exp(-abs(r2-.15)*22.);
+    return ring + ring2;
+
+  } else if(mode==2){ // Bessel mode — centered on orbit
+    float r = length(uv - src) * 2.*3.14159 * f / u_c;
+    float r2 = length(uv - src2) * 2.*3.14159 * f * 1.4 / u_c;
+    return A * bessJ0approx(r) * sin(2.*3.14159*f*t)
+         + A*.5 * bessJ0approx(r2) * sin(2.*3.14159*f*1.4*t + 1.);
+
+  } else if(mode==3){ // Dipole — tangent to orbit
+    vec2 tang = normalize(src2 - src + vec2(.0001));
+    float s1 = pointSource(uv, src + tang*.1, A, f, t);
+    float s2 = pointSource(uv, src - tang*.1, -A, f, t);
+    return s1 + s2;
+
+  } else if(mode==4){ // Quadrupole — around orbit point
+    float s1 = pointSource(uv, src+vec2(.1, .1), A, f, t);
+    float s2 = pointSource(uv, src+vec2(-.1, .1), -A, f, t);
+    float s3 = pointSource(uv, src+vec2(.1, -.1), -A, f, t);
+    float s4 = pointSource(uv, src+vec2(-.1,-.1), A, f, t);
+    return s1+s2+s3+s4;
+
+  } else { // Interference — witch + two trailing ghosts
+    return pointSource(uv, src, A, f, t)
+         + pointSource(uv, src2, A*.7, f, t+0.33)
+         + pointSource(uv, vec2(1.)-src2, A*.4, f, t+0.66);
+  }
+}
+
+void main(){
+  vec2 uv = v_uv;
+  vec2 px = 1./u_res;
+
+  // Sample neighbours (5-point stencil Laplacian)
+  float u_c2 = texture2D(u_wave, uv).r;
+  float u_v  = texture2D(u_wave, uv).g;
+  float u_r  = texture2D(u_wave, uv+vec2(px.x,0)).r;
+  float u_l  = texture2D(u_wave, uv-vec2(px.x,0)).r;
+  float u_u  = texture2D(u_wave, uv+vec2(0,px.y)).r;
+  float u_d  = texture2D(u_wave, uv-vec2(0,px.y)).r;
+
+  // Laplacian ∇²u
+  float lap = (u_r + u_l + u_u + u_d - 4.*u_c2) / (px.x*px.x);
+
+  // Tidal modulation of wave speed: c(x,y) = c₀*(1 + Φ_tidal)
+  float tidal = tidalPotential(uv);
+  float c_local = u_c * (1. + tidal);
+  c_local = clamp(c_local, 0.01, 0.95);
+
+  // Gravity drift: advection term v_g · ∇u
+  float du_dx = (u_r - u_l) / (2.*px.x);
+  float du_dy = (u_u - u_d) / (2.*px.y);
+  float advect = -(u_gx * du_dx + u_gy * du_dy) * u_gstr * u_dt;
+
+  // Nonlinear term: −α u³ (KdV-like self-steepening)
+  float nonlin_term = -u_nonlin * u_c2 * u_c2 * u_c2;
+
+  // Leapfrog (velocity-Verlet) integration:
+  // a = c²·∇²u + nonlinear + source
+  float audio = (u_chan==0 ? u_bass : u_chan==1 ? u_mid : u_treble) * u_areact;
+  float sf = u_chan==0 ? u_sf0 : u_chan==1 ? u_sf1 : u_sf2;
+  float src = sourceField(uv, audio * 0.8, sf, u_time, u_srcMode);
+
+  float accel = c_local*c_local * lap * u_dt*u_dt
+              + nonlin_term * u_dt*u_dt
+              + advect
+              + src * u_dt;
+
+  // PML (Perfectly Matched Layer) absorbing boundaries — exponential damping near edges
+  float pml_w = 0.08;
+  float pml = 1.;
+  float ex = max(0., pml_w - uv.x) + max(0., uv.x - (1.-pml_w));
+  float ey = max(0., pml_w - uv.y) + max(0., uv.y - (1.-pml_w));
+  pml = exp(-(ex + ey) * 40.);
+
+  float new_v = (u_v + accel) * u_damp * pml * u_fade;
+  float new_u = (u_c2 + new_v * u_dt) * u_fade;
+  new_u *= pml;
+  new_u = clamp(new_u, -3., 3.);
+
+  gl_FragColor = vec4(new_u, new_v, tidal, 1.);
+}
+</script>
+
+<!-- ===== DISPLAY PASS ===== -->
+<script id="frag-display" type="x-shader/f">
+precision highp float;
+varying vec2 v_uv;
+
+uniform sampler2D u_wR; // red channel wave
+uniform sampler2D u_wG; // green channel wave
+uniform sampler2D u_wB; // blue channel wave
+uniform float u_time;
+uniform float u_moon;
+uniform float u_moonAngle;
+uniform float u_bass;
+uniform float u_mid;
+uniform float u_treble;
+uniform float u_amp;
+uniform float u_cspeed;
+uniform float u_sat;
+uniform float u_brt;
+uniform float u_hue;
+uniform float u_glow;
+uniform int   u_palette;
+uniform vec2  u_res;
+uniform float u_distort;
+
+vec2 distortUV(vec2 uv){
+  vec2 p=uv-.5; float r2=dot(p,p);
+  return clamp(.5+p*(1.+u_distort*r2),0.,1.);
+}
+
+vec3 hsv2rgb(vec3 c){
+  vec3 p=abs(fract(c.xxx+vec3(1,2./3.,1./3.))*6.-3.);
+  return c.z*mix(vec3(1.),clamp(p-1.,0.,1.),c.y);
+}
+vec3 rgb2hsv(vec3 c){
+  vec4 K=vec4(0.,-1./3.,2./3.,-1.);
+  vec4 p=mix(vec4(c.bg,K.wz),vec4(c.gb,K.xy),step(c.b,c.g));
+  vec4 q=mix(vec4(p.xyw,c.r),vec4(c.r,p.yzx),step(p.x,c.r));
+  float d=q.x-min(q.w,q.y);
+  return vec3(abs(q.z+(q.w-q.y)/(6.*d+1e-10)),d/(q.x+1e-10),q.x);
+}
+
+// ---- Mathematical colour palettes ----
+// Each maps wave phase → hue in a way that creates wave-like colour fields
+
+vec3 palette(float phase, float energy, float tidal, int pal, float moonHue){
+  float h,s,v;
+  float t2=fract(phase);
+
+  if(pal==0){ // Tidal Fire — warm spectrum, moon shifts toward blue at full
+    h=fract(.05 + t2*.7 + moonHue*.3 + tidal*.1);
+    s=clamp(.7+energy*.6, 0.,1.);
+    v=clamp(.2+energy*1.5, 0.,1.);
+
+  } else if(pal==1){ // Deep Ocean — blue-cyan-teal, phosphorescent peaks
+    h=fract(.55 + t2*.2 + moonHue*.15 + tidal*.05);
+    s=clamp(.8+tidal*.3, 0.,1.);
+    v=clamp(.1+energy*2., 0.,1.);
+
+  } else if(pal==2){ // Aurora — green-purple bands, sinusoidal hue
+    h=fract(.33 + .4*sin(t2*6.2832) + moonHue*.5);
+    s=clamp(.9, 0.,1.);
+    v=clamp(energy*2.5, 0.,1.);
+
+  } else if(pal==3){ // Solar Corona — yellow→white→orange
+    float temp=clamp(energy*2.,0.,1.);
+    h=fract(.09 - temp*.05 + tidal*.05);
+    s=clamp(1.-temp*.6, 0.,1.);
+    v=clamp(temp*1.5, 0.,1.);
+
+  } else if(pal==4){ // Void Bloom — deep violet/magenta
+    h=fract(.75 + t2*.4 + moonHue*.4 - tidal*.2);
+    s=1.;
+    v=clamp(energy*2., 0.,1.);
+
+  } else if(pal==5){ // Prismatic — full spectrum per wavelength
+    h=fract(t2 + moonHue + u_time*0.005);
+    s=clamp(.8+energy*.4, 0.,1.);
+    v=clamp(.1+energy*1.8, 0.,1.);
+
+  } else { // Monochrome — luminance only
+    h=moonHue;
+    s=0.;
+    v=clamp(energy, 0.,1.);
+  }
+
+  return hsv2rgb(vec3(fract(h+u_hue), clamp(s*u_sat,0.,1.), clamp(v*u_brt,0.,1.)));
+}
+
+void main(){
+  vec2 uv = distortUV(v_uv);
+  vec2 px = 1./u_res;
+
+  // Sample all three wave channels
+  vec4 wR = texture2D(u_wR, uv);
+  vec4 wG = texture2D(u_wG, uv);
+  vec4 wB = texture2D(u_wB, uv);
+
+  float dispR = wR.r, velR = wR.g, tidalR = wR.b;
+  float dispG = wG.r, velG = wG.g;
+  float dispB = wB.r, velB = wB.g;
+  float tidal = tidalR; // same for all channels
+
+  // ---- Energy density: kinetic + potential ----
+  // E_kin ∝ v², E_pot ∝ |∇u|²
+  float gxR=(texture2D(u_wR,uv+vec2(px.x,0)).r - texture2D(u_wR,uv-vec2(px.x,0)).r)*.5/px.x;
+  float gyR=(texture2D(u_wR,uv+vec2(0,px.y)).r - texture2D(u_wR,uv-vec2(0,px.y)).r)*.5/px.y;
+  float gxG=(texture2D(u_wG,uv+vec2(px.x,0)).r - texture2D(u_wG,uv-vec2(px.x,0)).r)*.5/px.x;
+  float gxB=(texture2D(u_wB,uv+vec2(px.x,0)).r - texture2D(u_wB,uv-vec2(px.x,0)).r)*.5/px.x;
+
+  float energyR = velR*velR*.5 + (gxR*gxR + gyR*gyR)*.5;
+  float energyG = velG*velG*.5 + gxG*gxG*.5;
+  float energyB = velB*velB*.5 + gxB*gxB*.5;
+  float totalEnergy = (energyR + energyG + energyB) / 3.;
+  totalEnergy = clamp(totalEnergy * .0002, 0., 1.);
+
+  // ---- Wave phase (for colour mapping) ----
+  // Use atan2 of (displacement, velocity) = instantaneous phase angle
+  float phaseR = atan(velR, dispR) / 6.2832 + .5;
+  float phaseG = atan(velG, dispG) / 6.2832 + .5;
+  float phaseB = atan(velB, dispB) / 6.2832 + .5;
+
+  // Blend phase by audio weights
+  float phase = phaseR*(u_bass+.3) + phaseG*(u_mid+.3) + phaseB*(u_treble+.3);
+  phase = phase / (u_bass+u_mid+u_treble+.9);
+  phase = fract(phase * u_cspeed + u_time * .01);
+
+  // Moon hue: shifts through cycle (new=blue, full=gold)
+  float moonHue = u_moon * .15; // 0=blue-violet, 1=warm gold
+
+  // ---- Glow: soft blur of energy field ----
+  float glowEnergy = 0.;
+  float gw = u_glow * 2.;
+  for(int i=-2;i<=2;i++) for(int j=-2;j<=2;j++){
+    float d=length(vec2(float(i),float(j)));
+    if(d>2.5) continue;
+    vec4 nb=texture2D(u_wR, uv+vec2(float(i),float(j))*px*gw);
+    glowEnergy+=nb.g*nb.g*exp(-d*.8);
+  }
+  glowEnergy=clamp(glowEnergy*.00004*u_glow, 0., 1.);
+
+  // ---- Final energy measure ----
+  float E = clamp(totalEnergy + glowEnergy + abs(dispR+dispG+dispB)*.03, 0., 1.);
+
+  // ---- Colour from palette ----
+  vec3 col = palette(phase, E, tidal, u_palette, moonHue);
+
+  // ---- Interference highlight: where waves from different channels meet ----
+  float interference = abs(dispR * dispG) + abs(dispG * dispB) + abs(dispR * dispB);
+  interference = clamp(interference * .5, 0., 1.);
+  col += vec3(interference) * .3 * (1. + u_amp);
+
+  // ---- Moon limb light: faint ring at moon direction ----
+  vec2 moonDir = vec2(cos(u_moonAngle), sin(u_moonAngle));
+  float moonLimb = max(0., dot(normalize(uv-.5+vec2(.0001)), moonDir));
+  col += vec3(.5,.6,1.) * pow(moonLimb,.98) * u_moon * .06;
+
+  gl_FragColor = vec4(clamp(col,0.,1.), 1.);
+}
+</script>
+
+<script>
+// ===================== WebGL =====================
+const canvas=document.getElementById('c');
+const gl=canvas.getContext('webgl');
+let W=canvas.width=window.innerWidth;
+let H=canvas.height=window.innerHeight;
+gl.viewport(0,0,W,H);
+
+window.addEventListener('resize',()=>{
+  W=canvas.width=window.innerWidth;
+  H=canvas.height=window.innerHeight;
+  gl.viewport(0,0,W,H);
+  buildFBOs();
+});
+
+function mkShader(t,s){
+  const sh=gl.createShader(t);
+  gl.shaderSource(sh,s); gl.compileShader(sh);
+  if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS)) throw gl.getShaderInfoLog(sh);
+  return sh;
+}
+function mkProg(fs){
+  const VS=document.getElementById('vert').textContent;
+  const p=gl.createProgram();
+  gl.attachShader(p,mkShader(gl.VERTEX_SHADER,VS));
+  gl.attachShader(p,mkShader(gl.FRAGMENT_SHADER,fs));
+  gl.linkProgram(p);
+  if(!gl.getProgramParameter(p,gl.LINK_STATUS)) throw gl.getProgramInfoLog(p);
+  return p;
+}
+const progWave = mkProg(document.getElementById('frag-wave').textContent);
+const progDisp = mkProg(document.getElementById('frag-display').textContent);
+
+const qbuf=gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER,qbuf);
+gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+function bindQ(p){
+  gl.bindBuffer(gl.ARRAY_BUFFER,qbuf);
+  const l=gl.getAttribLocation(p,'a_pos');
+  gl.enableVertexAttribArray(l); gl.vertexAttribPointer(l,2,gl.FLOAT,false,0,0);
+}
+
+function mkTex(w,h){
+  const t=gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D,t);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,w,h,0,gl.RGBA,gl.UNSIGNED_BYTE,null);
+  return t;
+}
+function mkFBO(w,h){
+  const tex=mkTex(w,h);
+  const fbo=gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER,fbo);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,tex,0);
+  gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+  return{fbo,tex};
+}
+
+// Simulate at lower resolution for performance
+const SIM_SCALE=0.5;
+let SW=Math.floor(W*SIM_SCALE), SH=Math.floor(H*SIM_SCALE);
+let fbR=[mkFBO(SW,SH),mkFBO(SW,SH)];
+let fbG=[mkFBO(SW,SH),mkFBO(SW,SH)];
+let fbB=[mkFBO(SW,SH),mkFBO(SW,SH)];
+let ppR=0, ppG=0, ppB=0;
+
+function buildFBOs(){
+  SW=Math.floor(W*SIM_SCALE); SH=Math.floor(H*SIM_SCALE);
+  fbR=[mkFBO(SW,SH),mkFBO(SW,SH)];
+  fbG=[mkFBO(SW,SH),mkFBO(SW,SH)];
+  fbB=[mkFBO(SW,SH),mkFBO(SW,SH)];
+  ppR=ppG=ppB=0;
+}
+
+function getU(p,names){const U={};names.forEach(n=>U[n]=gl.getUniformLocation(p,n));return U;}
+const Uw=getU(progWave,['u_wave','u_res','u_dt','u_c','u_damp','u_nonlin',
+  'u_moon','u_moonAngle','u_tcoup','u_gx','u_gy','u_gstr',
+  'u_bass','u_mid','u_treble','u_amp','u_areact','u_time',
+  'u_srcMode','u_sf0','u_sf1','u_sf2','u_chan',
+  'u_srcPos','u_srcPos2','u_fade']);
+const Ud=getU(progDisp,['u_wR','u_wG','u_wB','u_time','u_moon','u_moonAngle',
+  'u_bass','u_mid','u_treble','u_amp','u_cspeed','u_sat','u_brt',
+  'u_hue','u_glow','u_palette','u_res','u_distort']);
+
+// ===================== Moon Phase Math =====================
+// Meeus "Astronomical Algorithms" Ch.49 simplified
+function julianDate(d){
+  return d.getTime()/86400000 + 2440587.5;
+}
+function moonPhaseData(date){
+  const JD=julianDate(date);
+  // Days since J2000.0
+  const T=(JD - 2451545.0)/36525.;
+  // Mean elongation of the Moon (degrees)
+  const D=297.85036+445267.111480*T-0.0019142*T*T+T*T*T/189474.;
+  // Mean anomaly of the Sun
+  const M=357.52772+35999.050340*T-0.0001603*T*T-T*T*T/300000.;
+  // Mean anomaly of the Moon
+  const Mp=134.96298+477198.867398*T+0.0086972*T*T+T*T*T/56250.;
+  // Moon's argument of latitude
+  const F=93.27191+483202.017538*T-0.0036825*T*T+T*T*T/327270.;
+
+  // Phase angle (0=new, π=full)
+  const Drad=D*Math.PI/180.;
+  const Mrad=M*Math.PI/180.;
+  const Mprad=Mp*Math.PI/180.;
+
+  // Geocentric elongation (approximate)
+  const elongation = D % 360.;
+  const phase = elongation / 360.; // 0=new, 0.5=full, 1=new again
+
+  // Illumination: k = (1 - cos(phase_angle)) / 2
+  const phaseAngle = elongation * Math.PI / 180.;
+  const illumination = (1 - Math.cos(phaseAngle)) / 2;
+
+  // Moon ecliptic longitude (approximate)
+  const L = 218.3165 + 481267.8813*T; // mean longitude
+  const moonLong = (L + 6.29*Math.sin(Mprad) - 1.27*Math.sin(Mprad - 2*Drad)
+                  + 0.66*Math.sin(2*Drad) + 0.21*Math.sin(2*Mprad)) % 360.;
+
+  return {
+    phase:((phase%1)+1)%1,       // 0-1
+    illumination:Math.max(0,Math.min(1,illumination)),
+    eclipticLong: moonLong * Math.PI / 180.,
+    age: ((phase%1)+1)%1 * 29.53058867
+  };
+}
+
+function moonEmoji(phase){
+  const p=phase;
+  if(p<.0625) return'🌑';
+  if(p<.1875) return'🌒';
+  if(p<.3125) return'🌓';
+  if(p<.4375) return'🌔';
+  if(p<.5625) return'🌕';
+  if(p<.6875) return'🌖';
+  if(p<.8125) return'🌗';
+  if(p<.9375) return'🌘';
+  return'🌑';
+}
+function moonName(phase){
+  const names=['New Moon','Waxing Crescent','First Quarter','Waxing Gibbous',
+    'Full Moon','Waning Gibbous','Last Quarter','Waning Crescent'];
+  return names[Math.floor(phase*8)%8];
+}
+
+// ===================== Audio =====================
+let analyser=null, audioData=null;
+let bass=0, mid=0, treble=0, amp=0;
+
+async function startMic(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    const src=ctx.createMediaStreamSource(stream);
+    analyser=ctx.createAnalyser(); analyser.fftSize=1024;
+    src.connect(analyser);
+    audioData=new Uint8Array(analyser.frequencyBinCount);
+    document.getElementById('btn-mic').classList.add('on');
+    document.getElementById('btn-mic').textContent='MIC LIVE';
+  }catch(e){alert('Mic: '+e.message);}
+}
+
+function updateAudio(){
+  if(!analyser) return;
+  analyser.getByteFrequencyData(audioData);
+  const n=audioData.length;
+  const avg=(a,b)=>{let s=0;for(let i=a;i<b;i++)s+=audioData[i];return s/(b-a)/255;};
+  bass  =avg(0,Math.floor(n*.06));
+  mid   =avg(Math.floor(n*.06),Math.floor(n*.3));
+  treble=avg(Math.floor(n*.3),Math.floor(n*.7));
+  amp   =avg(0,Math.floor(n*.8));
+  ['b','m','t','a'].forEach((k,i)=>{
+    document.getElementById('vf-'+k).style.height=([bass,mid,treble,amp][i]*100)+'%';
+  });
+}
+
+// ===================== Gravity/Tilt =====================
+let gravX=0, gravY=0;
+let gravEnabled=false;
+
+function startGravity(){
+  if(typeof DeviceOrientationEvent!=='undefined'&&
+     typeof DeviceOrientationEvent.requestPermission==='function'){
+    DeviceOrientationEvent.requestPermission()
+      .then(p=>{ if(p==='granted') attachGravity(); })
+      .catch(e=>console.log(e));
+  } else {
+    attachGravity();
+  }
+}
+function attachGravity(){
+  window.addEventListener('deviceorientation',e=>{
+    // beta = front-back tilt (-180..180), gamma = left-right (-90..90)
+    const b=e.beta||0, g=e.gamma||0;
+    gravX=Math.max(-1,Math.min(1, g/45.));   // left-right
+    gravY=Math.max(-1,Math.min(1, b/90.));   // front-back
+    gravEnabled=true;
+    const dot=document.getElementById('gravity-dot');
+    dot.style.left=(50+gravX*22)+'%';
+    dot.style.top =(50+gravY*22)+'%';
+    document.getElementById('grav-lbl').textContent=
+      `β${b.toFixed(0)}° γ${g.toFixed(0)}°`;
+  });
+  // Mouse fallback for desktop
+  canvas.addEventListener('mousemove',e=>{
+    if(gravEnabled) return; // real sensor takes priority
+    gravX=(e.clientX/W-.5)*2;
+    gravY=(e.clientY/H-.5)*2;
+    const dot=document.getElementById('gravity-dot');
+    dot.style.left=(50+gravX*22)+'%';
+    dot.style.top =(50+gravY*22)+'%';
+  });
+}
+attachGravity(); // always attach for mouse fallback
+
+// ===================== State =====================
+const S={
+  wc:0.45, damp:0.996, tcoup:0.6, nonlin:0.3,
+  srcMode:0, sf0:3, sf1:7, sf2:13,
+  cspeed:1, sat:1.2, brt:1, hue:0, glow:1,
+  palette:0, areact:1, gstr:1,
+  moonSpeed:1, realtime:true,
+  // witch orbit
+  witchSpeed:0.4, witchRadius:0.35, witchSpiral:0, cycleFade:0.8,
+};
+
+// Orbit state
+let witchAngle = 0;
+let witchLap = 0;
+let fadeThisFrame = 1.0;
+let srcX = 0.5, srcY = 0.5, src2X = 0.5, src2Y = 0.5;
+
+function clearWaves(){
+  // Rebuild FBOs = zero state = blank canvas for next picture
+  buildFBOs();
+}
+
+let t0=performance.now(), lastT=0;
+let simTime=0;
+let moonTime=0;
+const LUNATION=29.53058867*24*3600;
+
+// Current moon state
+let moonPhaseNorm=0, moonEclLong=0, moonIllum=0;
+
+function updateMoonUI(phase, illum, ecl){
+  document.getElementById('moon-glyph').textContent=moonEmoji(phase);
+  document.getElementById('moon-name').textContent=moonName(phase);
+  document.getElementById('moon-data').innerHTML=
+    `Phase: ${(phase*29.53).toFixed(2)} days<br>Illumination: ${(illum*100).toFixed(1)}%<br>Ecliptic: ${(ecl*180/Math.PI).toFixed(1)}°`;
+  document.getElementById('phase-fill').style.width=(phase*100)+'%';
+}
+
+// ===================== Render =====================
+function runWavePass(fbSrc, fbDst, chan, simT, dt){
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fbDst.fbo);
+  gl.viewport(0,0,SW,SH);
+  gl.useProgram(progWave);
+  bindQ(progWave);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, fbSrc.tex);
+  gl.uniform1i(Uw.u_wave,0);
+  gl.uniform2f(Uw.u_res,SW,SH);
+  gl.uniform1f(Uw.u_dt,dt);
+  gl.uniform1f(Uw.u_c,S.wc);
+  gl.uniform1f(Uw.u_damp,S.damp);
+  gl.uniform1f(Uw.u_nonlin,S.nonlin);
+  gl.uniform1f(Uw.u_moon,moonPhaseNorm);
+  gl.uniform1f(Uw.u_moonAngle,moonEclLong);
+  gl.uniform1f(Uw.u_tcoup,S.tcoup);
+  gl.uniform1f(Uw.u_gx,gravX);
+  gl.uniform1f(Uw.u_gy,gravY);
+  gl.uniform1f(Uw.u_gstr,S.gstr);
+  gl.uniform1f(Uw.u_bass,bass);
+  gl.uniform1f(Uw.u_mid,mid);
+  gl.uniform1f(Uw.u_treble,treble);
+  gl.uniform1f(Uw.u_amp,amp);
+  gl.uniform1f(Uw.u_areact,S.areact);
+  gl.uniform1f(Uw.u_time,simT);
+  gl.uniform1i(Uw.u_srcMode,S.srcMode);
+  gl.uniform1f(Uw.u_sf0,S.sf0);
+  gl.uniform1f(Uw.u_sf1,S.sf1);
+  gl.uniform1f(Uw.u_sf2,S.sf2);
+  gl.uniform1i(Uw.u_chan,chan);
+  gl.uniform2f(Uw.u_srcPos, srcX, srcY);
+  gl.uniform2f(Uw.u_srcPos2, src2X, src2Y);
+  gl.uniform1f(Uw.u_fade, fadeThisFrame);
+  gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+}
+
+function render(now){
+  const wallDt=Math.min((now-lastT)/1000, 0.05);
+  lastT=now;
+  simTime+=(now-t0)/1000; t0=now;
+
+  updateAudio();
+
+  // ---- Witch orbit ----
+  const prevAngle = witchAngle;
+  witchAngle += S.witchSpeed * wallDt;
+  fadeThisFrame = 1.0;
+
+  // Detect lap completion (crossing 2π)
+  if(Math.floor(witchAngle / (Math.PI*2)) > witchLap){
+    witchLap = Math.floor(witchAngle / (Math.PI*2));
+    // Fade out on cycle completion instead of hard clear
+    fadeThisFrame = S.cycleFade;
+    document.getElementById('orbit-disp').textContent = `⟳ lap ${witchLap}  — new picture!`;
+    setTimeout(()=>{
+      document.getElementById('orbit-disp').textContent =
+        `⟳ ${((witchAngle%(Math.PI*2))/(Math.PI*2)).toFixed(2)} / 1.0`;
+    }, 600);
+  } else {
+    document.getElementById('orbit-disp').textContent =
+      `⟳ ${((witchAngle%(Math.PI*2))/(Math.PI*2)).toFixed(2)} / 1.0`;
+  }
+
+  // Compute source positions (assigned to outer vars for runWavePass)
+  const a1 = witchAngle;
+  const spiral = S.witchSpiral * (witchAngle % (Math.PI*2)) / (Math.PI*2);
+  const r1 = Math.max(0.05, S.witchRadius + spiral * 0.35);
+  srcX = 0.5 + Math.cos(a1) * r1;
+  srcY = 0.5 + Math.sin(a1) * r1;
+  const a2 = a1 * 1.618 + Math.PI;
+  const r2 = r1 * 0.65;
+  src2X = 0.5 + Math.cos(a2) * r2;
+  src2Y = 0.5 + Math.sin(a2) * r2;
+
+  // Advance moon time
+  const moonDt = wallDt * S.moonSpeed;
+  moonTime += moonDt;
+
+  // Compute current moon phase
+  let moonDate;
+  if(S.realtime){
+    moonDate = new Date();
+  } else {
+    // Accelerated: start from now, add moonTime
+    moonDate = new Date(Date.now() + moonTime * 1000 * (S.moonSpeed - 1));
+  }
+  const md = moonPhaseData(moonDate);
+  moonPhaseNorm = md.phase;
+  moonEclLong   = md.eclipticLong;
+  moonIllum     = md.illumination;
+
+  // Update UI every ~30 frames
+  if(Math.floor(simTime*30)%30===0){
+    updateMoonUI(moonPhaseNorm, moonIllum, moonEclLong);
+  }
+
+  const dt=0.35; // simulation timestep (stable for c<0.5 on unit grid)
+
+  // --- Run wave sim for each colour channel ---
+  const rSrc=fbR[ppR], rDst=fbR[ppR^1];
+  runWavePass(rSrc, rDst, 0, simTime, dt);
+  ppR^=1;
+
+  const gSrc=fbG[ppG], gDst=fbG[ppG^1];
+  runWavePass(gSrc, gDst, 1, simTime, dt);
+  ppG^=1;
+
+  const bSrc=fbB[ppB], bDst=fbB[ppB^1];
+  runWavePass(bSrc, bDst, 2, simTime, dt);
+  ppB^=1;
+
+  // --- Display pass ---
+  gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+  gl.viewport(0,0,W,H);
+  gl.useProgram(progDisp);
+  bindQ(progDisp);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,fbR[ppR].tex);
+  gl.uniform1i(Ud.u_wR,0);
+  gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,fbG[ppG].tex);
+  gl.uniform1i(Ud.u_wG,1);
+  gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D,fbB[ppB].tex);
+  gl.uniform1i(Ud.u_wB,2);
+  gl.uniform1f(Ud.u_time,simTime);
+  gl.uniform1f(Ud.u_moon,moonPhaseNorm);
+  gl.uniform1f(Ud.u_moonAngle,moonEclLong);
+  gl.uniform1f(Ud.u_bass,bass);
+  gl.uniform1f(Ud.u_mid,mid);
+  gl.uniform1f(Ud.u_treble,treble);
+  gl.uniform1f(Ud.u_amp,amp);
+  gl.uniform1f(Ud.u_cspeed,S.cspeed);
+  gl.uniform1f(Ud.u_sat,S.sat);
+  gl.uniform1f(Ud.u_brt,S.brt);
+  gl.uniform1f(Ud.u_hue,S.hue);
+  gl.uniform1f(Ud.u_glow,S.glow);
+  gl.uniform1i(Ud.u_palette,S.palette);
+  gl.uniform2f(Ud.u_res,W,H);
+  gl.uniform1f(Ud.u_distort,S.distort||0);
+  gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+
+  requestAnimationFrame(render);
+}
+requestAnimationFrame(render);
+
+// ===================== UI wiring =====================
+function wire(id,key,vid2,mul){
+  const el=document.getElementById(id);
+  el.addEventListener('input',()=>{
+    S[key]=parseFloat(el.value)*(mul||1);
+    document.getElementById(vid2).textContent=S[key].toFixed(S[key]<10?2:0)+(key==='moonSpeed'?'×':'');
+  });
+}
+wire('wc','wc','v-wc');
+wire('damp','damp','v-damp');
+wire('tcoup','tcoup','v-tcoup');
+wire('nonlin','nonlin','v-nonlin');
+wire('sf0','sf0','v-sf0');
+wire('sf1','sf1','v-sf1');
+wire('sf2','sf2','v-sf2');
+wire('cspeed','cspeed','v-cspeed');
+wire('sat','sat','v-sat');
+wire('brt','brt','v-brt');
+wire('hue','hue','v-hue');
+wire('glow','glow','v-glow');
+wire('areact','areact','v-areact');
+wire('gstr','gstr','v-gstr');
+
+document.getElementById('mspeed').addEventListener('input',function(){
+  S.moonSpeed=parseFloat(this.value);
+  document.getElementById('v-mspeed').textContent=S.moonSpeed+'×';
+  S.realtime=(S.moonSpeed===1);
+  document.getElementById('btn-realtime').classList.toggle('on',S.realtime);
+});
+document.getElementById('btn-realtime').addEventListener('click',function(){
+  S.realtime=!S.realtime;
+  if(S.realtime){S.moonSpeed=1;document.getElementById('mspeed').value=1;}
+  this.classList.toggle('on',S.realtime);
+  document.getElementById('v-mspeed').textContent=S.moonSpeed+'×';
+});
+document.getElementById('btn-reset-moon').addEventListener('click',()=>{
+  moonTime=0;
+});
+document.getElementById('palette').addEventListener('change',e=>S.palette=parseInt(e.target.value));
+document.querySelectorAll('[data-src]').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('[data-src]').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); S.srcMode=parseInt(b.dataset.src);
+}));
+// Witch orbit controls
+wire('wspd','witchSpeed','v-wspd');
+wire('wrad','witchRadius','v-wrad');
+wire('wspi','witchSpiral','v-wspi');
+wire('cfade','cycleFade','v-cfade');
+wire('distort','distort','val-distort');
+document.getElementById('btn-clear').addEventListener('click',()=>{
+  witchAngle=0; witchLap=0; clearWaves();
+});
+
+document.getElementById('btn-mic').addEventListener('click',startMic);
+document.getElementById('btn-gravity').addEventListener('click',startGravity);
+document.getElementById('btn-fs').addEventListener('click',()=>{
+  if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+});
+const uiEl=document.getElementById('ui');
+const togBtn=document.getElementById('tog');
+togBtn.addEventListener('click',()=>{
+  uiEl.classList.toggle('hidden');
+  togBtn.classList.toggle('open',!uiEl.classList.contains('hidden'));
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='h'){uiEl.classList.toggle('hidden');togBtn.classList.toggle('open',!uiEl.classList.contains('hidden'));}
+  if(e.key==='f') document.getElementById('btn-fs').click();
+});
+
+// Initial moon display
+const initMoon=moonPhaseData(new Date());
+updateMoonUI(initMoon.phase, initMoon.illumination, initMoon.eclipticLong);
+moonPhaseNorm=initMoon.phase;
+moonEclLong=initMoon.eclipticLong;
+</script>
+</body>
+</html>

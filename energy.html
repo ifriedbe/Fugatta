@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ENERGY — Light Field Camera</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #000; overflow: hidden; font-family: monospace; color: #fff; }
+  #c { display: block; width: 100vw; height: 100vh; }
+
+  #ui {
+    position: fixed; top: 0; right: 0;
+    width: 260px; height: 100vh;
+    background: rgba(0,0,0,0.78);
+    border-left: 1px solid rgba(255,255,255,0.1);
+    padding: 16px; overflow-y: auto;
+    z-index: 10;
+    transition: transform 0.3s ease;
+    font-size: 12px;
+  }
+  #ui.hidden { transform: translateX(100%); }
+
+  #toggle {
+    position: fixed; top: 12px; right: 12px; z-index: 20;
+    background: rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff; padding: 6px 10px; cursor: pointer;
+    font-family: monospace; font-size: 12px;
+  }
+  #toggle.open { right: 272px; }
+
+  .section { margin-bottom: 18px; border-top: 1px solid rgba(255,255,255,0.12); padding-top: 10px; }
+  .section:first-child { border-top: none; }
+  h3 { margin-bottom: 8px; font-size: 10px; letter-spacing: 2px; color: #888; text-transform: uppercase; }
+
+  label { display: flex; justify-content: space-between; margin-bottom: 5px; align-items: center; }
+  label span { color: #ccc; }
+  .val { color: #fff; min-width: 36px; text-align: right; }
+  input[type=range] { width: 100%; margin: 3px 0; accent-color: #0ff; }
+
+  select {
+    width: 100%; background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.2); color: #fff;
+    padding: 5px; font-family: monospace; font-size: 12px; margin-top: 3px;
+  }
+  button {
+    width: 100%; background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.2); color: #fff;
+    padding: 6px; cursor: pointer; font-family: monospace;
+    font-size: 12px; margin-top: 4px;
+  }
+  button:hover { background: rgba(255,255,255,0.15); }
+  button.active { background: rgba(0,200,255,0.2); border-color: #0cf; }
+
+  #title { font-size: 15px; letter-spacing: 4px; margin-bottom: 4px; }
+  #sub { font-size: 9px; color: #555; margin-bottom: 14px; line-height: 1.6; }
+
+  #cam-status { font-size: 10px; color: #f88; margin-top: 6px; }
+  #cam-status.ok { color: #8f8; }
+
+  .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 4px; }
+  .mode-btn {
+    padding: 8px 4px; font-size: 10px; letter-spacing: 0.5px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05);
+    color: #aaa; cursor: pointer; text-align: center;
+    font-family: monospace;
+  }
+  .mode-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+  .mode-btn.active { background: rgba(0,200,255,0.15); border-color: #0cf; color: #0ff; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<button id="toggle" class="open">ENERGY</button>
+
+<div id="ui">
+  <div id="title">ENERGY</div>
+  <div id="sub">Light Field Camera<br>See the energy around objects</div>
+
+  <div class="section">
+    <h3>Camera</h3>
+    <button id="btn-start">START CAMERA</button>
+    <div id="cam-status">Camera not started</div>
+    <button id="btn-flip" style="margin-top:6px;">FLIP MIRROR</button>
+    <label style="margin-top:8px;">
+      <span>Camera</span>
+    </label>
+    <select id="cam-select"><option>Loading cameras...</option></select>
+  </div>
+
+  <div class="section">
+    <h3>Effect Mode</h3>
+    <div class="mode-grid">
+      <div class="mode-btn active" data-mode="0">AURA</div>
+      <div class="mode-btn" data-mode="1">PLASMA</div>
+      <div class="mode-btn" data-mode="2">FIELD LINES</div>
+      <div class="mode-btn" data-mode="3">THERMAL</div>
+      <div class="mode-btn" data-mode="4">CHROMATIC</div>
+      <div class="mode-btn" data-mode="5">SACRED GEO</div>
+      <div class="mode-btn" data-mode="6">VOID</div>
+      <div class="mode-btn" data-mode="7">KIRLIAN</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Energy</h3>
+    <label><span>Edge sensitivity</span><span class="val" id="v-edge">0.30</span></label>
+    <input type="range" id="edge" min="0" max="1" step="0.01" value="0.3">
+    <label><span>Field radius</span><span class="val" id="v-radius">0.40</span></label>
+    <input type="range" id="radius" min="0" max="1" step="0.01" value="0.4">
+    <label><span>Intensity</span><span class="val" id="v-intensity">1.00</span></label>
+    <input type="range" id="intensity" min="0" max="3" step="0.01" value="1.0">
+    <label><span>Pulsation</span><span class="val" id="v-pulse">0.50</span></label>
+    <input type="range" id="pulse" min="0" max="2" step="0.01" value="0.5">
+  </div>
+
+  <div class="section">
+    <h3>Color</h3>
+    <label><span>Hue shift</span><span class="val" id="v-hue">0.00</span></label>
+    <input type="range" id="hue" min="0" max="6.28" step="0.01" value="0">
+    <label><span>Saturation</span><span class="val" id="v-sat">1.00</span></label>
+    <input type="range" id="sat" min="0" max="2" step="0.01" value="1.0">
+    <label><span>Glow blend</span><span class="val" id="v-blend">0.80</span></label>
+    <input type="range" id="blend" min="0" max="1" step="0.01" value="0.8">
+  </div>
+
+  <div class="section">
+    <h3>Original Feed</h3>
+    <label><span>Camera mix</span><span class="val" id="v-camix">0.40</span></label>
+    <input type="range" id="camix" min="0" max="1" step="0.01" value="0.4">
+    <label><span>Desaturate cam</span><span class="val" id="v-desat">0.60</span></label>
+    <input type="range" id="desat" min="0" max="1" step="0.01" value="0.6">
+  </div>
+
+  <div class="section">
+    <h3>Time</h3>
+    <label><span>Flow speed</span><span class="val" id="v-speed">0.50</span></label>
+    <input type="range" id="speed" min="0" max="3" step="0.01" value="0.5">
+    <button id="btn-freeze">FREEZE FRAME</button>
+    <button id="btn-fullscreen" style="margin-top:4px;">FULLSCREEN</button>
+  </div>
+  <div class="section">
+    <h3>Projection</h3>
+    <label><span>Barrel / Pincushion</span><span class="val" id="val-distort">0.00</span></label>
+    <input type="range" id="distort" min="-2" max="2" step="0.01" value="0">
+    <div style="display:flex;justify-content:space-between;font-size:9px;color:#444;margin-top:1px;"><span>◀ pincushion</span><span>barrel ▶</span></div>
+  </div>
+</div>
+
+<!-- Hidden video element for camera feed -->
+<video id="vid" autoplay playsinline muted style="display:none"></video>
+
+<script id="vert" type="x-shader/v">
+attribute vec2 a_pos;
+varying vec2 v_uv;
+void main() {
+  v_uv = vec2(a_pos.x * 0.5 + 0.5, 0.5 - a_pos.y * 0.5);
+  gl_Position = vec4(a_pos, 0.0, 1.0);
+}
+</script>
+
+<script id="frag" type="x-shader/f">
+precision highp float;
+varying vec2 v_uv;
+
+uniform sampler2D u_cam;
+uniform float u_time;
+uniform float u_edge;
+uniform float u_radius;
+uniform float u_intensity;
+uniform float u_pulse;
+uniform float u_hue;
+uniform float u_sat;
+uniform float u_blend;
+uniform float u_camix;
+uniform float u_desat;
+uniform float u_speed;
+uniform int   u_mode;
+uniform vec2  u_res;
+uniform int   u_flip;
+uniform float u_distort;
+
+vec2 distortUV(vec2 uv){
+  vec2 p=uv-.5; float r2=dot(p,p);
+  return clamp(.5+p*(1.+u_distort*r2),0.,1.);
+}
+
+// ---- Utilities ----
+vec3 rgb2hsv(vec3 c) {
+  vec4 K = vec4(0.0,-1.0/3.0,2.0/3.0,-1.0);
+  vec4 p = mix(vec4(c.bg,K.wz), vec4(c.gb,K.xy), step(c.b,c.g));
+  vec4 q = mix(vec4(p.xyw,c.r), vec4(c.r,p.yzx), step(p.x,c.r));
+  float d = q.x - min(q.w,q.y); float e2 = 1e-10;
+  return vec3(abs(q.z+(q.w-q.y)/(6.0*d+e2)), d/(q.x+e2), q.x);
+}
+vec3 hsv2rgb(vec3 c) {
+  vec3 p = abs(fract(c.xxx+vec3(1,2.0/3.0,1.0/3.0))*6.0-3.0);
+  return c.z*mix(vec3(1.0),clamp(p-1.0,0.0,1.0),c.y);
+}
+
+float luma(vec3 c) { return dot(c, vec3(0.299,0.587,0.114)); }
+
+// Sample with optional mirror flip
+vec4 camSample(vec2 uv) {
+  if (u_flip == 1) uv.x = 1.0 - uv.x;
+  return texture2D(u_cam, uv);
+}
+
+// Sobel edge detection — returns edge strength and gradient direction
+vec2 sobel(vec2 uv) {
+  vec2 px = 1.0 / u_res;
+  float tl = luma(camSample(uv+px*vec2(-1, 1)).rgb);
+  float t  = luma(camSample(uv+px*vec2( 0, 1)).rgb);
+  float tr = luma(camSample(uv+px*vec2( 1, 1)).rgb);
+  float l  = luma(camSample(uv+px*vec2(-1, 0)).rgb);
+  float r  = luma(camSample(uv+px*vec2( 1, 0)).rgb);
+  float bl = luma(camSample(uv+px*vec2(-1,-1)).rgb);
+  float b  = luma(camSample(uv+px*vec2( 0,-1)).rgb);
+  float br = luma(camSample(uv+px*vec2( 1,-1)).rgb);
+  float gx = -tl - 2.0*l - bl + tr + 2.0*r + br;
+  float gy = -tl - 2.0*t - tr + bl + 2.0*b + br;
+  return vec2(gx, gy);
+}
+
+// Dilated edge — sample edges in a radius to create glow field
+float edgeField(vec2 uv, float r) {
+  float maxE = 0.0;
+  vec2 px = 1.0 / u_res;
+  for (int i = -8; i <= 8; i++) {
+    for (int j = -8; j <= 8; j++) {
+      float dist = length(vec2(float(i),float(j)));
+      if (dist > 8.5) continue;
+      vec2 g = sobel(uv + vec2(float(i),float(j))*px*r*12.0);
+      float e = length(g) * (1.0 - dist/9.0);
+      maxE = max(maxE, e);
+    }
+  }
+  return maxE;
+}
+
+// Noise helpers
+float hash(vec2 p) { return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
+float noise(vec2 p) {
+  vec2 i = floor(p); vec2 f = fract(p);
+  f = f*f*(3.0-2.0*f);
+  return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),
+             mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);
+}
+float fbm(vec2 p) {
+  float v=0.0, a=0.5;
+  for (int i=0;i<5;i++) { v+=a*noise(p); p=p*2.1+vec2(1.3,3.7); a*=0.5; }
+  return v;
+}
+
+void main() {
+  vec2 uv = distortUV(v_uv);
+  float t = u_time * u_speed;
+  float pulse = 1.0 + u_pulse * sin(t * 3.14159);
+
+  // Camera color
+  vec4 cam = camSample(uv);
+  vec3 camCol = cam.rgb;
+  float camLuma = luma(camCol);
+  vec3 camGray = mix(camCol, vec3(camLuma), u_desat);
+
+  // Sobel gradient at this pixel
+  vec2 grad = sobel(uv);
+  float edgeStr = length(grad);
+  float edgeNorm = clamp(edgeStr / (u_edge * 0.3 + 0.01), 0.0, 1.0);
+
+  // Energy field: dilated glow around edges
+  float field = edgeField(uv, u_radius) / (u_edge * 0.3 + 0.01);
+  field = clamp(field, 0.0, 1.0);
+
+  // Gradient direction angle for field-line-aware coloring
+  float angle = atan(grad.y, grad.x);
+
+  // Effect color based on mode
+  vec3 energy = vec3(0.0);
+
+  if (u_mode == 0) {
+    // AURA — soft expanding glow, hue rotates with field strength
+    float f = field * pulse;
+    float h = fract(f * 0.5 + u_hue / 6.28318 + t * 0.05);
+    energy = hsv2rgb(vec3(h, u_sat, f * u_intensity));
+
+  } else if (u_mode == 1) {
+    // PLASMA — animated noise field driven by edges
+    vec2 p = uv * 3.0 + vec2(t * 0.2, t * 0.15);
+    float plasma = fbm(p + grad * 2.0) * field;
+    float h = fract(plasma * 2.0 + u_hue/6.28318 + sin(t*0.3)*0.5);
+    energy = hsv2rgb(vec3(h, u_sat, plasma * u_intensity * pulse));
+
+  } else if (u_mode == 3) {
+    // THERMAL — hot = high edge, cold = low (infrared style)
+    float heat = field * pulse;
+    // black -> blue -> cyan -> yellow -> red -> white
+    vec3 thermal;
+    if (heat < 0.25)      thermal = mix(vec3(0,0,0.3), vec3(0,0.5,1), heat*4.0);
+    else if (heat < 0.5)  thermal = mix(vec3(0,0.5,1), vec3(0,1,0.5), (heat-0.25)*4.0);
+    else if (heat < 0.75) thermal = mix(vec3(0,1,0.5), vec3(1,0.8,0), (heat-0.5)*4.0);
+    else                  thermal = mix(vec3(1,0.8,0), vec3(1,1,1),   (heat-0.75)*4.0);
+    energy = thermal * u_intensity;
+
+  } else if (u_mode == 4) {
+    // CHROMATIC — RGB channel shift along gradient direction
+    vec2 dir = normalize(grad + vec2(0.0001));
+    float r2 = u_radius * 0.02;
+    float rC = luma(camSample(uv + dir*r2*1.0).rgb);
+    float gC = luma(camSample(uv + dir*r2*0.5).rgb);
+    float bC = luma(camSample(uv - dir*r2*1.0).rgb);
+    float split = field * u_intensity * pulse;
+    energy = vec3(rC,gC,bC) * split + hsv2rgb(vec3(u_hue/6.28318, u_sat, field*0.5));
+
+  } else if (u_mode == 5) {
+    // SACRED GEOMETRY — field lines follow Fibonacci spiral structure
+    vec2 centered = uv - 0.5;
+    float r3 = length(centered);
+    float a2 = atan(centered.y, centered.x);
+    float phi = 1.61803398874;
+    float spiral = fract((a2/6.28318 + log(r3+0.001)/log(phi)) * 8.0 + t*0.1);
+    float sacredField = field * (0.5 + 0.5*sin(spiral*6.28318));
+    float h = fract(spiral + u_hue/6.28318);
+    energy = hsv2rgb(vec3(h, u_sat, sacredField * u_intensity * pulse));
+
+  } else if (u_mode == 6) {
+    // VOID — energy inverts: bright where there are NO edges, dark at edges
+    float inv = (1.0 - field) * camLuma;
+    float warp = fbm(uv * 4.0 - t * 0.1 + grad);
+    float h = fract(warp * 0.5 + u_hue/6.28318 + t*0.03);
+    energy = hsv2rgb(vec3(h, u_sat * 0.6, inv * u_intensity * pulse));
+
+  } else if (u_mode == 7) {
+    // KIRLIAN — simulates Kirlian photography corona discharge
+    float corona = pow(field, 0.4) * pulse;
+    float noise1 = fbm(uv*8.0 + grad*3.0 + vec2(t*0.4, t*0.3));
+    float discharge = corona * (0.6 + 0.4*noise1);
+    float h = fract(discharge*0.3 + u_hue/6.28318 + 0.55); // blue-violet base
+    energy = hsv2rgb(vec3(h, u_sat, discharge * u_intensity));
+
+  } else {
+    // FIELD LINES (mode 2) — contour lines perpendicular to gradient
+    float contour = abs(sin(field * 12.0 * 3.14159 + t * 2.0));
+    contour = pow(contour, 3.0) * field;
+    float lineAngle = fract(angle / 6.28318 + 0.5 + u_hue/6.28318);
+    energy = hsv2rgb(vec3(lineAngle, u_sat, contour * u_intensity * pulse));
+  }
+
+  // Hue rotate the energy color
+  if (u_hue > 0.001 && u_mode != 5 && u_mode != 7) {
+    vec3 hsv = rgb2hsv(energy);
+    hsv.x = fract(hsv.x + u_hue / 6.28318);
+    energy = hsv2rgb(hsv);
+  }
+
+  // Composite: camera under, energy on top
+  vec3 out3 = mix(camGray, camGray + energy, u_blend);
+  out3 = mix(out3, energy, clamp(field * u_blend, 0.0, 1.0));
+  out3 = mix(out3, camGray, 1.0 - u_camix);
+  out3 += energy * u_camix * 0.5;
+
+  gl_FragColor = vec4(clamp(out3, 0.0, 1.0), 1.0);
+}
+</script>
+
+<script>
+const canvas = document.getElementById('c');
+const gl = canvas.getContext('webgl');
+const video = document.getElementById('vid');
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  gl.viewport(0, 0, canvas.width, canvas.height);
+}
+window.addEventListener('resize', resize);
+resize();
+
+// Compile shader
+function shader(type, src) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src);
+  gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS))
+    throw gl.getShaderInfoLog(s);
+  return s;
+}
+
+const prog = (() => {
+  const p = gl.createProgram();
+  gl.attachShader(p, shader(gl.VERTEX_SHADER, document.getElementById('vert').textContent));
+  gl.attachShader(p, shader(gl.FRAGMENT_SHADER, document.getElementById('frag').textContent));
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw gl.getProgramInfoLog(p);
+  return p;
+})();
+gl.useProgram(prog);
+
+// Quad
+const buf = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+const posLoc = gl.getAttribLocation(prog, 'a_pos');
+gl.enableVertexAttribArray(posLoc);
+gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
+// Uniforms
+const U = {};
+['u_cam','u_time','u_edge','u_radius','u_intensity','u_pulse','u_hue',
+ 'u_sat','u_blend','u_camix','u_desat','u_speed','u_mode','u_res','u_flip','u_distort']
+  .forEach(n => U[n] = gl.getUniformLocation(prog, n));
+
+// Camera texture
+const tex = gl.createTexture();
+gl.bindTexture(gl.TEXTURE_2D, tex);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+// State
+const S = {
+  running: false, frozen: false, flip: 0, mode: 0,
+  edge: 0.3, radius: 0.4, intensity: 1.0, pulse: 0.5,
+  hue: 0, sat: 1.0, blend: 0.8, camix: 0.4, desat: 0.6, speed: 0.5,
+};
+let t0 = performance.now();
+
+// Enumerate cameras
+async function listCameras() {
+  try {
+    const devs = await navigator.mediaDevices.enumerateDevices();
+    const cams = devs.filter(d => d.kind === 'videoinput');
+    const sel = document.getElementById('cam-select');
+    sel.innerHTML = '';
+    cams.forEach((d, i) => {
+      const opt = document.createElement('option');
+      opt.value = d.deviceId;
+      opt.textContent = d.label || `Camera ${i+1}`;
+      sel.appendChild(opt);
+    });
+    if (cams.length === 0) sel.innerHTML = '<option>No cameras found</option>';
+  } catch(e) {
+    document.getElementById('cam-select').innerHTML = '<option>Permission needed</option>';
+  }
+}
+
+async function startCamera(deviceId) {
+  try {
+    if (video.srcObject) {
+      video.srcObject.getTracks().forEach(t => t.stop());
+    }
+    const constraints = {
+      video: deviceId
+        ? { deviceId: { exact: deviceId }, width: { ideal: 1280 }, height: { ideal: 720 } }
+        : { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' }
+    };
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    video.srcObject = stream;
+    await new Promise(r => video.onloadedmetadata = r);
+    video.play();
+    S.running = true;
+    const st = document.getElementById('cam-status');
+    st.textContent = `Live — ${video.videoWidth}×${video.videoHeight}`;
+    st.className = 'ok';
+    await listCameras();
+    // Select current device
+    const track = stream.getVideoTracks()[0];
+    const settings = track.getSettings();
+    if (settings.deviceId) {
+      document.getElementById('cam-select').value = settings.deviceId;
+    }
+  } catch(e) {
+    const st = document.getElementById('cam-status');
+    st.textContent = 'Camera error: ' + e.message;
+    st.className = '';
+  }
+}
+
+// Upload video frame to texture
+function uploadFrame() {
+  if (!S.running || S.frozen) return;
+  if (video.readyState < 2) return;
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video);
+}
+
+// Render loop
+function render(now) {
+  uploadFrame();
+  const t = (now - t0) / 1000;
+
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.uniform1i(U['u_cam'], 0);
+  gl.uniform1f(U['u_time'], t);
+  gl.uniform1f(U['u_edge'], S.edge);
+  gl.uniform1f(U['u_radius'], S.radius);
+  gl.uniform1f(U['u_intensity'], S.intensity);
+  gl.uniform1f(U['u_pulse'], S.pulse);
+  gl.uniform1f(U['u_hue'], S.hue);
+  gl.uniform1f(U['u_sat'], S.sat);
+  gl.uniform1f(U['u_blend'], S.blend);
+  gl.uniform1f(U['u_camix'], S.camix);
+  gl.uniform1f(U['u_desat'], S.desat);
+  gl.uniform1f(U['u_speed'], S.speed);
+  gl.uniform1i(U['u_mode'], S.mode);
+  gl.uniform2f(U['u_res'], canvas.width, canvas.height);
+  gl.uniform1i(U['u_flip'], S.flip);
+  gl.uniform1f(U['u_distort'], S.distort||0);
+
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  requestAnimationFrame(render);
+}
+requestAnimationFrame(render);
+
+// ---- UI wiring ----
+function wire(id, key, valId) {
+  const el = document.getElementById(id);
+  el.addEventListener('input', () => {
+    S[key] = parseFloat(el.value);
+    document.getElementById(valId).textContent = S[key].toFixed(2);
+  });
+}
+wire('edge','edge','v-edge');
+wire('radius','radius','v-radius');
+wire('intensity','intensity','v-intensity');
+wire('pulse','pulse','v-pulse');
+wire('hue','hue','v-hue');
+wire('sat','sat','v-sat');
+wire('blend','blend','v-blend');
+wire('camix','camix','v-camix');
+wire('desat','desat','v-desat');
+wire('speed','speed','v-speed');
+wire('distort','distort','val-distort');
+
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    S.mode = parseInt(btn.dataset.mode);
+  });
+});
+
+document.getElementById('btn-start').addEventListener('click', () => {
+  const devId = document.getElementById('cam-select').value;
+  startCamera(devId === 'Loading cameras...' ? null : devId);
+});
+
+document.getElementById('cam-select').addEventListener('change', e => {
+  if (S.running) startCamera(e.target.value);
+});
+
+document.getElementById('btn-flip').addEventListener('click', function() {
+  S.flip = S.flip ? 0 : 1;
+  this.classList.toggle('active', S.flip === 1);
+});
+
+let frozen = false;
+document.getElementById('btn-freeze').addEventListener('click', function() {
+  S.frozen = !S.frozen;
+  this.textContent = S.frozen ? 'UNFREEZE' : 'FREEZE FRAME';
+  this.classList.toggle('active', S.frozen);
+});
+
+document.getElementById('btn-fullscreen').addEventListener('click', () => {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+});
+
+const uiEl = document.getElementById('ui');
+const toggleBtn = document.getElementById('toggle');
+toggleBtn.addEventListener('click', () => {
+  uiEl.classList.toggle('hidden');
+  toggleBtn.classList.toggle('open', !uiEl.classList.contains('hidden'));
+});
+
+// Keyboard
+document.addEventListener('keydown', e => {
+  if (e.key === 'h' || e.key === 'H') {
+    uiEl.classList.toggle('hidden');
+    toggleBtn.classList.toggle('open', !uiEl.classList.contains('hidden'));
+  }
+  if (e.key === 'f' || e.key === 'F') document.getElementById('btn-fullscreen').click();
+  if (e.key === ' ') { e.preventDefault(); document.getElementById('btn-freeze').click(); }
+  if (e.key >= '1' && e.key <= '8') {
+    const mode = parseInt(e.key) - 1;
+    document.querySelectorAll('.mode-btn').forEach(b => {
+      const active = parseInt(b.dataset.mode) === mode;
+      b.classList.toggle('active', active);
+    });
+    S.mode = mode;
+  }
+});
+
+// Auto-request camera permission on load to populate device list
+navigator.mediaDevices.getUserMedia({ video: true })
+  .then(s => { s.getTracks().forEach(t => t.stop()); listCameras(); })
+  .catch(() => listCameras());
+</script>
+</body>
+</html>

@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HEXFIELD — Frequency · Camera · Spin</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#000; overflow:hidden; font-family:monospace; color:#fff; }
+canvas#c { display:block; width:100vw; height:100vh; }
+
+#ui {
+  position:fixed; top:0; right:0; width:268px; height:100vh;
+  background:rgba(0,0,0,0.9); border-left:1px solid rgba(255,255,255,0.07);
+  padding:12px; overflow-y:auto; z-index:10; font-size:11px;
+  transition:transform .3s;
+}
+#ui.hidden { transform:translateX(100%); }
+#tog {
+  position:fixed; top:10px; right:10px; z-index:20;
+  background:rgba(0,0,0,0.7); border:1px solid rgba(255,255,255,0.2);
+  color:#fff; padding:5px 9px; cursor:pointer; font-family:monospace; font-size:11px;
+}
+#tog.open { right:278px; }
+
+#title { font-size:13px; letter-spacing:4px; margin-bottom:2px; color:#fff; }
+#sub   { font-size:9px; color:#444; margin-bottom:11px; line-height:1.8; }
+
+.sec { margin-bottom:12px; border-top:1px solid rgba(255,255,255,0.07); padding-top:8px; }
+.sec:first-child { border-top:none; }
+h3 { margin-bottom:5px; font-size:9px; letter-spacing:2px; color:#555; text-transform:uppercase; }
+
+label { display:flex; justify-content:space-between; margin-bottom:3px; align-items:center; }
+label span { color:#999; }
+.v { color:#fff; min-width:40px; text-align:right; font-size:10px; }
+input[type=range] { width:100%; margin:2px 0; accent-color:#ff6a00; }
+
+select {
+  width:100%; background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.12); color:#fff;
+  padding:4px; font-family:monospace; font-size:11px; margin-top:2px;
+}
+button {
+  width:100%; background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.12); color:#888;
+  padding:5px; cursor:pointer; font-family:monospace; font-size:11px; margin-top:3px;
+}
+button:hover { background:rgba(255,255,255,0.12); color:#fff; }
+button.on { background:rgba(255,106,0,0.2); border-color:#ff6a00; color:#ffa040; }
+
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:3px; margin-top:3px; }
+.mb {
+  padding:6px 2px; font-size:9px; border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.03); color:#666; cursor:pointer; text-align:center; font-family:monospace;
+}
+.mb:hover { color:#ccc; }
+.mb.on { background:rgba(255,106,0,0.15); border-color:#ff6a00; color:#ffa040; }
+
+#freq-map {
+  width:100%; height:30px; margin:4px 0;
+  background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1);
+  position:relative; overflow:hidden;
+}
+#freq-canvas { width:100%; height:100%; display:block; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<button id="tog" class="open">HEXFIELD</button>
+
+<div id="ui">
+  <div id="title">HEXFIELD</div>
+  <div id="sub">Frequency hexagons<br>camera optics · spin modes</div>
+
+  <div class="sec">
+    <h3>Inputs</h3>
+    <button id="btn-mic">OPEN MICROPHONE</button>
+    <button id="btn-cam" style="margin-top:3px;">START CAMERA</button>
+    <select id="cam-sel" style="margin-top:4px;"><option>Loading...</option></select>
+    <div id="freq-map"><canvas id="freq-canvas"></canvas></div>
+  </div>
+
+  <div class="sec">
+    <h3>Hexagon Grid</h3>
+    <label><span>Hex size</span><span class="v" id="v-hsize">28</span></label>
+    <input type="range" id="hsize" min="10" max="80" step="1" value="28">
+    <label><span>Decay time (sec)</span><span class="v" id="v-decay">1.20</span></label>
+    <input type="range" id="decay" min="0.05" max="8" step="0.05" value="1.2">
+    <label><span>Trigger threshold</span><span class="v" id="v-thr">0.08</span></label>
+    <input type="range" id="thr" min="0.01" max="0.5" step="0.005" value="0.08">
+    <label><span>Brightness</span><span class="v" id="v-hbrt">1.00</span></label>
+    <input type="range" id="hbrt" min="0" max="2" step="0.01" value="1.0">
+    <label><span>Hex opacity</span><span class="v" id="v-hopac">0.85</span></label>
+    <input type="range" id="hopac" min="0" max="1" step="0.01" value="0.85">
+    <h3 style="margin-top:7px;">Frequency Layout</h3>
+    <div class="grid2">
+      <div class="mb on" data-fl="0">SPIRAL</div>
+      <div class="mb" data-fl="1">ROWS L→R</div>
+      <div class="mb" data-fl="2">CENTER OUT</div>
+      <div class="mb" data-fl="3">RANDOM</div>
+    </div>
+    <h3 style="margin-top:7px;">Color Palette</h3>
+    <select id="hpal">
+      <option value="0">Spectrum (freq→hue)</option>
+      <option value="1">Fire</option>
+      <option value="2">Ice</option>
+      <option value="3">Plasma</option>
+      <option value="4">Mono white</option>
+    </select>
+  </div>
+
+  <div class="sec">
+    <h3>Spin Mechanism</h3>
+    <div class="grid2">
+      <div class="mb on" data-spin="0">OFF</div>
+      <div class="mb" data-spin="1">RADAR</div>
+      <div class="mb" data-spin="2">SCANNER</div>
+      <div class="mb" data-spin="3">ROTATE ALL</div>
+    </div>
+    <label style="margin-top:7px;"><span>Spin speed (rpm)</span><span class="v" id="v-srpm">6.0</span></label>
+    <input type="range" id="srpm" min="0.1" max="60" step="0.1" value="6">
+    <label><span>Arm width</span><span class="v" id="v-awidth">0.04</span></label>
+    <input type="range" id="awidth" min="0.005" max="0.2" step="0.005" value="0.04">
+    <label><span>Arm glow</span><span class="v" id="v-aglow">1.00</span></label>
+    <input type="range" id="aglow" min="0" max="3" step="0.05" value="1.0">
+    <label><span>Trail fade</span><span class="v" id="v-trail">0.60</span></label>
+    <input type="range" id="trail" min="0" max="1" step="0.01" value="0.6">
+    <button id="btn-dir">DIRECTION: CW</button>
+  </div>
+
+  <div class="sec">
+    <h3>Camera — Color Similarity</h3>
+    <label><span>Similarity radius</span><span class="v" id="v-simrad">3</span></label>
+    <input type="range" id="simrad" min="1" max="12" step="1" value="3">
+    <label><span>Match threshold</span><span class="v" id="v-simthr">0.12</span></label>
+    <input type="range" id="simthr" min="0.01" max="0.5" step="0.005" value="0.12">
+    <h3 style="margin-top:7px;">Effect on matching pixels</h3>
+    <div class="grid2">
+      <div class="mb on" data-fx="0">NONE</div>
+      <div class="mb" data-fx="1">INVERT</div>
+      <div class="mb" data-fx="2">REFRACT</div>
+      <div class="mb" data-fx="3">CHROMATIC</div>
+      <div class="mb" data-fx="4">DIFFRACT</div>
+      <div class="mb" data-fx="5">IRIDESC.</div>
+      <div class="mb" data-fx="6">BLOOM</div>
+      <div class="mb" data-fx="7">THERMAL</div>
+      <div class="mb" data-fx="8">KALEID.</div>
+      <div class="mb" data-fx="9">CRYSTALLIZE</div>
+    </div>
+    <label style="margin-top:7px;"><span>Effect strength</span><span class="v" id="v-fxstr">0.80</span></label>
+    <input type="range" id="fxstr" min="0" max="2" step="0.01" value="0.8">
+    <label><span>Camera opacity</span><span class="v" id="v-copac">0.50</span></label>
+    <input type="range" id="copac" min="0" max="1" step="0.01" value="0.5">
+    <button id="btn-flip">FLIP CAMERA</button>
+  </div>
+
+  <div class="sec">
+  </div>
+
+  <div class="sec">
+    <h3>Projection</h3>
+    <label><span>Barrel / Pincushion</span><span class="v" id="val-distort">0.00</span></label>
+    <input type="range" id="distort" min="-2" max="2" step="0.01" value="0">
+    <div style="display:flex;justify-content:space-between;font-size:9px;color:#444;margin-top:1px;"><span>◀ pincushion</span><span>barrel ▶</span></div>
+    <button id="btn-fs" style="margin-top:6px;">FULLSCREEN [F]</button>
+  </div>
+</div>
+
+<video id="vid" autoplay playsinline muted style="display:none"></video>
+
+<!-- ===== VERTEX ===== -->
+<script id="vert" type="x-shader/v">
+attribute vec2 a_pos;
+varying vec2 v_uv;
+void main(){ v_uv=a_pos*.5+.5; gl_Position=vec4(a_pos,0,1); }
+</script>
+
+<!-- ===== MAIN RENDER SHADER ===== -->
+<script id="frag-main" type="x-shader/f">
+precision highp float;
+varying vec2 v_uv;
+
+uniform sampler2D u_hex;    // hex state texture  (R=brightness, G=hue_norm, B=age_norm)
+uniform sampler2D u_cam;    // camera texture
+uniform sampler2D u_scan;   // scanner accumulation texture
+uniform vec2  u_res;
+uniform vec2  u_hexRes;     // hex texture dimensions
+uniform float u_hsize;      // hex size in pixels
+uniform float u_hopac;
+uniform float u_hbrt;
+uniform int   u_hpal;
+uniform int   u_spinMode;
+uniform float u_spinAngle;  // current arm angle (radians)
+uniform float u_awidth;     // arm angular half-width (0-1 of full circle)
+uniform float u_aglow;
+uniform float u_trail;
+uniform int   u_fxMode;
+uniform float u_simrad;
+uniform float u_simthr;
+uniform float u_fxstr;
+uniform float u_copac;
+uniform int   u_flip;
+uniform int   u_freqLayout; // 0=spiral,1=rows,2=center,3=random
+uniform int   u_numHexes;
+uniform int   u_hexCols;
+uniform int   u_hexRows;
+uniform float u_time;
+uniform float u_distort;
+
+vec2 distortUV(vec2 uv){
+  vec2 p=uv-.5; float r2=dot(p,p);
+  return clamp(.5+p*(1.+u_distort*r2),0.,1.);
+}
+
+const float PI  = 3.14159265359;
+const float TAU = 6.28318530718;
+const float SQRT3 = 1.73205080757;
+
+// ---- Hex grid math (pointy-top) ----
+vec2 hexCenter(int col, int row, float size){
+  float x = float(col)*SQRT3*size + float(row%2)*SQRT3*size*.5;
+  float y = float(row)*1.5*size;
+  return vec2(x, y);
+}
+
+// Find nearest hex to pixel p (returns col,row)
+vec2 nearestHex(vec2 p, float size){
+  // Axial coords
+  float q = (p.x*SQRT3/3. - p.y/3.) / size;
+  float r = p.y*2./3. / size;
+  // Cube coords for rounding
+  float x=q, z=r, y=-x-z;
+  float rx=floor(x+.5), ry=floor(y+.5), rz=floor(z+.5);
+  float dx=abs(rx-x), dy=abs(ry-y), dz=abs(rz-z);
+  if(dx>dy && dx>dz) rx=-ry-rz;
+  else if(dy>dz) ry=-rx-rz;
+  else rz=-rx-ry;
+  // Convert axial → "odd-r" offset: offset_col = q + floor(r/2)
+  float offset_col = rx + floor(rz / 2.);
+  return vec2(floor(offset_col), floor(rz));
+}
+
+// ---- Color palettes ----
+vec3 hsv2rgb(vec3 c){
+  vec3 p=abs(fract(c.xxx+vec3(1,2./3.,1./3.))*6.-3.);
+  return c.z*mix(vec3(1.),clamp(p-1.,0.,1.),c.y);
+}
+vec3 hexColor(float brightness, float hueNorm, int pal){
+  float h=hueNorm;
+  if(pal==0) return hsv2rgb(vec3(h, 1., brightness));         // spectrum
+  if(pal==1) return hsv2rgb(vec3(.05-h*.05, 1., brightness)); // fire
+  if(pal==2) return hsv2rgb(vec3(.55+h*.1, .9, brightness));  // ice
+  if(pal==3) return hsv2rgb(vec3(.7+h*.4, 1., brightness));   // plasma
+  return vec3(brightness);                                      // mono
+}
+
+// ---- Camera sampling ----
+vec4 sampleCam(vec2 uv){
+  if(u_flip==1) uv.x=1.-uv.x;
+  return texture2D(u_cam, clamp(uv,0.,1.));
+}
+
+// ---- Color similarity ----
+float colorSim(vec3 a, vec3 b){ return 1.-clamp(length(a-b)/u_simthr, 0.,1.); }
+
+// Compute similarity field: how similar are neighbours
+float simField(vec2 uv, vec3 centerCol){
+  vec2 px=1./u_res;
+  float score=0., total=0.;
+  float r=u_simrad;
+  for(int i=-3;i<=3;i++) for(int j=-3;j<=3;j++){
+    float d=length(vec2(float(i),float(j)));
+    if(d>3.5) continue;
+    vec3 nb=sampleCam(uv+vec2(float(i),float(j))*px*r).rgb;
+    float w=1./(d+.5);
+    score+=colorSim(centerCol, nb)*w; total+=w;
+  }
+  return clamp(score/total, 0., 1.);
+}
+
+// ---- Camera optical effects ----
+vec3 applyEffect(vec2 uv, vec3 camCol, float sim, int mode){
+  vec2 px=1./u_res;
+  float str=u_fxstr*sim;
+  if(str<0.001) return camCol;
+
+  if(mode==1){ // Inversion
+    return mix(camCol, 1.-camCol, str);
+
+  } else if(mode==2){ // Refraction (Snell-like: bend UV toward matched neighbor)
+    vec2 grad=vec2(0.);
+    for(int i=-2;i<=2;i++) for(int j=-2;j<=2;j++){
+      if(i==0&&j==0) continue;
+      vec3 nb=sampleCam(uv+vec2(float(i),float(j))*px*u_simrad).rgb;
+      float s2=colorSim(camCol,nb);
+      grad+=vec2(float(i),float(j))*s2;
+    }
+    grad=normalize(grad+vec2(.0001));
+    vec2 refUV=uv+grad*px*u_simrad*str*3.;
+    return mix(camCol, sampleCam(refUV).rgb, str);
+
+  } else if(mode==3){ // Chromatic aberration along similarity gradient
+    vec2 grad2=vec2(0.);
+    for(int i=-1;i<=1;i++) for(int j=-1;j<=1;j++){
+      if(i==0&&j==0) continue;
+      vec3 nb=sampleCam(uv+vec2(float(i),float(j))*px*u_simrad).rgb;
+      grad2+=vec2(float(i),float(j))*colorSim(camCol,nb);
+    }
+    vec2 d2=normalize(grad2+vec2(.0001))*px*str*6.;
+    float r2=sampleCam(uv+d2).r;
+    float g2=sampleCam(uv).g;
+    float b2=sampleCam(uv-d2).b;
+    return mix(camCol, vec3(r2,g2,b2), str);
+
+  } else if(mode==4){ // Diffraction — rainbow fringe at similarity boundaries
+    float edge=dFdx(sim)*dFdx(sim)+dFdy(sim)*dFdy(sim);
+    edge=sqrt(edge)*40.;
+    float angle2=atan(uv.y-.5,uv.x-.5);
+    vec3 rainbow=.5+.5*cos(angle2*3.+vec3(0,2.094,4.189));
+    return mix(camCol, camCol+rainbow*edge*str*2., clamp(edge*str,0.,1.));
+
+  } else if(mode==5){ // Iridescence — angle-dependent hue shift
+    float cosA=dot(normalize(uv-.5+vec2(.001)), vec3(.577,.577,0.).xy);
+    float irid=cosA*.5+.5;
+    vec3 sheen=.5+.5*cos(irid*TAU*3.+vec3(0,2.094,4.189));
+    return mix(camCol, camCol*sheen*1.5, str*sim);
+
+  } else if(mode==6){ // Bloom — spread energy from matched pixels
+    vec3 bloom=vec3(0.);
+    for(int i=-4;i<=4;i++) for(int j=-4;j<=4;j++){
+      float d3=length(vec2(float(i),float(j)));
+      if(d3>4.5) continue;
+      vec3 nb=sampleCam(uv+vec2(float(i),float(j))*px*2.).rgb;
+      bloom+=nb*colorSim(camCol,nb)*exp(-d3*.6);
+    }
+    bloom/=20.;
+    return mix(camCol, camCol+bloom*str*2., str);
+
+  } else if(mode==7){ // Thermal — matched regions get temperature-mapped
+    float heat=sim;
+    vec3 thermal;
+    if(heat<.25)      thermal=mix(vec3(0,0,.3),vec3(0,.5,1.),heat*4.);
+    else if(heat<.5)  thermal=mix(vec3(0,.5,1.),vec3(0,1,.5),(heat-.25)*4.);
+    else if(heat<.75) thermal=mix(vec3(0,1,.5),vec3(1,.8,0.),(heat-.5)*4.);
+    else              thermal=mix(vec3(1,.8,0.),vec3(1,1,1.),(heat-.75)*4.);
+    return mix(camCol, thermal, str);
+
+  } else if(mode==8){ // Kaleidoscope on matched regions
+    vec2 cp=uv-.5;
+    float r2=length(cp);
+    float ang=atan(cp.y,cp.x);
+    float sectors=6.;
+    float segAng=PI/sectors;
+    ang=mod(ang,segAng*2.);
+    if(ang>segAng) ang=segAng*2.-ang;
+    vec2 mirrorUV=vec2(cos(ang),sin(ang))*r2+.5;
+    return mix(camCol, sampleCam(mirrorUV).rgb, str);
+
+  } else if(mode==9){ // Crystallize — Voronoi facets on matched pixels
+    vec2 cellSize=vec2(16.)*px*u_simrad;
+    vec2 cellID=floor(uv/cellSize);
+    vec2 bestUV=uv;
+    float bestDist=9999.;
+    for(int ci=-1;ci<=1;ci++) for(int cj=-1;cj<=1;cj++){
+      vec2 nID=cellID+vec2(float(ci),float(cj));
+      float hx=fract(sin(dot(nID,vec2(127.1,311.7)))*43758.5);
+      float hy=fract(sin(dot(nID,vec2(311.7,127.1)))*13758.5);
+      vec2 seed=(nID+vec2(hx,hy))*cellSize;
+      float d4=length(uv-seed);
+      if(d4<bestDist){bestDist=d4;bestUV=seed;}
+    }
+    vec3 crystal=sampleCam(bestUV).rgb;
+    return mix(camCol, crystal, str);
+  }
+  return camCol;
+}
+
+// ---- Spin arm ----
+float armInfluence(vec2 uv, float armAngle){
+  vec2 p=uv-.5;
+  float pixAngle=atan(p.y,p.x);
+  // Angular distance from arm (wrap-around)
+  float diff=mod(pixAngle-armAngle+PI*3., TAU)-PI;
+  float halfW=u_awidth*PI;
+  return max(0.,1.-abs(diff)/halfW);
+}
+
+// Trail fade: pixels behind the arm have reduced brightness
+float trailFactor(vec2 uv, float armAngle){
+  if(u_spinMode==0) return 1.;
+  vec2 p=uv-.5;
+  float pixAngle=atan(p.y,p.x);
+  float diff=mod(armAngle-pixAngle+TAU*2., TAU); // how far behind arm
+  float trail=1.-diff/TAU;
+  return mix(1., pow(clamp(trail,0.,1.),1.5), u_trail);
+}
+
+void main(){
+  vec2 uv=distortUV(v_uv);
+  vec2 pixPos=uv*u_res;
+
+  // ---- Apply spin rotation to hex lookup ----
+  vec2 lookupUV=uv;
+  if(u_spinMode==3){ // Rotate all: rotate the UV for hex lookup
+    vec2 cp=uv-.5;
+    float c=cos(-u_spinAngle), s=sin(-u_spinAngle);
+    cp=vec2(cp.x*c-cp.y*s, cp.x*s+cp.y*c);
+    lookupUV=cp+.5;
+    pixPos=lookupUV*u_res;
+  }
+
+  // ---- Find hex at this pixel ----
+  vec2 hexCoord=nearestHex(pixPos, u_hsize);
+  int hcol=int(hexCoord.x), hrow=int(hexCoord.y);
+  vec2 hCenter=hexCenter(hcol, hrow, u_hsize);
+
+  // Hex index (col + row*hexCols) — use float math, no int modulo (GLSL ES 1.0)
+  float fidx = float(hrow) * float(u_hexCols) + float(hcol);
+  float texU = (mod(fidx, u_hexRes.x) + 0.5) / u_hexRes.x;
+  float texV = (floor(fidx / u_hexRes.x) + 0.5) / u_hexRes.y;
+  vec4 hexState=texture2D(u_hex, clamp(vec2(texU,texV), 0., 1.));
+  float hexBrt  = hexState.r * u_hbrt;
+  float hexHue  = hexState.g;
+  float hexAge  = hexState.b; // 0=just triggered, 1=fully decayed
+
+  // Distance from hex center (for border)
+  float distToCenter=length(pixPos - hCenter);
+  float hexInner=u_hsize*.82; // inner radius of hex
+  float hexOuter=u_hsize*.92;
+  // Pointy-top hex boundary
+  vec2 pd=pixPos-hCenter;
+  float hexDist=max(abs(pd.x)/(SQRT3*.5), abs(pd.x*.5/SQRT3)+abs(pd.y)*.5)/u_hsize;
+  bool inHex=(hexDist<0.88);
+  bool onBorder=(hexDist>0.78 && hexDist<0.88);
+
+  // ---- Camera layer ----
+  vec4 camRaw=sampleCam(uv);
+  vec3 camCol=camRaw.rgb;
+  float sim=0.;
+  vec3 fxCol=camCol;
+  if(u_fxMode>0){
+    sim=simField(uv, camCol);
+    fxCol=applyEffect(uv, camCol, sim, u_fxMode);
+  }
+
+  // Scanner: blend scan texture
+  if(u_spinMode==2){
+    vec4 scanPx=texture2D(u_scan, uv);
+    fxCol=mix(fxCol, scanPx.rgb, scanPx.a*u_copac);
+  }
+  vec3 camFinal=mix(camCol, fxCol, u_copac*2.);
+  camFinal=clamp(camFinal,0.,1.);
+
+  // ---- Hex color ----
+  vec3 hCol=hexColor(hexBrt, hexHue, u_hpal);
+
+  // Apply trail fade to hex brightness in radar/scanner mode
+  float tf=trailFactor(uv, u_spinAngle);
+  if(u_spinMode==1||u_spinMode==2) hCol*=tf;
+
+  // ---- Spin arm glow ----
+  vec3 armCol=vec3(0.);
+  if(u_spinMode>0 && u_spinMode<3){
+    float arm=armInfluence(uv, u_spinAngle);
+    if(arm>0.){
+      float r2=length(uv-.5);
+      armCol=vec3(1.,.8,.4)*arm*u_aglow*(1.-r2*.5);
+    }
+  }
+  // Rotate-all mode: show arm in unrotated space
+  if(u_spinMode==3){
+    float arm=armInfluence(v_uv, u_spinAngle);
+    armCol=vec3(.4,.8,1.)*arm*u_aglow*.5;
+  }
+
+  // ---- Compose ----
+  vec3 out3=camFinal; // background camera
+
+  if(inHex && hexBrt>0.001){
+    // Glowing hex fill
+    vec3 fill=hCol*(onBorder?1.3:1.0);
+    // Pulse ring at edge
+    float pulse=1.+.3*sin(u_time*4.-hexAge*TAU*2.);
+    fill*=pulse;
+    out3=mix(out3, fill, u_hopac*clamp(hexBrt*2.,0.,1.));
+  }
+  if(onBorder){
+    // Hex border line — always visible at low intensity
+    out3=mix(out3, hCol*0.5+vec3(0.1), 0.3*u_hopac);
+  }
+
+  // Add arm glow on top
+  out3+=armCol;
+
+  gl_FragColor=vec4(clamp(out3,0.,1.),1.);
+}
+</script>
+
+<!-- ===== SCANNER ACCUMULATION SHADER ===== -->
+<script id="frag-scan" type="x-shader/f">
+precision mediump float;
+varying vec2 v_uv;
+uniform sampler2D u_prev;  // previous scan accumulation
+uniform sampler2D u_cam;   // current camera
+uniform float u_spinAngle;
+uniform float u_awidth;
+uniform float u_decay;
+uniform int   u_flip;
+const float PI=3.14159; const float TAU=6.28318;
+
+vec4 getCam(vec2 uv){
+  if(u_flip==1) uv.x=1.-uv.x;
+  return texture2D(u_cam,clamp(uv,0.,1.));
+}
+void main(){
+  vec2 p=v_uv-.5;
+  float angle=atan(p.y,p.x);
+  float diff=mod(angle-u_spinAngle+PI*3.,TAU)-PI;
+  float halfW=u_awidth*PI;
+  float inArm=max(0.,1.-abs(diff)/halfW);
+
+  vec4 prev=texture2D(u_prev, v_uv)*u_decay;
+  vec4 camPx=getCam(v_uv);
+
+  // Write camera into the arm sector
+  if(inArm>0.1){
+    gl_FragColor=mix(prev, vec4(camPx.rgb,1.), inArm);
+  } else {
+    gl_FragColor=prev;
+  }
+}
+</script>
+
+<script>
+// ===================== WebGL setup =====================
+const canvas=document.getElementById('c');
+const gl=canvas.getContext('webgl');
+let W=canvas.width=window.innerWidth;
+let H=canvas.height=window.innerHeight;
+gl.viewport(0,0,W,H);
+
+window.addEventListener('resize',()=>{
+  W=canvas.width=window.innerWidth;
+  H=canvas.height=window.innerHeight;
+  gl.viewport(0,0,W,H);
+  rebuildGrid();
+  buildScanFBOs();
+});
+
+function mkShader(t,s){
+  const sh=gl.createShader(t);
+  gl.shaderSource(sh,s); gl.compileShader(sh);
+  if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS)){console.error(gl.getShaderInfoLog(sh));return null;}
+  return sh;
+}
+const VS=document.getElementById('vert').textContent;
+function mkProg(fs){
+  const p=gl.createProgram();
+  gl.attachShader(p,mkShader(gl.VERTEX_SHADER,VS));
+  gl.attachShader(p,mkShader(gl.FRAGMENT_SHADER,fs));
+  gl.linkProgram(p);
+  if(!gl.getProgramParameter(p,gl.LINK_STATUS)){console.error(gl.getProgramInfoLog(p));return null;}
+  return p;
+}
+const progMain=mkProg(document.getElementById('frag-main').textContent);
+const progScan=mkProg(document.getElementById('frag-scan').textContent);
+
+const qbuf=gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER,qbuf);
+gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+function bindQ(p){
+  gl.bindBuffer(gl.ARRAY_BUFFER,qbuf);
+  const l=gl.getAttribLocation(p,'a_pos');
+  gl.enableVertexAttribArray(l);
+  gl.vertexAttribPointer(l,2,gl.FLOAT,false,0,0);
+}
+function getU(p,ns){const U={};ns.forEach(n=>U[n]=gl.getUniformLocation(p,n));return U;}
+
+const Um=getU(progMain,['u_hex','u_cam','u_scan','u_res','u_hexRes','u_hsize','u_hopac',
+  'u_hbrt','u_hpal','u_spinMode','u_spinAngle','u_awidth','u_aglow','u_trail',
+  'u_fxMode','u_simrad','u_simthr','u_fxstr','u_copac','u_flip','u_freqLayout',
+  'u_numHexes','u_hexCols','u_hexRows','u_time','u_distort']);
+const Us=getU(progScan,['u_prev','u_cam','u_spinAngle','u_awidth','u_decay','u_flip']);
+
+function mkTex(w,h,filter,data){
+  const t=gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D,t);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+  const f=filter?gl.LINEAR:gl.NEAREST;
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,f);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,f);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,w,h,0,gl.RGBA,gl.UNSIGNED_BYTE,data||null);
+  return t;
+}
+function mkFBO(w,h){
+  const tex=mkTex(w,h,true,null);
+  const fbo=gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER,fbo);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,tex,0);
+  gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+  return{fbo,tex};
+}
+
+// Scanner ping-pong FBOs
+let scanA,scanB,scanPP=0;
+function buildScanFBOs(){
+  scanA=mkFBO(W,H); scanB=mkFBO(W,H); scanPP=0;
+}
+buildScanFBOs();
+
+// Camera texture
+let camTex=mkTex(1,1,true,new Uint8Array([0,0,0,255]));
+
+// ===================== Hex grid =====================
+const SQRT3=Math.sqrt(3);
+let hexes=[], hexCols=0, hexRows=0;
+let hexStateTex, hexTexW, hexTexH;
+let hexStateData; // Uint8Array
+
+function buildHexGrid(hsize){
+  hexes=[];
+  const colSpacing=SQRT3*hsize;
+  const rowSpacing=1.5*hsize;
+  hexCols=Math.ceil(W/colSpacing)+2;
+  hexRows=Math.ceil(H/rowSpacing)+2;
+
+  for(let row=0;row<hexRows;row++){
+    for(let col=0;col<hexCols;col++){
+      const x=col*colSpacing+(row%2)*colSpacing*.5;
+      const y=row*rowSpacing;
+      if(x>-hsize && x<W+hsize && y>-hsize && y<H+hsize){
+        hexes.push({col,row,px:x,py:y,
+          brightness:0, lastTrigger:-99, hue:0, age:1});
+      }
+    }
+  }
+}
+
+function assignFrequencies(layout){
+  const n=hexes.length;
+  if(layout===0){ // Spiral from center
+    const cx=W*.5, cy=H*.5;
+    hexes.sort((a,b)=>{
+      const da=Math.sqrt((a.px-cx)**2+(a.py-cy)**2);
+      const db=Math.sqrt((b.px-cx)**2+(b.py-cy)**2);
+      // Spiral: angle + distance
+      const aa=Math.atan2(a.py-cy,a.px-cx);
+      const ab=Math.atan2(b.py-cy,b.px-cx);
+      return (da*.1+aa) - (db*.1+ab);
+    });
+  } else if(layout===1){ // Rows L→R: sort by x then y
+    hexes.sort((a,b)=>a.py*10+a.px-(b.py*10+b.px));
+  } else if(layout===2){ // Center outward
+    const cx=W*.5, cy=H*.5;
+    hexes.sort((a,b)=>
+      Math.sqrt((a.px-cx)**2+(a.py-cy)**2)-
+      Math.sqrt((b.px-cx)**2+(b.py-cy)**2));
+  } else { // Random shuffle
+    for(let i=n-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [hexes[i],hexes[j]]=[hexes[j],hexes[i]];
+    }
+  }
+  // Log-scale frequency mapping
+  hexes.forEach((h,i)=>{
+    const t=i/(n-1);
+    // Log scale: bin = exp(t * log(maxBin)) → more hexes on bass end
+    const bin=Math.floor(Math.pow(2,t*8)); // 1..256
+    h.freqBin=Math.min(bin,255);
+    h.freqT=t; // 0=bass 1=treble
+  });
+  // Re-sort back by row,col for rendering index
+  hexes.sort((a,b)=>a.row*10000+a.col-(b.row*10000+b.col));
+}
+
+function rebuildGrid(){
+  buildHexGrid(S.hsize);
+  assignFrequencies(S.freqLayout);
+  // Build hex state texture
+  hexTexW=256; hexTexH=Math.ceil(hexes.length/hexTexW);
+  hexStateData=new Uint8Array(hexTexW*hexTexH*4);
+  if(hexStateTex) gl.deleteTexture(hexStateTex);
+  hexStateTex=mkTex(hexTexW,hexTexH,false,hexStateData);
+}
+
+// ===================== Audio =====================
+let analyser=null, audioData=null, freqSmooth=new Float32Array(256);
+async function startMic(silent){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    const src=ctx.createMediaStreamSource(stream);
+    analyser=ctx.createAnalyser();
+    analyser.fftSize=512;
+    analyser.smoothingTimeConstant=0.75;
+    src.connect(analyser);
+    audioData=new Uint8Array(analyser.frequencyBinCount);
+    document.getElementById('btn-mic').classList.add('on');
+    document.getElementById('btn-mic').textContent='MIC LIVE';
+  }catch(e){
+    if(!silent) alert('Mic: '+e.message);
+    else document.getElementById('btn-mic').textContent='MIC (click to enable)';
+  }
+}
+function updateAudio(){
+  if(!analyser) return;
+  analyser.getByteFrequencyData(audioData);
+  for(let i=0;i<256;i++){
+    const v=audioData[Math.floor(i*audioData.length/256)]/255;
+    freqSmooth[i]=freqSmooth[i]*.3+v*.7;
+  }
+}
+
+// ===================== Camera =====================
+const video=document.getElementById('vid');
+let camRunning=false, camFlip=0;
+
+async function listCams(){
+  const devs=await navigator.mediaDevices.enumerateDevices().catch(()=>[]);
+  const sel=document.getElementById('cam-sel');
+  const cams=devs.filter(d=>d.kind==='videoinput');
+  sel.innerHTML='';
+  cams.forEach((d,i)=>{
+    const o=document.createElement('option');
+    o.value=d.deviceId; o.textContent=d.label||`Camera ${i+1}`; sel.appendChild(o);
+  });
+}
+async function startCamera(devId, silent){
+  try{
+    if(video.srcObject) video.srcObject.getTracks().forEach(t=>t.stop());
+    const con={video:devId?{deviceId:{exact:devId},width:{ideal:1280},height:{ideal:720}}:{width:{ideal:1280},height:{ideal:720},facingMode:'user'}};
+    const stream=await navigator.mediaDevices.getUserMedia(con);
+    video.srcObject=stream;
+    await new Promise(r=>{video.onloadedmetadata=r;});
+    video.play();
+    camRunning=true;
+    document.getElementById('btn-cam').classList.add('on');
+    document.getElementById('btn-cam').textContent='CAM LIVE';
+    await listCams();
+  }catch(e){
+    if(!silent) alert('Cam: '+e.message);
+    else document.getElementById('btn-cam').textContent='CAM (click to enable)';
+  }
+}
+function uploadCam(){
+  if(!camRunning||video.readyState<2) return;
+  gl.bindTexture(gl.TEXTURE_2D,camTex);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,video);
+}
+
+// ===================== Hex state update =====================
+function updateHexes(now){
+  const decay=S.decay;
+  const thr=S.thr;
+  const arm=S.spinAngle;
+  const armW=S.awidth*Math.PI;
+
+  for(let i=0;i<hexes.length;i++){
+    const h=hexes[i];
+    const freq=freqSmooth[h.freqBin]||0;
+    const age=(now-h.lastTrigger)*0.001;
+
+    // Radar mode: only trigger hexes in the arm's sweep sector
+    if(S.spinMode===1){
+      const hexAngle=Math.atan2(h.py-H*.5, h.px-W*.5);
+      const diff=((arm-hexAngle)%(Math.PI*2)+Math.PI*2)%( Math.PI*2);
+      const inArm=(diff<armW)||(diff>Math.PI*2-armW);
+      if(inArm && freq>thr){
+        h.lastTrigger=now;
+        h.brightness=freq;
+      }
+    } else {
+      // Normal trigger: any time frequency is loud enough
+      if(freq>thr){
+        h.lastTrigger=now;
+        h.brightness=Math.max(h.brightness,freq);
+      }
+    }
+
+    // Decay
+    h.brightness=Math.max(0, 1 - age/decay)*h.brightness;
+    if(freq>thr) h.brightness=Math.max(h.brightness,freq*0.8);
+    h.age=Math.min(1, age/decay);
+  }
+}
+
+function packHexTexture(){
+  hexStateData.fill(0);
+  for(let i=0;i<hexes.length;i++){
+    const h=hexes[i];
+    const base=i*4;
+    hexStateData[base+0]=Math.floor(h.brightness*255);  // R=brightness
+    hexStateData[base+1]=Math.floor(h.freqT*255);       // G=hue (freq position)
+    hexStateData[base+2]=Math.floor(h.age*255);         // B=age
+    hexStateData[base+3]=255;
+  }
+  gl.bindTexture(gl.TEXTURE_2D,hexStateTex);
+  gl.texSubImage2D(gl.TEXTURE_2D,0,0,0,hexTexW,hexTexH,gl.RGBA,gl.UNSIGNED_BYTE,hexStateData);
+}
+
+// Mini freq display
+const freqCanvas=document.getElementById('freq-canvas');
+const fctx=freqCanvas.getContext('2d');
+function drawFreqMap(){
+  freqCanvas.width=freqCanvas.offsetWidth;
+  freqCanvas.height=freqCanvas.offsetHeight;
+  const W2=freqCanvas.width, H2=freqCanvas.height;
+  fctx.clearRect(0,0,W2,H2);
+  const bins=256;
+  const bw=W2/bins;
+  for(let i=0;i<bins;i++){
+    const v=freqSmooth[i]||0;
+    const hue=i/bins*300;
+    fctx.fillStyle=`hsl(${hue},100%,${50+v*40}%)`;
+    fctx.fillRect(i*bw, H2-v*H2, bw, v*H2);
+  }
+}
+
+// ===================== State =====================
+const S={
+  hsize:28, decay:1.2, thr:0.08, hbrt:1.0, hopac:0.85,
+  freqLayout:0, hpal:0,
+  spinMode:0, spinAngle:0, srpm:6, awidth:0.04, aglow:1, trail:0.6, spinDir:1,
+  fxMode:0, simrad:3, simthr:0.12, fxstr:0.8, copac:0.5,
+};
+let t0=performance.now();
+
+rebuildGrid();
+
+// ===================== Render loop =====================
+function render(now){
+  const t=(now-t0)*0.001;
+
+  updateAudio();
+  uploadCam();
+
+  // Advance spin angle
+  S.spinAngle=(S.spinAngle+S.spinDir*S.srpm/60*2*Math.PI*(16.67/1000))%(2*Math.PI);
+
+  // Update hex states in JS
+  updateHexes(now);
+  packHexTexture();
+  drawFreqMap();
+
+  // --- Scanner pass ---
+  if(S.spinMode===2){
+    const scanSrc=scanPP===0?scanA:scanB;
+    const scanDst=scanPP===0?scanB:scanA;
+    gl.bindFramebuffer(gl.FRAMEBUFFER,scanDst.fbo);
+    gl.viewport(0,0,W,H);
+    gl.useProgram(progScan);
+    bindQ(progScan);
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,scanSrc.tex);
+    gl.uniform1i(Us.u_prev,0);
+    gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,camTex);
+    gl.uniform1i(Us.u_cam,1);
+    gl.uniform1f(Us.u_spinAngle,S.spinAngle);
+    gl.uniform1f(Us.u_awidth,S.awidth);
+    gl.uniform1f(Us.u_decay,0.998); // very slow fade between revolutions
+    gl.uniform1i(Us.u_flip,camFlip);
+    gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+    scanPP^=1;
+    gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+    gl.viewport(0,0,W,H);
+  }
+
+  // --- Main render ---
+  gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+  gl.viewport(0,0,W,H);
+  gl.useProgram(progMain);
+  bindQ(progMain);
+
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,hexStateTex);
+  gl.uniform1i(Um.u_hex,0);
+  gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,camTex);
+  gl.uniform1i(Um.u_cam,1);
+  const scanTex=(S.spinMode===2)?(scanPP===0?scanA:scanB).tex:camTex;
+  gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D,scanTex);
+  gl.uniform1i(Um.u_scan,2);
+
+  gl.uniform2f(Um.u_res,W,H);
+  gl.uniform2f(Um.u_hexRes,hexTexW,hexTexH);
+  gl.uniform1f(Um.u_hsize,S.hsize);
+  gl.uniform1f(Um.u_hopac,S.hopac);
+  gl.uniform1f(Um.u_hbrt,S.hbrt);
+  gl.uniform1i(Um.u_hpal,S.hpal);
+  gl.uniform1i(Um.u_spinMode,S.spinMode);
+  gl.uniform1f(Um.u_spinAngle,S.spinAngle);
+  gl.uniform1f(Um.u_awidth,S.awidth);
+  gl.uniform1f(Um.u_aglow,S.aglow);
+  gl.uniform1f(Um.u_trail,S.trail);
+  gl.uniform1i(Um.u_fxMode,S.fxMode);
+  gl.uniform1f(Um.u_simrad,S.simrad);
+  gl.uniform1f(Um.u_simthr,S.simthr);
+  gl.uniform1f(Um.u_fxstr,S.fxstr);
+  gl.uniform1f(Um.u_copac,S.copac);
+  gl.uniform1i(Um.u_flip,camFlip);
+  gl.uniform1i(Um.u_freqLayout,S.freqLayout);
+  gl.uniform1i(Um.u_numHexes,hexes.length);
+  gl.uniform1i(Um.u_hexCols,hexCols);
+  gl.uniform1i(Um.u_hexRows,hexRows);
+  gl.uniform1f(Um.u_time,t);
+  gl.uniform1f(Um.u_distort,S.distort||0);
+  gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+
+  requestAnimationFrame(render);
+}
+requestAnimationFrame(render);
+
+// ===================== UI =====================
+function wire(id,key,vid2,rebuild){
+  const el=document.getElementById(id);
+  el.addEventListener('input',()=>{
+    S[key]=parseFloat(el.value);
+    const digs=S[key]<10?(S[key]<1?2:2):0;
+    document.getElementById(vid2).textContent=S[key].toFixed(digs);
+    if(rebuild) rebuildGrid();
+  });
+}
+wire('hsize','hsize','v-hsize',true);
+wire('decay','decay','v-decay');
+wire('thr','thr','v-thr');
+wire('hbrt','hbrt','v-hbrt');
+wire('hopac','hopac','v-hopac');
+wire('srpm','srpm','v-srpm');
+wire('awidth','awidth','v-awidth');
+wire('aglow','aglow','v-aglow');
+wire('trail','trail','v-trail');
+wire('simrad','simrad','v-simrad');
+wire('simthr','simthr','v-simthr');
+wire('fxstr','fxstr','v-fxstr');
+wire('copac','copac','v-copac');
+wire('distort','distort','val-distort');
+
+document.getElementById('hpal').addEventListener('change',e=>S.hpal=parseInt(e.target.value));
+
+document.querySelectorAll('[data-fl]').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('[data-fl]').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); S.freqLayout=parseInt(b.dataset.fl); rebuildGrid();
+}));
+document.querySelectorAll('[data-spin]').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('[data-spin]').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); S.spinMode=parseInt(b.dataset.spin);
+}));
+document.querySelectorAll('[data-fx]').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('[data-fx]').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); S.fxMode=parseInt(b.dataset.fx);
+}));
+
+document.getElementById('btn-dir').addEventListener('click',function(){
+  S.spinDir*=-1;
+  this.textContent='DIRECTION: '+(S.spinDir>0?'CW':'CCW');
+});
+document.getElementById('btn-mic').addEventListener('click',startMic);
+document.getElementById('btn-cam').addEventListener('click',()=>{
+  const v=document.getElementById('cam-sel').value;
+  startCamera(v==='Loading...'||v===''?null:v, false);
+});
+document.getElementById('cam-sel').addEventListener('change',e=>{
+  if(camRunning) startCamera(e.target.value);
+});
+document.getElementById('btn-flip').addEventListener('click',function(){
+  camFlip=camFlip?0:1; this.classList.toggle('on',camFlip===1);
+});
+document.getElementById('btn-fs').addEventListener('click',()=>{
+  if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+});
+const uiEl=document.getElementById('ui');
+const togBtn=document.getElementById('tog');
+togBtn.addEventListener('click',()=>{
+  uiEl.classList.toggle('hidden');
+  togBtn.classList.toggle('open',!uiEl.classList.contains('hidden'));
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='h'){uiEl.classList.toggle('hidden');togBtn.classList.toggle('open',!uiEl.classList.contains('hidden'));}
+  if(e.key==='f') document.getElementById('btn-fs').click();
+});
+
+// Auto-start mic and camera on load
+startMic(true);
+startCamera(null, true);
+</script>
+</body>
+</html>
