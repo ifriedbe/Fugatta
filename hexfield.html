@@ -222,20 +222,9 @@ vec2 nearestHex(vec2 p, float size){
   if(dx>dy && dx>dz) rx=-ry-rz;
   else if(dy>dz) ry=-rx-rz;
   else rz=-rx-ry;
-  // Convert axial back
-  float col = rx;
-  float row = rz;
-  // Offset coords for our layout
-  float c2 = col + (row - mod(row,2.)*.0)*.5;
-  return vec2(floor(c2 - floor(row/2.)), floor(row));
-}
-
-// Hex index in state texture → UV
-vec2 hexIndexToTexUV(int idx){
-  int tw = int(u_hexRes.x);
-  float u = (float(idx % tw) + .5) / u_hexRes.x;
-  float v = (float(idx / tw) + .5) / u_hexRes.y;
-  return vec2(u,v);
+  // Convert axial → "odd-r" offset: offset_col = q + floor(r/2)
+  float offset_col = rx + floor(rz / 2.);
+  return vec2(floor(offset_col), floor(rz));
 }
 
 // ---- Color palettes ----
@@ -412,12 +401,11 @@ void main(){
   int hcol=int(hexCoord.x), hrow=int(hexCoord.y);
   vec2 hCenter=hexCenter(hcol, hrow, u_hsize);
 
-  // Hex index (col + row*hexCols)
-  int hidx = hrow*u_hexCols + hcol;
-  int texW=int(u_hexRes.x);
-  float texU=(float(hidx % texW)+.5)/u_hexRes.x;
-  float texV=(float(hidx / texW)+.5)/u_hexRes.y;
-  vec4 hexState=texture2D(u_hex, vec2(texU,texV));
+  // Hex index (col + row*hexCols) — use float math, no int modulo (GLSL ES 1.0)
+  float fidx = float(hrow) * float(u_hexCols) + float(hcol);
+  float texU = (mod(fidx, u_hexRes.x) + 0.5) / u_hexRes.x;
+  float texV = (floor(fidx / u_hexRes.x) + 0.5) / u_hexRes.y;
+  vec4 hexState=texture2D(u_hex, clamp(vec2(texU,texV), 0., 1.));
   float hexBrt  = hexState.r * u_hbrt;
   float hexHue  = hexState.g;
   float hexAge  = hexState.b; // 0=just triggered, 1=fully decayed
@@ -685,7 +673,7 @@ function rebuildGrid(){
 
 // ===================== Audio =====================
 let analyser=null, audioData=null, freqSmooth=new Float32Array(256);
-async function startMic(){
+async function startMic(silent){
   try{
     const ctx=new(window.AudioContext||window.webkitAudioContext)();
     const stream=await navigator.mediaDevices.getUserMedia({audio:true});
@@ -697,7 +685,10 @@ async function startMic(){
     audioData=new Uint8Array(analyser.frequencyBinCount);
     document.getElementById('btn-mic').classList.add('on');
     document.getElementById('btn-mic').textContent='MIC LIVE';
-  }catch(e){alert('Mic: '+e.message);}
+  }catch(e){
+    if(!silent) alert('Mic: '+e.message);
+    else document.getElementById('btn-mic').textContent='MIC (click to enable)';
+  }
 }
 function updateAudio(){
   if(!analyser) return;
@@ -722,16 +713,22 @@ async function listCams(){
     o.value=d.deviceId; o.textContent=d.label||`Camera ${i+1}`; sel.appendChild(o);
   });
 }
-async function startCamera(devId){
+async function startCamera(devId, silent){
   try{
     if(video.srcObject) video.srcObject.getTracks().forEach(t=>t.stop());
-    const con={video:devId?{deviceId:{exact:devId},width:{ideal:1280},height:{ideal:720}}:{width:{ideal:1280},height:{ideal:720}}};
+    const con={video:devId?{deviceId:{exact:devId},width:{ideal:1280},height:{ideal:720}}:{width:{ideal:1280},height:{ideal:720},facingMode:'user'}};
     const stream=await navigator.mediaDevices.getUserMedia(con);
-    video.srcObject=stream; await new Promise(r=>video.onloadedmetadata=r); video.play();
+    video.srcObject=stream;
+    await new Promise(r=>{video.onloadedmetadata=r;});
+    video.play();
     camRunning=true;
-    document.getElementById('btn-cam').textContent='RECONNECT CAM';
+    document.getElementById('btn-cam').classList.add('on');
+    document.getElementById('btn-cam').textContent='CAM LIVE';
     await listCams();
-  }catch(e){alert('Cam: '+e.message);}
+  }catch(e){
+    if(!silent) alert('Cam: '+e.message);
+    else document.getElementById('btn-cam').textContent='CAM (click to enable)';
+  }
 }
 function uploadCam(){
   if(!camRunning||video.readyState<2) return;
@@ -943,7 +940,7 @@ document.getElementById('btn-dir').addEventListener('click',function(){
 document.getElementById('btn-mic').addEventListener('click',startMic);
 document.getElementById('btn-cam').addEventListener('click',()=>{
   const v=document.getElementById('cam-sel').value;
-  startCamera(v==='Loading...'?null:v);
+  startCamera(v==='Loading...'||v===''?null:v, false);
 });
 document.getElementById('cam-sel').addEventListener('change',e=>{
   if(camRunning) startCamera(e.target.value);
@@ -966,10 +963,9 @@ document.addEventListener('keydown',e=>{
   if(e.key==='f') document.getElementById('btn-fs').click();
 });
 
-// Pre-warm
-navigator.mediaDevices.getUserMedia({video:true})
-  .then(s=>{s.getTracks().forEach(t=>t.stop());listCams();})
-  .catch(()=>listCams());
+// Auto-start mic and camera on load
+startMic(true);
+startCamera(null, true);
 </script>
 </body>
 </html>
