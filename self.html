@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SELF — Ceiling Projection System</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #000; overflow: hidden; font-family: monospace; color: #fff; }
+  canvas { display: block; width: 100vw; height: 100vh; }
+
+  #ui {
+    position: fixed;
+    top: 0; left: 0;
+    width: 280px;
+    height: 100vh;
+    background: rgba(0,0,0,0.75);
+    padding: 16px;
+    overflow-y: auto;
+    z-index: 10;
+    transition: transform 0.3s ease;
+    font-size: 12px;
+    border-right: 1px solid rgba(255,255,255,0.1);
+  }
+  #ui.hidden { transform: translateX(-100%); }
+
+  #toggle-ui {
+    position: fixed;
+    top: 12px; left: 12px;
+    z-index: 20;
+    background: rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-family: monospace;
+    font-size: 12px;
+  }
+  #toggle-ui.open { left: 292px; }
+
+  .section { margin-bottom: 18px; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 10px; }
+  .section:first-child { border-top: none; }
+  .section h3 { margin-bottom: 8px; font-size: 11px; letter-spacing: 2px; color: #aaa; text-transform: uppercase; }
+
+  label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  label span { color: #ccc; flex: 1; }
+  label .val { color: #fff; min-width: 40px; text-align: right; }
+
+  input[type=range] { width: 100%; margin: 4px 0; accent-color: #8af; }
+  select, input[type=text] {
+    width: 100%;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    padding: 4px 6px;
+    margin-top: 4px;
+    font-family: monospace;
+    font-size: 12px;
+  }
+  button {
+    width: 100%;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff;
+    padding: 6px;
+    cursor: pointer;
+    font-family: monospace;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  button:hover { background: rgba(255,255,255,0.15); }
+  button.active { background: rgba(80,160,255,0.3); border-color: #8af; }
+
+  #moon-display {
+    text-align: center;
+    font-size: 32px;
+    margin: 6px 0;
+  }
+  #moon-info { font-size: 11px; color: #aaa; text-align: center; line-height: 1.6; }
+
+  .color-row { display: flex; gap: 6px; margin-top: 4px; }
+  .color-swatch {
+    width: 28px; height: 28px;
+    border: 1px solid rgba(255,255,255,0.2);
+    cursor: pointer;
+    border-radius: 2px;
+  }
+  .color-swatch.selected { border: 2px solid #fff; }
+
+  #custom-formula {
+    width: 100%;
+    height: 50px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #8f8;
+    padding: 6px;
+    font-family: monospace;
+    font-size: 11px;
+    resize: vertical;
+    margin-top: 4px;
+  }
+  #formula-error { color: #f88; font-size: 10px; margin-top: 4px; min-height: 14px; }
+</style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+
+<button id="toggle-ui" class="open">SELF</button>
+
+<div id="ui">
+  <div style="font-size:16px; letter-spacing:3px; margin-bottom:16px; color:#fff;">SELF</div>
+  <div style="font-size:10px; color:#666; margin-bottom:12px; line-height:1.5;">Ceiling Projection System<br>for Musical Performance</div>
+
+  <!-- MOON -->
+  <div class="section">
+    <h3>Moon Phase</h3>
+    <div id="moon-display">🌕</div>
+    <div id="moon-info">loading...</div>
+    <label style="margin-top:8px;">
+      <span>Moon influence</span>
+      <span class="val" id="val-moon">0.5</span>
+    </label>
+    <input type="range" id="moon-influence" min="0" max="1" step="0.01" value="0.5">
+    <label>
+      <span>Auto sync moon</span>
+    </label>
+    <button id="btn-moon-sync" class="active">ON</button>
+  </div>
+
+  <!-- FRACTAL -->
+  <div class="section">
+    <h3>Fractal</h3>
+    <select id="fractal-type">
+      <option value="0">Mandelbrot</option>
+      <option value="1">Julia Set</option>
+      <option value="2">Burning Ship</option>
+      <option value="3">Newton</option>
+      <option value="4">Lyapunov</option>
+    </select>
+    <label style="margin-top:8px;">
+      <span>Iterations</span>
+      <span class="val" id="val-iter">80</span>
+    </label>
+    <input type="range" id="fractal-iter" min="4" max="512" step="1" value="80">
+    <label>
+      <span>Zoom</span>
+      <span class="val" id="val-zoom">1.00</span>
+    </label>
+    <input type="range" id="fractal-zoom" min="-4" max="4" step="0.01" value="0">
+    <label>
+      <span>X offset</span>
+      <span class="val" id="val-cx">0.00</span>
+    </label>
+    <input type="range" id="fractal-cx" min="-2" max="2" step="0.001" value="0">
+    <label>
+      <span>Y offset</span>
+      <span class="val" id="val-cy">0.00</span>
+    </label>
+    <input type="range" id="fractal-cy" min="-2" max="2" step="0.001" value="0">
+    <label>
+      <span>Julia Cx</span>
+      <span class="val" id="val-jx">-0.70</span>
+    </label>
+    <input type="range" id="julia-cx" min="-2" max="2" step="0.001" value="-0.7">
+    <label>
+      <span>Julia Cy</span>
+      <span class="val" id="val-jy">0.27</span>
+    </label>
+    <input type="range" id="julia-cy" min="-2" max="2" step="0.001" value="0.27">
+  </div>
+
+  <!-- COLOR -->
+  <div class="section">
+    <h3>Color Scheme</h3>
+    <select id="color-scheme">
+      <option value="0">Cosmic Fire</option>
+      <option value="1">Ocean Deep</option>
+      <option value="2">Void Bloom</option>
+      <option value="3">Solar Wind</option>
+      <option value="4">Lunar Silver</option>
+      <option value="5">Aurora</option>
+      <option value="6">Monochrome</option>
+    </select>
+    <label style="margin-top:8px;">
+      <span>Color speed</span>
+      <span class="val" id="val-cspeed">1.0</span>
+    </label>
+    <input type="range" id="color-speed" min="0" max="5" step="0.05" value="1.0">
+    <label>
+      <span>Saturation</span>
+      <span class="val" id="val-sat">1.0</span>
+    </label>
+    <input type="range" id="color-sat" min="0" max="2" step="0.01" value="1.0">
+    <label>
+      <span>Brightness</span>
+      <span class="val" id="val-bright">1.0</span>
+    </label>
+    <input type="range" id="color-bright" min="0" max="2" step="0.01" value="1.0">
+  </div>
+
+  <!-- ANIMATION -->
+  <div class="section">
+    <h3>Animation</h3>
+    <label>
+      <span>Time speed</span>
+      <span class="val" id="val-tspeed">0.50</span>
+    </label>
+    <input type="range" id="time-speed" min="0" max="3" step="0.01" value="0.5">
+    <label>
+      <span>Rotation</span>
+      <span class="val" id="val-rot">0.00</span>
+    </label>
+    <input type="range" id="rotation" min="-3.14" max="3.14" step="0.01" value="0">
+    <label>
+      <span>Pulse (music)</span>
+      <span class="val" id="val-pulse">0.0</span>
+    </label>
+    <input type="range" id="pulse" min="0" max="1" step="0.01" value="0">
+    <button id="btn-auto-pulse">AUTO PULSE</button>
+  </div>
+
+  <!-- CUSTOM FORMULA -->
+  <div class="section">
+    <h3>Custom Color Formula</h3>
+    <div style="font-size:10px; color:#888; margin-bottom:4px;">
+      Variables: t (time), n (escape iter 0–1), moon (0–1), pulse (0–1)<br>
+      Returns: vec3(r,g,b) in 0–1
+    </div>
+    <textarea id="custom-formula" spellcheck="false">vec3 customColor(float t, float n, float moon, float pulse) {
+  float h = n * 6.0 + t * 0.5 + moon * 1.5;
+  return 0.5 + 0.5 * cos(h + vec3(0,2.094,4.189));
+}</textarea>
+    <div id="formula-error"></div>
+    <button id="btn-apply-formula">APPLY FORMULA</button>
+    <button id="btn-use-custom" style="margin-top:4px;">USE CUSTOM</button>
+  </div>
+
+  <!-- PROJECTION -->
+  <div class="section">
+    <h3>Projection</h3>
+    <label>
+      <span>Fisheye warp</span>
+      <span class="val" id="val-fish">0.0</span>
+    </label>
+    <input type="range" id="fisheye" min="0" max="2" step="0.01" value="0">
+    <label>
+      <span>Vignette</span>
+      <span class="val" id="val-vig">0.0</span>
+    </label>
+    <input type="range" id="vignette" min="0" max="1.5" step="0.01" value="0">
+    <button id="btn-fullscreen" style="margin-top:8px;">FULLSCREEN</button>
+  </div>
+</div>
+
+<script id="vert-src" type="x-shader/vertex">
+attribute vec2 a_pos;
+varying vec2 v_uv;
+void main() {
+  v_uv = a_pos * 0.5 + 0.5;
+  gl_Position = vec4(a_pos, 0.0, 1.0);
+}
+</script>
+
+<!-- Fragment shader template — custom color formula is injected at runtime -->
+<script id="frag-template" type="x-shader/fragment">
+precision highp float;
+varying vec2 v_uv;
+
+uniform float u_time;
+uniform float u_moon;       // 0=new, 1=full
+uniform float u_pulse;
+uniform int   u_fractal;    // 0=mandel,1=julia,2=ship,3=newton,4=lyapunov
+uniform int   u_iter;
+uniform float u_zoom;
+uniform float u_cx;
+uniform float u_cy;
+uniform float u_jx;
+uniform float u_jy;
+uniform int   u_color;
+uniform float u_cspeed;
+uniform float u_sat;
+uniform float u_bright;
+uniform float u_rotation;
+uniform float u_fisheye;
+uniform float u_vignette;
+uniform int   u_useCustom;
+
+// ---- Colour palettes ----
+vec3 palette(float t, int scheme, float moon, float pulse) {
+  t = fract(t);
+  if (scheme == 0) { // Cosmic Fire
+    return 0.5 + 0.5*cos(6.28318*(t*vec3(1.0,0.7,0.4)+vec3(0.0,0.15,0.3)));
+  } else if (scheme == 1) { // Ocean Deep
+    return 0.5 + 0.5*cos(6.28318*(t*vec3(0.5,0.8,1.0)+vec3(0.5,0.2,0.8+moon*0.2)));
+  } else if (scheme == 2) { // Void Bloom
+    vec3 c = 0.5+0.5*cos(6.28318*(t*vec3(1.0,0.5,0.9)+vec3(0.8,0.5,0.0)));
+    c = mix(c, vec3(0.6,0.0,1.0)*c.r, moon);
+    return c;
+  } else if (scheme == 3) { // Solar Wind
+    return 0.5+0.5*cos(6.28318*(t*vec3(0.8,0.5,0.3)+vec3(0.2,0.4,0.6)));
+  } else if (scheme == 4) { // Lunar Silver
+    float s = 0.5+0.5*sin(t*6.28318+moon*3.14);
+    return mix(vec3(0.05,0.05,0.1), vec3(0.85,0.9,1.0)*moon, s);
+  } else if (scheme == 5) { // Aurora
+    return 0.5+0.5*cos(6.28318*(t*vec3(0.3,1.0,0.6)+vec3(0.1,0.5+moon*0.3,0.2)));
+  } else { // Monochrome
+    float v = fract(t + pulse*0.3);
+    return vec3(v);
+  }
+}
+
+// ---- Fractals ----
+float mandelbrot(vec2 c) {
+  vec2 z = vec2(0.0);
+  for (int i = 0; i < 512; i++) {
+    if (i >= u_iter) break;
+    z = vec2(z.x*z.x - z.y*z.y, 2.0*z.x*z.y) + c;
+    if (dot(z,z) > 4.0) return float(i) / float(u_iter);
+  }
+  return 1.0;
+}
+
+float julia(vec2 z, vec2 c) {
+  for (int i = 0; i < 512; i++) {
+    if (i >= u_iter) break;
+    z = vec2(z.x*z.x - z.y*z.y, 2.0*z.x*z.y) + c;
+    if (dot(z,z) > 4.0) return float(i) / float(u_iter);
+  }
+  return 1.0;
+}
+
+float burningShip(vec2 c) {
+  vec2 z = vec2(0.0);
+  for (int i = 0; i < 512; i++) {
+    if (i >= u_iter) break;
+    z = vec2(z.x*z.x - z.y*z.y, 2.0*abs(z.x*z.y)) + c;
+    if (dot(z,z) > 4.0) return float(i) / float(u_iter);
+  }
+  return 1.0;
+}
+
+float newton(vec2 z0) {
+  // z^3 - 1 = 0
+  vec2 z = z0;
+  for (int i = 0; i < 512; i++) {
+    if (i >= u_iter) break;
+    vec2 z2 = vec2(z.x*z.x - z.y*z.y, 2.0*z.x*z.y);
+    vec2 z3 = vec2(z2.x*z.x - z2.y*z.y, z2.x*z.y + z2.y*z.x);
+    vec2 denom = 3.0*z2;
+    float d2 = dot(denom,denom);
+    if (d2 < 0.0001) break;
+    vec2 delta = vec2((z3.x-1.0)*denom.x+(z3.y)*denom.y,
+                      (z3.y)*denom.x-(z3.x-1.0)*denom.y) / d2;
+    z -= delta;
+    if (dot(delta,delta) < 0.00001) return float(i) / float(u_iter);
+  }
+  return 1.0;
+}
+
+float lyapunov(vec2 c) {
+  // Simple Lyapunov fractal using "AB" sequence
+  float x = 0.5;
+  float lya = 0.0;
+  for (int i = 0; i < 512; i++) {
+    if (i >= u_iter) break;
+    float r = (mod(float(i),2.0) < 1.0) ? c.x : c.y;
+    x = r * x * (1.0 - x);
+    lya += log(abs(r * (1.0 - 2.0*x))) / log(2.0);
+  }
+  lya /= float(u_iter);
+  return clamp(lya * 0.2 + 0.5, 0.0, 1.0);
+}
+
+// ---- Custom colour (replaced at runtime) ----
+CUSTOM_COLOR_PLACEHOLDER
+
+void main() {
+  vec2 uv = v_uv * 2.0 - 1.0;
+  uv.x *= (1280.0/720.0);
+
+  // Fisheye warp for ceiling projection
+  if (u_fisheye > 0.0) {
+    float r = length(uv);
+    float theta = atan(uv.y, uv.x);
+    r = pow(r, 1.0 + u_fisheye * 0.8);
+    uv = r * vec2(cos(theta), sin(theta));
+  }
+
+  // Rotation
+  float cosR = cos(u_rotation);
+  float sinR = sin(u_rotation);
+  uv = vec2(uv.x*cosR - uv.y*sinR, uv.x*sinR + uv.y*cosR);
+
+  // Pan / zoom
+  float zoom = pow(2.0, u_zoom);
+  vec2 c = uv / zoom + vec2(u_cx, u_cy);
+
+  // Fractal evaluation
+  float n;
+  if (u_fractal == 0) {
+    n = mandelbrot(c);
+  } else if (u_fractal == 1) {
+    n = julia(c, vec2(u_jx, u_jy));
+  } else if (u_fractal == 2) {
+    n = burningShip(c);
+  } else if (u_fractal == 3) {
+    n = newton(c);
+  } else {
+    c = c * 2.0 + vec2(2.0);
+    n = lyapunov(clamp(c, vec2(0.01), vec2(3.99)));
+  }
+
+  // Colour
+  float t = n * u_cspeed + u_time * 0.1 + u_moon * 0.2;
+  vec3 col;
+  if (u_useCustom == 1) {
+    col = customColor(u_time, n, u_moon, u_pulse);
+  } else {
+    col = palette(t, u_color, u_moon, u_pulse);
+  }
+
+  // Pulse brightness flash
+  col += col * u_pulse * 0.4;
+
+  // Saturation & brightness
+  float luma = dot(col, vec3(0.299,0.587,0.114));
+  col = mix(vec3(luma), col, u_sat) * u_bright;
+
+  // Vignette for ceiling domes
+  if (u_vignette > 0.0) {
+    float v = 1.0 - length(v_uv*2.0-1.0) * u_vignette;
+    col *= clamp(v, 0.0, 1.0);
+  }
+
+  gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
+}
+</script>
+
+<script>
+// ---- Moon phase calculation ----
+function moonPhase(date) {
+  // Known new moon: Jan 6 2000 18:14 UTC
+  const knownNew = new Date(Date.UTC(2000,0,6,18,14,0));
+  const lunation = 29.53058867;
+  const diff = (date - knownNew) / (1000*60*60*24);
+  const phase = ((diff % lunation) + lunation) % lunation;
+  return phase; // 0=new, ~14.76=full
+}
+
+function moonEmoji(phase) {
+  const p = phase / 29.53;
+  if (p < 0.0625) return '🌑';
+  if (p < 0.1875) return '🌒';
+  if (p < 0.3125) return '🌓';
+  if (p < 0.4375) return '🌔';
+  if (p < 0.5625) return '🌕';
+  if (p < 0.6875) return '🌖';
+  if (p < 0.8125) return '🌗';
+  if (p < 0.9375) return '🌘';
+  return '🌑';
+}
+
+function moonInfluence(phase) {
+  // Sine curve: 0 at new moon, 1 at full moon
+  return 0.5 - 0.5 * Math.cos(2 * Math.PI * phase / 29.53058867);
+}
+
+// ---- WebGL setup ----
+const canvas = document.getElementById('c');
+const gl = canvas.getContext('webgl', { antialias: false, preserveDrawingBuffer: true });
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  gl.viewport(0, 0, canvas.width, canvas.height);
+}
+window.addEventListener('resize', resize);
+resize();
+
+// Compile shader
+function compileShader(type, src) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src);
+  gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+    const err = gl.getShaderInfoLog(s);
+    gl.deleteShader(s);
+    throw err;
+  }
+  return s;
+}
+
+function buildProgram(fragSrc) {
+  const vertSrc = document.getElementById('vert-src').textContent;
+  const vert = compileShader(gl.VERTEX_SHADER, vertSrc);
+  const frag = compileShader(gl.FRAGMENT_SHADER, fragSrc);
+  const prog = gl.createProgram();
+  gl.attachShader(prog, vert);
+  gl.attachShader(prog, frag);
+  gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+    throw gl.getProgramInfoLog(prog);
+  }
+  return prog;
+}
+
+// Default custom color function (GLSL)
+let customColorGLSL = document.getElementById('custom-formula').value;
+
+function makeFragSrc(customGLSL) {
+  const template = document.getElementById('frag-template').textContent;
+  return template.replace('CUSTOM_COLOR_PLACEHOLDER', customGLSL);
+}
+
+let program = null;
+let uniforms = {};
+
+function rebuildProgram(customGLSL) {
+  try {
+    const src = makeFragSrc(customGLSL);
+    const prog = buildProgram(src);
+    if (program) gl.deleteProgram(program);
+    program = prog;
+    gl.useProgram(program);
+    // Cache uniform locations
+    const uNames = [
+      'u_time','u_moon','u_pulse','u_fractal','u_iter','u_zoom',
+      'u_cx','u_cy','u_jx','u_jy','u_color','u_cspeed','u_sat',
+      'u_bright','u_rotation','u_fisheye','u_vignette','u_useCustom'
+    ];
+    uniforms = {};
+    uNames.forEach(n => { uniforms[n] = gl.getUniformLocation(program, n); });
+    document.getElementById('formula-error').textContent = '';
+    return true;
+  } catch(e) {
+    document.getElementById('formula-error').textContent = 'Shader error: ' + e;
+    return false;
+  }
+}
+
+// Fullscreen quad
+const buf = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+
+function bindGeometry() {
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  const loc = gl.getAttribLocation(program, 'a_pos');
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+}
+
+// ---- State ----
+const state = {
+  timeSpeed: 0.5,
+  fractal: 0,
+  iter: 80,
+  zoom: 0,
+  cx: 0, cy: 0,
+  jx: -0.7, jy: 0.27,
+  color: 0,
+  cspeed: 1.0,
+  sat: 1.0,
+  bright: 1.0,
+  rotation: 0,
+  pulse: 0,
+  autoPulse: false,
+  moonInfluenceVal: 0.5,
+  moonAutoSync: true,
+  moonPhaseNorm: 0,
+  fisheye: 0,
+  vignette: 0,
+  useCustom: 0,
+};
+
+let t = 0;
+let lastTime = performance.now();
+
+// ---- Moon init ----
+function updateMoonDisplay() {
+  const now = new Date();
+  const phase = moonPhase(now);
+  const influence = moonInfluence(phase);
+  const pct = (phase / 29.53 * 100).toFixed(1);
+  const names = ['New Moon','Waxing Crescent','First Quarter','Waxing Gibbous',
+                  'Full Moon','Waning Gibbous','Last Quarter','Waning Crescent'];
+  const nameIdx = Math.floor((phase / 29.53) * 8) % 8;
+
+  document.getElementById('moon-display').textContent = moonEmoji(phase);
+  document.getElementById('moon-info').innerHTML =
+    names[nameIdx] + '<br>' +
+    'Cycle: ' + pct + '%<br>' +
+    'Influence: ' + influence.toFixed(3);
+
+  state.moonPhaseNorm = influence;
+  if (state.moonAutoSync) {
+    state.moonInfluenceVal = influence;
+    document.getElementById('moon-influence').value = influence;
+    document.getElementById('val-moon').textContent = influence.toFixed(2);
+  }
+}
+
+// ---- UI wiring ----
+function wire(id, stateKey, valId, transform) {
+  const el = document.getElementById(id);
+  el.addEventListener('input', () => {
+    const v = transform ? transform(el.value) : parseFloat(el.value);
+    state[stateKey] = v;
+    if (valId) document.getElementById(valId).textContent =
+      (typeof v === 'number') ? v.toFixed(2) : v;
+  });
+}
+
+wire('moon-influence', 'moonInfluenceVal', 'val-moon');
+wire('fractal-iter', 'iter', 'val-iter', v => parseInt(v));
+wire('fractal-zoom', 'zoom', 'val-zoom');
+wire('fractal-cx', 'cx', 'val-cx');
+wire('fractal-cy', 'cy', 'val-cy');
+wire('julia-cx', 'jx', 'val-jx');
+wire('julia-cy', 'jy', 'val-jy');
+wire('color-speed', 'cspeed', 'val-cspeed');
+wire('color-sat', 'sat', 'val-sat');
+wire('color-bright', 'bright', 'val-bright');
+wire('time-speed', 'timeSpeed', 'val-tspeed');
+wire('rotation', 'rotation', 'val-rot');
+wire('pulse', 'pulse', 'val-pulse');
+wire('fisheye', 'fisheye', 'val-fish');
+wire('vignette', 'vignette', 'val-vig');
+
+document.getElementById('fractal-type').addEventListener('change', e => {
+  state.fractal = parseInt(e.target.value);
+});
+document.getElementById('color-scheme').addEventListener('change', e => {
+  state.color = parseInt(e.target.value);
+  state.useCustom = 0;
+  document.getElementById('btn-use-custom').textContent = 'USE CUSTOM';
+});
+
+document.getElementById('btn-moon-sync').addEventListener('click', function() {
+  state.moonAutoSync = !state.moonAutoSync;
+  this.textContent = state.moonAutoSync ? 'ON' : 'OFF';
+  this.classList.toggle('active', state.moonAutoSync);
+  updateMoonDisplay();
+});
+
+let autoPulseTimer = 0;
+document.getElementById('btn-auto-pulse').addEventListener('click', function() {
+  state.autoPulse = !state.autoPulse;
+  this.classList.toggle('active', state.autoPulse);
+  this.textContent = state.autoPulse ? 'STOP PULSE' : 'AUTO PULSE';
+});
+
+document.getElementById('btn-apply-formula').addEventListener('click', () => {
+  customColorGLSL = document.getElementById('custom-formula').value;
+  rebuildProgram(customColorGLSL);
+  bindGeometry();
+});
+
+document.getElementById('btn-use-custom').addEventListener('click', function() {
+  state.useCustom = state.useCustom === 0 ? 1 : 0;
+  this.textContent = state.useCustom ? 'USE PRESET' : 'USE CUSTOM';
+  this.classList.toggle('active', state.useCustom === 1);
+});
+
+document.getElementById('btn-fullscreen').addEventListener('click', () => {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen();
+  } else {
+    document.exitFullscreen();
+  }
+});
+
+const uiEl = document.getElementById('ui');
+const toggleBtn = document.getElementById('toggle-ui');
+toggleBtn.addEventListener('click', () => {
+  uiEl.classList.toggle('hidden');
+  toggleBtn.classList.toggle('open', !uiEl.classList.contains('hidden'));
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.key === 'h' || e.key === 'H') {
+    uiEl.classList.toggle('hidden');
+    toggleBtn.classList.toggle('open', !uiEl.classList.contains('hidden'));
+  }
+  if (e.key === 'f' || e.key === 'F') document.getElementById('btn-fullscreen').click();
+  if (e.key === ' ') { e.preventDefault(); state.useCustom = state.useCustom ? 0 : 1; }
+});
+
+// Mouse drag to pan
+let dragging = false, dragStart = null, dragState = null;
+canvas.addEventListener('mousedown', e => {
+  if (uiEl.contains(e.target)) return;
+  dragging = true;
+  dragStart = [e.clientX, e.clientY];
+  dragState = [state.cx, state.cy];
+});
+canvas.addEventListener('mousemove', e => {
+  if (!dragging) return;
+  const zoom = Math.pow(2, state.zoom);
+  state.cx = dragState[0] - (e.clientX - dragStart[0]) * 0.003 / zoom;
+  state.cy = dragState[1] + (e.clientY - dragStart[1]) * 0.003 / zoom;
+  document.getElementById('fractal-cx').value = state.cx;
+  document.getElementById('fractal-cy').value = state.cy;
+  document.getElementById('val-cx').textContent = state.cx.toFixed(2);
+  document.getElementById('val-cy').textContent = state.cy.toFixed(2);
+});
+canvas.addEventListener('mouseup', () => { dragging = false; });
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  state.zoom = Math.max(-4, Math.min(4, state.zoom - e.deltaY * 0.001));
+  document.getElementById('fractal-zoom').value = state.zoom;
+  document.getElementById('val-zoom').textContent = state.zoom.toFixed(2);
+}, { passive: false });
+
+// ---- Init & loop ----
+rebuildProgram(customColorGLSL);
+bindGeometry();
+updateMoonDisplay();
+setInterval(updateMoonDisplay, 60000); // refresh moon every minute
+
+function render(now) {
+  const dt = (now - lastTime) / 1000;
+  lastTime = now;
+  t += dt * state.timeSpeed;
+
+  // Auto pulse: slow sine wave for ambient use
+  if (state.autoPulse) {
+    autoPulseTimer += dt;
+    state.pulse = 0.5 + 0.5 * Math.sin(autoPulseTimer * 2.0);
+    document.getElementById('pulse').value = state.pulse;
+    document.getElementById('val-pulse').textContent = state.pulse.toFixed(2);
+  }
+
+  gl.useProgram(program);
+  gl.uniform1f(uniforms['u_time'], t);
+  gl.uniform1f(uniforms['u_moon'], state.moonInfluenceVal);
+  gl.uniform1f(uniforms['u_pulse'], state.pulse);
+  gl.uniform1i(uniforms['u_fractal'], state.fractal);
+  gl.uniform1i(uniforms['u_iter'], state.iter);
+  gl.uniform1f(uniforms['u_zoom'], state.zoom);
+  gl.uniform1f(uniforms['u_cx'], state.cx);
+  gl.uniform1f(uniforms['u_cy'], state.cy);
+  gl.uniform1f(uniforms['u_jx'], state.jx);
+  gl.uniform1f(uniforms['u_jy'], state.jy);
+  gl.uniform1i(uniforms['u_color'], state.color);
+  gl.uniform1f(uniforms['u_cspeed'], state.cspeed);
+  gl.uniform1f(uniforms['u_sat'], state.sat);
+  gl.uniform1f(uniforms['u_bright'], state.bright);
+  gl.uniform1f(uniforms['u_rotation'], state.rotation);
+  gl.uniform1f(uniforms['u_fisheye'], state.fisheye);
+  gl.uniform1f(uniforms['u_vignette'], state.vignette);
+  gl.uniform1i(uniforms['u_useCustom'], state.useCustom);
+
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  requestAnimationFrame(render);
+}
+requestAnimationFrame(render);
+</script>
+</body>
+</html>
