@@ -147,6 +147,21 @@ button.on { background:rgba(0,200,255,0.15); border-color:#0cf; color:#0df; }
     <input type="range" id="gstr" min="0" max="3" step="0.01" value="1">
   </div>
 
+  <!-- WITCH ORBIT -->
+  <div class="sec">
+    <h3>Witch Orbit</h3>
+    <label><span>Orbit speed</span><span class="v" id="v-wspd">0.40</span></label>
+    <input type="range" id="wspd" min="0.02" max="3" step="0.01" value="0.4">
+    <label><span>Orbit radius</span><span class="v" id="v-wrad">0.35</span></label>
+    <input type="range" id="wrad" min="0.05" max="0.48" step="0.01" value="0.35">
+    <label><span>Trail spiral</span><span class="v" id="v-wspi">0.00</span></label>
+    <input type="range" id="wspi" min="-1" max="1" step="0.01" value="0">
+    <label><span>Cycle fade</span><span class="v" id="v-cfade">0.80</span></label>
+    <input type="range" id="cfade" min="0" max="1" step="0.01" value="0.8">
+    <button id="btn-clear">CLEAR / RESET</button>
+    <div id="orbit-disp" style="text-align:center;font-size:9px;color:#444;margin-top:4px;">⟳ 0.00 / 2π</div>
+  </div>
+
   <!-- WAVE -->
   <div class="sec">
     <h3>Wave Physics</h3>
@@ -244,6 +259,9 @@ uniform float u_sf0;          // source frequency for bass
 uniform float u_sf1;
 uniform float u_sf2;
 uniform int   u_chan;         // which channel (0=R/bass,1=G/mid,2=B/tre)
+uniform vec2  u_srcPos;       // primary source position (orbiting)
+uniform vec2  u_srcPos2;      // secondary source position
+uniform float u_fade;         // per-frame fade multiplier (for cycle reset)
 
 // ---- Tidal potential (simplified gravitational tidal force) ----
 // Moon's tidal potential: Φ = −(GM/d³) r² P₂(cos θ_moon)
@@ -278,38 +296,42 @@ float bessJ0approx(float x){
 }
 
 float sourceField(vec2 uv, float A, float f, float t, int mode){
-  vec2 center = vec2(.5);
-  if(mode==0){ // Single point at center
-    return pointSource(uv, center, A, f, t);
+  vec2 src  = u_srcPos;
+  vec2 src2 = u_srcPos2;
+  if(mode==0){ // Orbiting point — primary + secondary
+    return pointSource(uv, src, A, f, t)
+         + pointSource(uv, src2, A*.6, f*1.5, t+0.25);
 
-  } else if(mode==1){ // Ring source
-    float r = length(uv - center);
-    float ring = A * sin(2.*3.14159*(f*t - r/u_c)) * exp(-abs(r-.3)*20.);
-    return ring;
+  } else if(mode==1){ // Ring around moving center
+    float r = length(uv - src);
+    float ring = A * sin(2.*3.14159*(f*t - r/u_c)) * exp(-abs(r-.25)*18.);
+    float r2 = length(uv - src2);
+    float ring2 = A*.5 * sin(2.*3.14159*(f*1.3*t - r2/u_c)) * exp(-abs(r2-.15)*22.);
+    return ring + ring2;
 
-  } else if(mode==2){ // Bessel mode J₀ — radially symmetric standing wave
-    float r = length(uv - center) * 2.*3.14159 * f / u_c;
-    return A * bessJ0approx(r) * sin(2.*3.14159*f*t);
+  } else if(mode==2){ // Bessel mode — centered on orbit
+    float r = length(uv - src) * 2.*3.14159 * f / u_c;
+    float r2 = length(uv - src2) * 2.*3.14159 * f * 1.4 / u_c;
+    return A * bessJ0approx(r) * sin(2.*3.14159*f*t)
+         + A*.5 * bessJ0approx(r2) * sin(2.*3.14159*f*1.4*t + 1.);
 
-  } else if(mode==3){ // Dipole — two sources ±
-    float s1 = pointSource(uv, center + vec2(.15, 0), A, f, t);
-    float s2 = pointSource(uv, center - vec2(.15, 0), -A, f, t);
+  } else if(mode==3){ // Dipole — tangent to orbit
+    vec2 tang = normalize(src2 - src + vec2(.0001));
+    float s1 = pointSource(uv, src + tang*.1, A, f, t);
+    float s2 = pointSource(uv, src - tang*.1, -A, f, t);
     return s1 + s2;
 
-  } else if(mode==4){ // Quadrupole — four sources
-    float s1 = pointSource(uv, center+vec2(.12, .12), A, f, t);
-    float s2 = pointSource(uv, center+vec2(-.12, .12), -A, f, t);
-    float s3 = pointSource(uv, center+vec2(.12, -.12), -A, f, t);
-    float s4 = pointSource(uv, center+vec2(-.12,-.12), A, f, t);
+  } else if(mode==4){ // Quadrupole — around orbit point
+    float s1 = pointSource(uv, src+vec2(.1, .1), A, f, t);
+    float s2 = pointSource(uv, src+vec2(-.1, .1), -A, f, t);
+    float s3 = pointSource(uv, src+vec2(.1, -.1), -A, f, t);
+    float s4 = pointSource(uv, src+vec2(-.1,-.1), A, f, t);
     return s1+s2+s3+s4;
 
-  } else { // Interference — 3 sources in triangle
-    vec2 p0 = center + vec2(0., .2);
-    vec2 p1 = center + vec2(-.17, -.1);
-    vec2 p2 = center + vec2(.17, -.1);
-    return pointSource(uv,p0,A,f,t)
-         + pointSource(uv,p1,A,f*1.0,t+0.33)
-         + pointSource(uv,p2,A,f*1.0,t+0.66);
+  } else { // Interference — witch + two trailing ghosts
+    return pointSource(uv, src, A, f, t)
+         + pointSource(uv, src2, A*.7, f, t+0.33)
+         + pointSource(uv, vec2(1.)-src2, A*.4, f, t+0.66);
   }
 }
 
@@ -359,8 +381,8 @@ void main(){
   float ey = max(0., pml_w - uv.y) + max(0., uv.y - (1.-pml_w));
   pml = exp(-(ex + ey) * 40.);
 
-  float new_v = (u_v + accel) * u_damp * pml;
-  float new_u = u_c2 + new_v * u_dt;
+  float new_v = (u_v + accel) * u_damp * pml * u_fade;
+  float new_u = (u_c2 + new_v * u_dt) * u_fade;
   new_u *= pml;
   new_u = clamp(new_u, -3., 3.);
 
@@ -603,7 +625,8 @@ function getU(p,names){const U={};names.forEach(n=>U[n]=gl.getUniformLocation(p,
 const Uw=getU(progWave,['u_wave','u_res','u_dt','u_c','u_damp','u_nonlin',
   'u_moon','u_moonAngle','u_tcoup','u_gx','u_gy','u_gstr',
   'u_bass','u_mid','u_treble','u_amp','u_areact','u_time',
-  'u_srcMode','u_sf0','u_sf1','u_sf2','u_chan']);
+  'u_srcMode','u_sf0','u_sf1','u_sf2','u_chan',
+  'u_srcPos','u_srcPos2','u_fade']);
 const Ud=getU(progDisp,['u_wR','u_wG','u_wB','u_time','u_moon','u_moonAngle',
   'u_bass','u_mid','u_treble','u_amp','u_cspeed','u_sat','u_brt',
   'u_hue','u_glow','u_palette','u_res']);
@@ -747,12 +770,25 @@ const S={
   cspeed:1, sat:1.2, brt:1, hue:0, glow:1,
   palette:0, areact:1, gstr:1,
   moonSpeed:1, realtime:true,
+  // witch orbit
+  witchSpeed:0.4, witchRadius:0.35, witchSpiral:0, cycleFade:0.8,
 };
 
+// Orbit state
+let witchAngle = 0;
+let witchLap = 0;
+let fadeThisFrame = 1.0;
+let srcX = 0.5, srcY = 0.5, src2X = 0.5, src2Y = 0.5;
+
+function clearWaves(){
+  // Rebuild FBOs = zero state = blank canvas for next picture
+  buildFBOs();
+}
+
 let t0=performance.now(), lastT=0;
-let simTime=0;    // simulation time
-let moonTime=0;   // moon simulation time offset in seconds (1 real sec = moonSpeed * lunation_seconds / realtime_rate)
-const LUNATION=29.53058867*24*3600; // seconds per lunar cycle
+let simTime=0;
+let moonTime=0;
+const LUNATION=29.53058867*24*3600;
 
 // Current moon state
 let moonPhaseNorm=0, moonEclLong=0, moonIllum=0;
@@ -795,6 +831,9 @@ function runWavePass(fbSrc, fbDst, chan, simT, dt){
   gl.uniform1f(Uw.u_sf1,S.sf1);
   gl.uniform1f(Uw.u_sf2,S.sf2);
   gl.uniform1i(Uw.u_chan,chan);
+  gl.uniform2f(Uw.u_srcPos, srcX, srcY);
+  gl.uniform2f(Uw.u_srcPos2, src2X, src2Y);
+  gl.uniform1f(Uw.u_fade, fadeThisFrame);
   gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
 }
 
@@ -804,6 +843,37 @@ function render(now){
   simTime+=(now-t0)/1000; t0=now;
 
   updateAudio();
+
+  // ---- Witch orbit ----
+  const prevAngle = witchAngle;
+  witchAngle += S.witchSpeed * wallDt;
+  fadeThisFrame = 1.0;
+
+  // Detect lap completion (crossing 2π)
+  if(Math.floor(witchAngle / (Math.PI*2)) > witchLap){
+    witchLap = Math.floor(witchAngle / (Math.PI*2));
+    // Fade out on cycle completion instead of hard clear
+    fadeThisFrame = S.cycleFade;
+    document.getElementById('orbit-disp').textContent = `⟳ lap ${witchLap}  — new picture!`;
+    setTimeout(()=>{
+      document.getElementById('orbit-disp').textContent =
+        `⟳ ${((witchAngle%(Math.PI*2))/(Math.PI*2)).toFixed(2)} / 1.0`;
+    }, 600);
+  } else {
+    document.getElementById('orbit-disp').textContent =
+      `⟳ ${((witchAngle%(Math.PI*2))/(Math.PI*2)).toFixed(2)} / 1.0`;
+  }
+
+  // Compute source positions (assigned to outer vars for runWavePass)
+  const a1 = witchAngle;
+  const spiral = S.witchSpiral * (witchAngle % (Math.PI*2)) / (Math.PI*2);
+  const r1 = Math.max(0.05, S.witchRadius + spiral * 0.35);
+  srcX = 0.5 + Math.cos(a1) * r1;
+  srcY = 0.5 + Math.sin(a1) * r1;
+  const a2 = a1 * 1.618 + Math.PI;
+  const r2 = r1 * 0.65;
+  src2X = 0.5 + Math.cos(a2) * r2;
+  src2Y = 0.5 + Math.sin(a2) * r2;
 
   // Advance moon time
   const moonDt = wallDt * S.moonSpeed;
@@ -916,6 +986,15 @@ document.querySelectorAll('[data-src]').forEach(b=>b.addEventListener('click',()
   document.querySelectorAll('[data-src]').forEach(x=>x.classList.remove('on'));
   b.classList.add('on'); S.srcMode=parseInt(b.dataset.src);
 }));
+// Witch orbit controls
+wire('wspd','witchSpeed','v-wspd');
+wire('wrad','witchRadius','v-wrad');
+wire('wspi','witchSpiral','v-wspi');
+wire('cfade','cycleFade','v-cfade');
+document.getElementById('btn-clear').addEventListener('click',()=>{
+  witchAngle=0; witchLap=0; clearWaves();
+});
+
 document.getElementById('btn-mic').addEventListener('click',startMic);
 document.getElementById('btn-gravity').addEventListener('click',startGravity);
 document.getElementById('btn-fs').addEventListener('click',()=>{
