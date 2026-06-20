@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ORBIT — Living Edge Observatory</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#000; overflow:hidden; font-family:monospace; color:#fff; }
+canvas#c { display:block; width:100vw; height:100vh; }
+
+#ui {
+  position:fixed; top:0; right:0; width:265px; height:100vh;
+  background:rgba(0,0,0,0.85); border-left:1px solid rgba(255,255,255,0.08);
+  padding:13px; overflow-y:auto; z-index:10; font-size:11px;
+  transition:transform .3s ease;
+}
+#ui.hidden { transform:translateX(100%); }
+#tog {
+  position:fixed; top:10px; right:10px; z-index:20;
+  background:rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.25);
+  color:#fff; padding:5px 9px; cursor:pointer; font-family:monospace; font-size:11px;
+}
+#tog.open { right:275px; }
+
+.sec { margin-bottom:14px; border-top:1px solid rgba(255,255,255,0.08); padding-top:9px; }
+.sec:first-child { border-top:none; }
+h3 { margin-bottom:6px; font-size:9px; letter-spacing:2px; color:#666; text-transform:uppercase; }
+
+label { display:flex; justify-content:space-between; margin-bottom:3px; align-items:center; }
+label span { color:#aaa; }
+.v { color:#fff; min-width:36px; text-align:right; }
+input[type=range] { width:100%; margin:2px 0; accent-color:#a0f; }
+
+select {
+  width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15);
+  color:#fff; padding:4px 5px; font-family:monospace; font-size:11px; margin-top:2px;
+}
+button {
+  width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15);
+  color:#aaa; padding:5px; cursor:pointer; font-family:monospace; font-size:11px; margin-top:3px;
+}
+button:hover { background:rgba(255,255,255,0.12); color:#fff; }
+button.on { background:rgba(160,0,255,0.2); border-color:#a0f; color:#c0f; }
+
+#title { font-size:13px; letter-spacing:4px; margin-bottom:2px; color:#fff; }
+#sub { font-size:9px; color:#444; margin-bottom:11px; line-height:1.7; }
+
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:3px; margin-top:3px; }
+.mb {
+  padding:6px 3px; font-size:9px; border:1px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.04); color:#777; cursor:pointer; text-align:center; font-family:monospace;
+}
+.mb:hover { color:#ccc; }
+.mb.on { background:rgba(160,0,255,0.18); border-color:#a0f; color:#c0f; }
+
+#meters {
+  display:flex; gap:3px; height:28px; margin:5px 0; align-items:flex-end;
+}
+.meter {
+  flex:1; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1);
+  position:relative; overflow:hidden;
+}
+.meter-fill {
+  position:absolute; bottom:0; width:100%; transition:height .05s;
+  background:linear-gradient(to top, #a0f, #f0a);
+}
+.meter-lbl { font-size:8px; color:#555; text-align:center; margin-top:2px; }
+
+#status { font-size:9px; color:#f88; margin-top:4px; }
+#status.ok { color:#8f8; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<button id="tog" class="open">ORBIT</button>
+
+<div id="ui">
+  <div id="title">ORBIT</div>
+  <div id="sub">Edge shapes orbit like planets<br>audio shapes their gravity</div>
+
+  <div class="sec">
+    <h3>Inputs</h3>
+    <button id="btn-cam">START CAMERA</button>
+    <button id="btn-mic" style="margin-top:3px;">OPEN MICROPHONE</button>
+    <div id="status">Inputs not started</div>
+    <select id="cam-sel" style="margin-top:5px;"><option>Loading...</option></select>
+    <button id="btn-flip">FLIP CAMERA</button>
+    <div id="meters">
+      <div class="meter"><div class="meter-fill" id="m-bass" style="height:0%"></div></div>
+      <div class="meter"><div class="meter-fill" id="m-mid"  style="height:0%"></div></div>
+      <div class="meter"><div class="meter-fill" id="m-tre"  style="height:0%"></div></div>
+    </div>
+    <div style="display:flex;gap:3px;font-size:8px;color:#444;">
+      <div style="flex:1;text-align:center">BASS</div>
+      <div style="flex:1;text-align:center">MID</div>
+      <div style="flex:1;text-align:center">TRE</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h3>Edge Capture</h3>
+    <label><span>Sensitivity</span><span class="v" id="v-esens">0.25</span></label>
+    <input type="range" id="esens" min="0.01" max="1" step="0.01" value="0.25">
+    <label><span>Capture rate</span><span class="v" id="v-crate">0.60</span></label>
+    <input type="range" id="crate" min="0" max="1" step="0.01" value="0.6">
+    <label><span>Trail decay</span><span class="v" id="v-decay">0.97</span></label>
+    <input type="range" id="decay" min="0.8" max="0.999" step="0.001" value="0.97">
+    <button id="btn-clear">CLEAR TRAILS</button>
+    <button id="btn-freeze" style="margin-top:2px;">FREEZE CAPTURE</button>
+  </div>
+
+  <div class="sec">
+    <h3>Orbit</h3>
+    <div class="grid2">
+      <div class="mb on" data-o="0">CIRCULAR</div>
+      <div class="mb" data-o="1">ELLIPTICAL</div>
+      <div class="mb" data-o="2">EPICYCLIC</div>
+      <div class="mb" data-o="3">SPIRAL</div>
+      <div class="mb" data-o="4">LISSAJOUS</div>
+      <div class="mb" data-o="5">VORTEX</div>
+    </div>
+    <label style="margin-top:7px;"><span>Orbit speed</span><span class="v" id="v-ospeed">0.30</span></label>
+    <input type="range" id="ospeed" min="0" max="2" step="0.005" value="0.3">
+    <label><span>Orbit radius</span><span class="v" id="v-orad">0.50</span></label>
+    <input type="range" id="orad" min="0" max="1" step="0.01" value="0.5">
+    <label><span>Audio → speed</span><span class="v" id="v-aospeed">0.50</span></label>
+    <input type="range" id="aospeed" min="0" max="2" step="0.01" value="0.5">
+  </div>
+
+  <div class="sec">
+    <h3>Cellular Automaton</h3>
+    <div class="grid2">
+      <div class="mb on" data-ca="0">OFF</div>
+      <div class="mb" data-ca="1">LIFE</div>
+      <div class="mb" data-ca="2">BRIAN</div>
+      <div class="mb" data-ca="3">LENIA</div>
+      <div class="mb" data-ca="4">SEEDS</div>
+      <div class="mb" data-ca="5">WAVES</div>
+    </div>
+    <label style="margin-top:7px;"><span>CA strength</span><span class="v" id="v-castr">0.40</span></label>
+    <input type="range" id="castr" min="0" max="1" step="0.01" value="0.4">
+    <label><span>CA threshold</span><span class="v" id="v-cathr">0.50</span></label>
+    <input type="range" id="cathr" min="0.01" max="1" step="0.01" value="0.5">
+  </div>
+
+  <div class="sec">
+    <h3>Fractal Injection</h3>
+    <div class="grid2">
+      <div class="mb on" data-fr="0">NONE</div>
+      <div class="mb" data-fr="1">JULIA</div>
+      <div class="mb" data-fr="2">NEWTON</div>
+      <div class="mb" data-fr="3">BURN.SHIP</div>
+      <div class="mb" data-fr="4">IFS FERN</div>
+      <div class="mb" data-fr="5">SIERP.</div>
+    </div>
+    <label style="margin-top:7px;"><span>Fractal mix</span><span class="v" id="v-fmix">0.20</span></label>
+    <input type="range" id="fmix" min="0" max="1" step="0.01" value="0.2">
+    <label><span>Julia Cx (audio)</span><span class="v" id="v-jcx">-0.70</span></label>
+    <input type="range" id="jcx" min="-2" max="2" step="0.005" value="-0.7">
+    <label><span>Julia Cy (audio)</span><span class="v" id="v-jcy">0.27</span></label>
+    <input type="range" id="jcy" min="-2" max="2" step="0.005" value="0.27">
+  </div>
+
+  <div class="sec">
+    <h3>Recursion</h3>
+    <div class="grid2">
+      <div class="mb on" data-rec="0">OFF</div>
+      <div class="mb" data-rec="1">MIRROR ×4</div>
+      <div class="mb" data-rec="2">KALEID ×6</div>
+      <div class="mb" data-rec="3">TILE</div>
+      <div class="mb" data-rec="4">INWARD</div>
+      <div class="mb" data-rec="5">MÖBIUS</div>
+    </div>
+    <label style="margin-top:7px;"><span>Recursion depth</span><span class="v" id="v-rdepth">3.0</span></label>
+    <input type="range" id="rdepth" min="1" max="8" step="0.1" value="3">
+  </div>
+
+  <div class="sec">
+    <h3>Color</h3>
+    <select id="palette">
+      <option value="0">Orbital Fire</option>
+      <option value="1">Deep Space</option>
+      <option value="2">Plasma Arc</option>
+      <option value="3">Biolumen.</option>
+      <option value="4">Prism</option>
+      <option value="5">Monolith</option>
+    </select>
+    <label style="margin-top:6px;"><span>Hue shift</span><span class="v" id="v-hue">0.00</span></label>
+    <input type="range" id="hue" min="0" max="1" step="0.005" value="0">
+    <label><span>Glow</span><span class="v" id="v-glow">1.50</span></label>
+    <input type="range" id="glow" min="0" max="4" step="0.05" value="1.5">
+    <label><span>Camera blend</span><span class="v" id="v-camix">0.15</span></label>
+    <input type="range" id="camix" min="0" max="1" step="0.01" value="0.15">
+    <label><span>Audio → color</span><span class="v" id="v-acol">0.60</span></label>
+    <input type="range" id="acol" min="0" max="1" step="0.01" value="0.6">
+  </div>
+
+  <div class="sec">
+    <button id="btn-fs">FULLSCREEN  [F]</button>
+  </div>
+</div>
+
+<video id="vid" autoplay playsinline muted style="display:none"></video>
+
+<!-- ===== EDGE SHADER ===== -->
+<script id="vert-base" type="x-shader/v">
+attribute vec2 a_pos;
+varying vec2 v_uv;
+void main(){
+  v_uv=vec2(a_pos.x*.5+.5,.5-a_pos.y*.5);
+  gl_Position=vec4(a_pos,0,1);
+}
+</script>
+
+<script id="frag-edge" type="x-shader/f">
+precision highp float;
+varying vec2 v_uv;
+uniform sampler2D u_cam;
+uniform vec2 u_res;
+uniform float u_esens;
+uniform int u_flip;
+
+vec4 s(vec2 uv){
+  if(u_flip==1) uv.x=1.-uv.x;
+  return texture2D(u_cam,clamp(uv,0.,1.));
+}
+float luma(vec3 c){return dot(c,vec3(.299,.587,.114));}
+
+void main(){
+  vec2 px=1./u_res;
+  vec2 uv=v_uv;
+  // Sobel
+  float tl=luma(s(uv+px*vec2(-1, 1)).rgb);
+  float t2=luma(s(uv+px*vec2( 0, 1)).rgb);
+  float tr=luma(s(uv+px*vec2( 1, 1)).rgb);
+  float l =luma(s(uv+px*vec2(-1, 0)).rgb);
+  float r =luma(s(uv+px*vec2( 1, 0)).rgb);
+  float bl=luma(s(uv+px*vec2(-1,-1)).rgb);
+  float b2=luma(s(uv+px*vec2( 0,-1)).rgb);
+  float br=luma(s(uv+px*vec2( 1,-1)).rgb);
+  float gx=-tl-2.*l-bl+tr+2.*r+br;
+  float gy=-tl-2.*t2-tr+bl+2.*b2+br;
+  float edge=clamp(length(vec2(gx,gy))/u_esens,0.,1.);
+  // Pack: R=edge, GB=gradient direction, A=camera luma
+  float angle=atan(gy,gx)*.5/3.14159+.5;
+  gl_FragColor=vec4(edge, angle, luma(s(uv).rgb), 1.);
+}
+</script>
+
+<!-- ===== ACCUMULATION SHADER ===== -->
+<script id="frag-accum" type="x-shader/f">
+precision highp float;
+varying vec2 v_uv;
+uniform sampler2D u_prev;
+uniform sampler2D u_edge;
+uniform sampler2D u_cam;
+uniform float u_time;
+uniform vec2  u_res;
+uniform float u_angle;      // current cumulative orbit angle
+uniform int   u_orbitMode;
+uniform float u_orad;       // orbit offset influence
+uniform float u_decay;
+uniform float u_crate;
+uniform int   u_caMode;
+uniform float u_castr;
+uniform float u_cathr;
+uniform int   u_fractalMode;
+uniform float u_fmix;
+uniform float u_jcx;
+uniform float u_jcy;
+uniform int   u_recMode;
+uniform float u_rdepth;
+uniform int   u_freeze;
+uniform int   u_clear;
+uniform float u_bass;
+uniform float u_mid;
+uniform float u_treble;
+uniform float u_amp;
+uniform int   u_flip;
+
+// ---- helpers ----
+float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float noise(vec2 p){
+  vec2 i=floor(p);vec2 f=fract(p);f=f*f*(3.-2.*f);
+  return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),
+             mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);
+}
+float fbm(vec2 p){
+  float v=0.,a=.5;
+  for(int i=0;i<5;i++){v+=a*noise(p);p=p*2.1+vec2(1.3,3.7);a*=.5;}
+  return v;
+}
+vec4 cam(vec2 uv){
+  if(u_flip==1) uv.x=1.-uv.x;
+  return texture2D(u_cam,clamp(uv,0.,1.));
+}
+
+// ---- recursion / symmetry transform ----
+vec2 applyRecursion(vec2 uv){
+  if(u_recMode==0) return uv;
+  vec2 p=uv-.5;
+  if(u_recMode==1){ // 4-fold mirror
+    p=abs(p);
+  } else if(u_recMode==2){ // 6-fold kaleidoscope
+    float a=atan(p.y,p.x);
+    float r=length(p);
+    float seg=3.14159/3.;
+    a=mod(a,seg*2.);
+    if(a>seg) a=seg*2.-a;
+    p=vec2(cos(a),sin(a))*r;
+  } else if(u_recMode==3){ // tile (fract)
+    p=fract(p*2.+.5)-.5;
+  } else if(u_recMode==4){ // inward recursion — zoom into center repeatedly
+    float d=float(int(u_rdepth));
+    for(int i=0;i<8;i++){
+      if(float(i)>=d) break;
+      if(length(p)>0.3) break;
+      p=p*3.;
+    }
+  } else { // Möbius-like inversion
+    float r2=dot(p,p);
+    if(r2>0.0001) p=p/r2*.25;
+  }
+  return p+.5;
+}
+
+// ---- orbit transform ----
+// Returns UV to sample from previous accumulation frame
+vec2 orbitSampleUV(vec2 uv, float angle){
+  vec2 center=vec2(.5);
+  // audio nudges the center slightly for wobble
+  center += vec2(u_bass-.5, u_mid-.5)*0.04*u_orad;
+
+  vec2 p=uv-center;
+
+  if(u_orbitMode==0){ // circular: rotate prev frame backward so content appears to rotate forward
+    float c=cos(-angle),s2=sin(-angle);
+    p=vec2(p.x*c-p.y*s2,p.x*s2+p.y*c);
+
+  } else if(u_orbitMode==1){ // elliptical
+    float c=cos(-angle),s2=sin(-angle);
+    p=vec2(p.x*c-p.y*s2,p.x*s2+p.y*c);
+    p.x*=1.0+u_orad*0.4;
+    p.y*=1.0-u_orad*0.3;
+
+  } else if(u_orbitMode==2){ // epicyclic
+    float c=cos(-angle),s2=sin(-angle);
+    p=vec2(p.x*c-p.y*s2,p.x*s2+p.y*c);
+    float a2=angle*3.;
+    p+=vec2(cos(a2),sin(a2))*0.03*(u_orad+u_amp*0.5);
+
+  } else if(u_orbitMode==3){ // spiral — very slight zoom per frame
+    float c=cos(-angle),s2=sin(-angle);
+    p=vec2(p.x*c-p.y*s2,p.x*s2+p.y*c);
+    p*=(1.0+u_orad*0.002);
+
+  } else if(u_orbitMode==4){ // lissajous drift
+    float lx=sin(3.*u_time*.05+1.5708);
+    float ly=sin(2.*u_time*.05);
+    center+=vec2(lx,ly)*0.08*u_orad;
+    p=uv-center;
+    float c=cos(-angle),s2=sin(-angle);
+    p=vec2(p.x*c-p.y*s2,p.x*s2+p.y*c);
+
+  } else { // vortex — rotation + outward distortion
+    float r=length(p);
+    float a=atan(p.y,p.x)-angle*(1.+r*2.);
+    p=vec2(cos(a),sin(a))*r;
+  }
+
+  return p+center;
+}
+
+// ---- cellular automaton ----
+float caRule(vec2 uv, float self_val, float px_size){
+  if(u_caMode==0) return self_val;
+  vec2 px=vec2(px_size);
+  float n=0., total=0.;
+  for(int i=-1;i<=1;i++) for(int j=-1;j<=1;j++){
+    if(i==0&&j==0) continue;
+    float nb=texture2D(u_prev, uv+vec2(float(i),float(j))*px).r;
+    n+=nb; total+=1.;
+  }
+  float avg=n/total;
+  float alive=step(u_cathr, self_val);
+
+  if(u_caMode==1){ // Conway's Life (continuous)
+    float birth=step(u_cathr*0.5,avg)*(1.-step(u_cathr,avg))*(1.-alive);
+    float survive=alive*(step(u_cathr*0.4,avg)*(1.-step(u_cathr*1.4,avg)));
+    return clamp(birth+survive,0.,1.)*u_castr + self_val*(1.-u_castr);
+
+  } else if(u_caMode==2){ // Brian's Brain
+    // 3 states: dying(0.3-0.7), off(<0.3), firing(>0.7)
+    float firing=step(.7,self_val);
+    float dying=step(.3,self_val)*(1.-firing);
+    float off=1.-firing-dying;
+    float nb_firing=0.;
+    for(int i=-1;i<=1;i++) for(int j=-1;j<=1;j++){
+      if(i==0&&j==0) continue;
+      nb_firing+=step(.7,texture2D(u_prev,uv+vec2(float(i),float(j))*px).r);
+    }
+    float newFiring=off*step(2.,nb_firing)*(1.-step(3.,nb_firing));
+    float newDying=firing;
+    float newOff=dying;
+    float result=newFiring*.9+newDying*.5+newOff*.0;
+    return mix(self_val, result, u_castr);
+
+  } else if(u_caMode==3){ // Lenia — continuous smooth CA
+    // Gaussian-weighted neighbourhood integration
+    float kernel=0., ksum=0.;
+    for(int i=-2;i<=2;i++) for(int j=-2;j<=2;j++){
+      float d=length(vec2(float(i),float(j)));
+      float w=exp(-d*d*0.5);
+      kernel+=texture2D(u_prev,uv+vec2(float(i),float(j))*px).r*w;
+      ksum+=w;
+    }
+    kernel/=ksum;
+    // Growth function: bell curve around u_cathr
+    float mu=u_cathr; float sigma=0.15;
+    float growth=2.*exp(-(kernel-mu)*(kernel-mu)/(2.*sigma*sigma))-1.;
+    float next=clamp(self_val+0.1*growth,0.,1.);
+    return mix(self_val,next,u_castr);
+
+  } else if(u_caMode==4){ // Seeds
+    float nb_alive=0.;
+    for(int i=-1;i<=1;i++) for(int j=-1;j<=1;j++){
+      if(i==0&&j==0) continue;
+      nb_alive+=step(u_cathr,texture2D(u_prev,uv+vec2(float(i),float(j))*px).r);
+    }
+    float birth=(1.-alive)*step(2.,nb_alive)*(1.-step(3.,nb_alive));
+    return mix(self_val, birth, u_castr);
+
+  } else { // Waves — excitable medium
+    float exc=avg-self_val;
+    float wave=self_val+exc*0.3*u_castr;
+    if(self_val>u_cathr&&avg<u_cathr*0.5) wave*=0.7;
+    return clamp(wave,0.,1.);
+  }
+}
+
+// ---- fractal injection ----
+float fractalVal(vec2 uv){
+  if(u_fractalMode==0) return 0.;
+  vec2 p=(uv-.5)*3.5;
+
+  if(u_fractalMode==1){ // Julia
+    vec2 c=vec2(u_jcx+u_bass*0.3, u_jcy+u_treble*0.2);
+    vec2 z=p;
+    for(int i=0;i<48;i++){
+      z=vec2(z.x*z.x-z.y*z.y,2.*z.x*z.y)+c;
+      if(dot(z,z)>4.) return float(i)/48.;
+    }
+    return 1.;
+
+  } else if(u_fractalMode==2){ // Newton z^3-1
+    vec2 z=p;
+    for(int i=0;i<32;i++){
+      vec2 z2=vec2(z.x*z.x-z.y*z.y,2.*z.x*z.y);
+      vec2 z3=vec2(z2.x*z.x-z2.y*z.y,z2.x*z.y+z2.y*z.x);
+      vec2 denom=3.*z2; float d2=dot(denom,denom);
+      if(d2<1e-6) break;
+      vec2 delta=vec2((z3.x-1.)*denom.x+z3.y*denom.y,(z3.y)*denom.x-(z3.x-1.)*denom.y)/d2;
+      z-=delta;
+      if(dot(delta,delta)<1e-8) return float(i)/32.;
+    }
+    return 0.;
+
+  } else if(u_fractalMode==3){ // Burning Ship
+    vec2 z=vec2(0.);
+    for(int i=0;i<48;i++){
+      z=vec2(z.x*z.x-z.y*z.y,2.*abs(z.x*z.y))+p;
+      if(dot(z,z)>4.) return float(i)/48.;
+    }
+    return 1.;
+
+  } else if(u_fractalMode==4){ // IFS Barnsley fern (approximate via noise)
+    float fern=0.;
+    vec2 q=p;
+    for(int i=0;i<12;i++){
+      float r=hash(q+vec2(float(i)*.7,float(i)*.3));
+      if(r<.01){ q=vec2(0.,.16*q.y); }
+      else if(r<.86){ q=vec2(.85*q.x+.04*q.y,-.04*q.x+.85*q.y+1.6); }
+      else if(r<.93){ q=vec2(.2*q.x-.26*q.y,.23*q.x+.22*q.y+1.6); }
+      else { q=vec2(-.15*q.x+.28*q.y,.26*q.x+.24*q.y+.44); }
+      fern+=exp(-length(q-p)*8.)*0.1;
+    }
+    return clamp(fern,0.,1.);
+
+  } else { // Sierpinski triangle (analytic)
+    vec2 q=p*.5+.5;
+    float s3=1.;
+    for(int i=0;i<8;i++){
+      if(float(i)>=u_rdepth) break;
+      q*=2.; s3*=2.;
+      if(q.x>1.) q.x-=1.;
+      if(q.y>1.) q.y-=1.;
+      if(q.x+q.y>1.){ q.x=1.-q.x; q.y=1.-q.y; }
+    }
+    return step(.9,q.x+q.y)*.5;
+  }
+}
+
+void main(){
+  if(u_clear==1){ gl_FragColor=vec4(0); return; }
+
+  vec2 uv=v_uv;
+
+  // Apply recursion symmetry to UV space
+  vec2 symUV=applyRecursion(uv);
+
+  // Sample previous accumulated frame at orbital offset UV
+  vec2 orbitUV=orbitSampleUV(symUV, u_angle);
+  vec4 prev=texture2D(u_prev, clamp(orbitUV,0.,1.));
+
+  // Decay
+  float accumulated=prev.r*u_decay;
+
+  // Apply CA rules on accumulated value
+  float px_size=1./max(u_res.x,u_res.y);
+  accumulated=caRule(orbitUV, accumulated, px_size);
+
+  // Sample new edges from camera at symmetric UV
+  vec4 edgeData=texture2D(u_edge, symUV);
+  float newEdge=edgeData.r;
+
+  // Audio amplifies edge capture
+  float audioBoost=1.+u_amp*1.5+u_bass*0.8;
+  if(u_freeze==0){
+    accumulated=clamp(accumulated+newEdge*u_crate*audioBoost*.5, 0., 1.);
+  }
+
+  // Inject fractal
+  float fval=fractalVal(symUV)*u_fmix*(1.+u_mid*0.5);
+  accumulated=clamp(accumulated+fval*0.15, 0., 1.);
+
+  // Pack extra data into GBA channels
+  float angle_data=edgeData.y;  // gradient angle from edge pass
+  float cam_luma=edgeData.z;
+
+  gl_FragColor=vec4(accumulated, angle_data, cam_luma, 1.);
+}
+</script>
+
+<!-- ===== DISPLAY SHADER ===== -->
+<script id="frag-display" type="x-shader/f">
+precision highp float;
+varying vec2 v_uv;
+uniform sampler2D u_accum;
+uniform sampler2D u_cam;
+uniform float u_time;
+uniform float u_hue;
+uniform float u_glow;
+uniform float u_camix;
+uniform int   u_palette;
+uniform float u_bass;
+uniform float u_mid;
+uniform float u_treble;
+uniform float u_amp;
+uniform float u_acol;
+uniform int   u_flip;
+
+vec3 hsv2rgb(vec3 c){
+  vec3 p=abs(fract(c.xxx+vec3(1,2./3.,1./3.))*6.-3.);
+  return c.z*mix(vec3(1.),clamp(p-1.,0.,1.),c.y);
+}
+float luma(vec3 c){return dot(c,vec3(.299,.587,.114));}
+vec4 camCol(vec2 uv){
+  if(u_flip==1) uv.x=1.-uv.x;
+  return texture2D(u_cam,clamp(uv,0.,1.));
+}
+
+vec3 palette(float t, int pal){
+  t=fract(t);
+  if(pal==0){ // Orbital Fire
+    return .5+.5*cos(6.2832*(t*vec3(1.,.5,.3)+vec3(0.,.15,.4)));
+  } else if(pal==1){ // Deep Space
+    return .5+.5*cos(6.2832*(t*vec3(.3,.5,1.)+vec3(.5,.2,.8)));
+  } else if(pal==2){ // Plasma Arc
+    return .5+.5*cos(6.2832*(t*vec3(.8,1.,.4)+vec3(.2,.5,.1)));
+  } else if(pal==3){ // Bioluminescent
+    vec3 c=vec3(0.);
+    c+=vec3(0.,.7,.4)*max(0.,sin(t*6.2832));
+    c+=vec3(0.,.2,1.)*max(0.,sin(t*6.2832*2.+1.));
+    return c;
+  } else if(pal==4){ // Prism
+    return vec3(.5+.5*sin(t*6.2832),.5+.5*sin(t*6.2832+2.094),.5+.5*sin(t*6.2832+4.189));
+  } else { // Monolith
+    float v=pow(t,2.);
+    return vec3(v*.4,v*.6,v);
+  }
+}
+
+void main(){
+  vec2 uv=v_uv;
+  vec4 accum=texture2D(u_accum,uv);
+  float bright=accum.r;
+  float edgeAngle=accum.g;
+  float camL=accum.b;
+
+  // Tone map with glow
+  float mapped=1.-exp(-bright*u_glow);
+
+  // Colour: hue driven by edge angle + time + audio
+  float audioHue=u_bass*0.15+u_mid*0.05-u_treble*0.1;
+  float hue=fract(edgeAngle + u_hue + u_time*.02 + audioHue*u_acol);
+  vec3 col=palette(hue, u_palette)*mapped;
+
+  // Glow fringe: add softer halo
+  float hueShift=fract(hue+.33);
+  col+=palette(hueShift,u_palette)*mapped*mapped*.4;
+
+  // Audio pulse brightens
+  col*=1.+u_amp*0.6+u_bass*0.4;
+
+  // Blend in original camera
+  vec3 cam3=camCol(uv).rgb;
+  float camLuma=luma(cam3);
+  vec3 camMono=mix(cam3,vec3(camLuma),.6);
+  col=mix(col, col+camMono*0.3, u_camix);
+
+  gl_FragColor=vec4(clamp(col,0.,1.),1.);
+}
+</script>
+
+<script>
+// ========== WebGL setup ==========
+const canvas = document.getElementById('c');
+const gl = canvas.getContext('webgl');
+const video = document.getElementById('vid');
+
+function resize(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  gl.viewport(0,0,canvas.width,canvas.height);
+}
+window.addEventListener('resize', resize);
+resize();
+
+function mkShader(type, src){
+  const s=gl.createShader(type);
+  gl.shaderSource(s,src); gl.compileShader(s);
+  if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)) throw gl.getShaderInfoLog(s);
+  return s;
+}
+function mkProg(vsrc, fsrc){
+  const p=gl.createProgram();
+  gl.attachShader(p,mkShader(gl.VERTEX_SHADER,vsrc));
+  gl.attachShader(p,mkShader(gl.FRAGMENT_SHADER,fsrc));
+  gl.linkProgram(p);
+  if(!gl.getProgramParameter(p,gl.LINK_STATUS)) throw gl.getProgramInfoLog(p);
+  return p;
+}
+
+const VS = document.getElementById('vert-base').textContent;
+const progEdge   = mkProg(VS, document.getElementById('frag-edge').textContent);
+const progAccum  = mkProg(VS, document.getElementById('frag-accum').textContent);
+const progDisplay= mkProg(VS, document.getElementById('frag-display').textContent);
+
+// Quad
+const qbuf = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, qbuf);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+
+function bindQuad(prog){
+  gl.bindBuffer(gl.ARRAY_BUFFER, qbuf);
+  const loc=gl.getAttribLocation(prog,'a_pos');
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+}
+
+// Textures
+function mkTex(w,h,data){
+  const t=gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D,t);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,w,h,0,gl.RGBA,gl.UNSIGNED_BYTE,data);
+  return t;
+}
+function mkFBO(w,h){
+  const tex=mkTex(w,h,null);
+  const fbo=gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER,fbo);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,tex,0);
+  gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+  return {fbo,tex};
+}
+
+let W=canvas.width, H=canvas.height;
+let camTex  = mkTex(1,1,new Uint8Array([0,0,0,255]));
+let edgeFBO = mkFBO(W,H);
+let accumA  = mkFBO(W,H);
+let accumB  = mkFBO(W,H);
+
+// Rebuild FBOs on resize
+window.addEventListener('resize',()=>{
+  W=canvas.width; H=canvas.height;
+  edgeFBO=mkFBO(W,H);
+  accumA=mkFBO(W,H);
+  accumB=mkFBO(W,H);
+});
+
+// ========== Audio ==========
+let analyser=null, audioData=null;
+let bass=0,mid=0,treble=0,amp=0;
+
+async function startMic(){
+  try {
+    const ctx=new (window.AudioContext||window.webkitAudioContext)();
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+    const src=ctx.createMediaStreamSource(stream);
+    analyser=ctx.createAnalyser();
+    analyser.fftSize=256;
+    src.connect(analyser);
+    audioData=new Uint8Array(analyser.frequencyBinCount);
+    document.getElementById('btn-mic').classList.add('on');
+    document.getElementById('btn-mic').textContent='MIC LIVE';
+  } catch(e){
+    alert('Mic error: '+e.message);
+  }
+}
+
+function updateAudio(){
+  if(!analyser) return;
+  analyser.getByteFrequencyData(audioData);
+  const avg=(arr,a,b)=>{
+    let s=0; for(let i=a;i<b;i++) s+=arr[i];
+    return s/(b-a)/255;
+  };
+  const n=audioData.length;
+  bass   = avg(audioData,0,Math.floor(n*.1));
+  mid    = avg(audioData,Math.floor(n*.1),Math.floor(n*.4));
+  treble = avg(audioData,Math.floor(n*.4),Math.floor(n*.8));
+  amp    = avg(audioData,0,n);
+  document.getElementById('m-bass').style.height=(bass*100)+'%';
+  document.getElementById('m-mid').style.height=(mid*100)+'%';
+  document.getElementById('m-tre').style.height=(treble*100)+'%';
+}
+
+// ========== Camera ==========
+let camRunning=false;
+
+async function listCams(){
+  const devs=await navigator.mediaDevices.enumerateDevices().catch(()=>[]);
+  const sel=document.getElementById('cam-sel');
+  const cams=devs.filter(d=>d.kind==='videoinput');
+  sel.innerHTML='';
+  cams.forEach((d,i)=>{
+    const o=document.createElement('option');
+    o.value=d.deviceId; o.textContent=d.label||`Camera ${i+1}`; sel.appendChild(o);
+  });
+}
+
+async function startCamera(devId){
+  try {
+    if(video.srcObject) video.srcObject.getTracks().forEach(t=>t.stop());
+    const con={video:devId?{deviceId:{exact:devId},width:{ideal:1280},height:{ideal:720}}:{width:{ideal:1280},height:{ideal:720}}};
+    const stream=await navigator.mediaDevices.getUserMedia(con);
+    video.srcObject=stream;
+    await new Promise(r=>video.onloadedmetadata=r);
+    video.play();
+    camRunning=true;
+    const st=document.getElementById('status');
+    st.textContent=`Cam ${video.videoWidth}×${video.videoHeight} | Orbit active`;
+    st.className='ok';
+    await listCams();
+    const sid=stream.getVideoTracks()[0].getSettings().deviceId;
+    if(sid) document.getElementById('cam-sel').value=sid;
+  } catch(e){
+    document.getElementById('status').textContent='Cam error: '+e.message;
+  }
+}
+
+function uploadCamFrame(){
+  if(!camRunning||video.readyState<2) return;
+  gl.bindTexture(gl.TEXTURE_2D,camTex);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,video);
+}
+
+// ========== Uniforms helper ==========
+function getU(prog, names){
+  const U={};
+  names.forEach(n=>U[n]=gl.getUniformLocation(prog,n));
+  return U;
+}
+
+const Ue = getU(progEdge,   ['u_cam','u_res','u_esens','u_flip']);
+const Ua = getU(progAccum,  ['u_prev','u_edge','u_cam','u_time','u_res','u_angle',
+  'u_orbitMode','u_orad','u_decay','u_crate','u_caMode','u_castr','u_cathr',
+  'u_fractalMode','u_fmix','u_jcx','u_jcy','u_recMode','u_rdepth','u_freeze','u_clear',
+  'u_bass','u_mid','u_treble','u_amp','u_flip']);
+const Ud = getU(progDisplay,['u_accum','u_cam','u_time','u_hue','u_glow','u_camix',
+  'u_palette','u_bass','u_mid','u_treble','u_amp','u_acol','u_flip']);
+
+// ========== State ==========
+const S={
+  esens:0.25, crate:0.6, decay:0.97,
+  ospeed:0.3, orad:0.5,  aospeed:0.5,
+  orbitMode:0, caMode:0, castr:0.4, cathr:0.5,
+  fractalMode:0, fmix:0.2, jcx:-0.7, jcy:0.27,
+  recMode:0, rdepth:3,
+  palette:0, hue:0, glow:1.5, camix:0.15, acol:0.6,
+  flip:0, freeze:0, clear:0,
+};
+let t0=performance.now(), orbitAngle=0;
+let pingpong=0; // 0=write to B read from A, 1=vice versa
+
+// ========== Render ==========
+function render(now){
+  const t=(now-t0)/1000;
+  updateAudio();
+  uploadCamFrame();
+
+  // Advance orbit angle: base speed + audio influence
+  orbitAngle += (S.ospeed + amp*S.aospeed)*0.01;
+
+  // --- PASS 1: Edge detection → edgeFBO ---
+  gl.bindFramebuffer(gl.FRAMEBUFFER, edgeFBO.fbo);
+  gl.viewport(0,0,W,H);
+  gl.useProgram(progEdge);
+  bindQuad(progEdge);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,camTex);
+  gl.uniform1i(Ue.u_cam,0);
+  gl.uniform2f(Ue.u_res,W,H);
+  gl.uniform1f(Ue.u_esens,S.esens);
+  gl.uniform1i(Ue.u_flip,S.flip);
+  gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+
+  // --- PASS 2: Accumulate into ping-pong FBO ---
+  const readFBO  = pingpong===0 ? accumA : accumB;
+  const writeFBO = pingpong===0 ? accumB : accumA;
+  pingpong = pingpong===0 ? 1 : 0;
+
+  gl.bindFramebuffer(gl.FRAMEBUFFER, writeFBO.fbo);
+  gl.viewport(0,0,W,H);
+  gl.useProgram(progAccum);
+  bindQuad(progAccum);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,readFBO.tex);
+  gl.uniform1i(Ua.u_prev,0);
+  gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,edgeFBO.tex);
+  gl.uniform1i(Ua.u_edge,1);
+  gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D,camTex);
+  gl.uniform1i(Ua.u_cam,2);
+  gl.uniform1f(Ua.u_time,t);
+  gl.uniform2f(Ua.u_res,W,H);
+  gl.uniform1f(Ua.u_angle,orbitAngle);
+  gl.uniform1i(Ua.u_orbitMode,S.orbitMode);
+  gl.uniform1f(Ua.u_orad,S.orad);
+  gl.uniform1f(Ua.u_decay,S.decay);
+  gl.uniform1f(Ua.u_crate,S.crate);
+  gl.uniform1i(Ua.u_caMode,S.caMode);
+  gl.uniform1f(Ua.u_castr,S.castr);
+  gl.uniform1f(Ua.u_cathr,S.cathr);
+  gl.uniform1i(Ua.u_fractalMode,S.fractalMode);
+  gl.uniform1f(Ua.u_fmix,S.fmix);
+  gl.uniform1f(Ua.u_jcx,S.jcx + bass*0.3);
+  gl.uniform1f(Ua.u_jcy,S.jcy + treble*0.2);
+  gl.uniform1i(Ua.u_recMode,S.recMode);
+  gl.uniform1f(Ua.u_rdepth,S.rdepth);
+  gl.uniform1i(Ua.u_freeze,S.freeze);
+  gl.uniform1i(Ua.u_clear,S.clear);
+  gl.uniform1f(Ua.u_bass,bass);
+  gl.uniform1f(Ua.u_mid,mid);
+  gl.uniform1f(Ua.u_treble,treble);
+  gl.uniform1f(Ua.u_amp,amp);
+  gl.uniform1i(Ua.u_flip,S.flip);
+  gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+  S.clear=0; // one-shot
+
+  // --- PASS 3: Display ---
+  gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+  gl.viewport(0,0,canvas.width,canvas.height);
+  gl.useProgram(progDisplay);
+  bindQuad(progDisplay);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,writeFBO.tex);
+  gl.uniform1i(Ud.u_accum,0);
+  gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,camTex);
+  gl.uniform1i(Ud.u_cam,1);
+  gl.uniform1f(Ud.u_time,t);
+  gl.uniform1f(Ud.u_hue,S.hue);
+  gl.uniform1f(Ud.u_glow,S.glow);
+  gl.uniform1f(Ud.u_camix,S.camix);
+  gl.uniform1i(Ud.u_palette,S.palette);
+  gl.uniform1f(Ud.u_bass,bass);
+  gl.uniform1f(Ud.u_mid,mid);
+  gl.uniform1f(Ud.u_treble,treble);
+  gl.uniform1f(Ud.u_amp,amp);
+  gl.uniform1f(Ud.u_acol,S.acol);
+  gl.uniform1i(Ud.u_flip,S.flip);
+  gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+
+  requestAnimationFrame(render);
+}
+requestAnimationFrame(render);
+
+// ========== UI ==========
+function wire(id,key,vid2,transform){
+  const el=document.getElementById(id);
+  el.addEventListener('input',()=>{
+    S[key]=transform?transform(el.value):parseFloat(el.value);
+    document.getElementById(vid2).textContent=S[key].toFixed(2);
+  });
+}
+wire('esens','esens','v-esens');
+wire('crate','crate','v-crate');
+wire('decay','decay','v-decay');
+wire('ospeed','ospeed','v-ospeed');
+wire('orad','orad','v-orad');
+wire('aospeed','aospeed','v-aospeed');
+wire('castr','castr','v-castr');
+wire('cathr','cathr','v-cathr');
+wire('fmix','fmix','v-fmix');
+wire('jcx','jcx','v-jcx');
+wire('jcy','jcy','v-jcy');
+wire('rdepth','rdepth','v-rdepth');
+wire('hue','hue','v-hue');
+wire('glow','glow','v-glow');
+wire('camix','camix','v-camix');
+wire('acol','acol','v-acol');
+document.getElementById('palette').addEventListener('change',e=>S.palette=parseInt(e.target.value));
+
+function mkModeGroup(sel, key){
+  document.querySelectorAll(sel).forEach(b=>{
+    b.addEventListener('click',()=>{
+      document.querySelectorAll(sel).forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      S[key]=parseInt(b.dataset[key.replace('Mode','').replace('o','o').charAt(0)==='o'?'o':'p']||b.dataset.o||b.dataset.ca||b.dataset.fr||b.dataset.rec);
+    });
+  });
+}
+document.querySelectorAll('[data-o]').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('[data-o]').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); S.orbitMode=parseInt(b.dataset.o);
+}));
+document.querySelectorAll('[data-ca]').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('[data-ca]').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); S.caMode=parseInt(b.dataset.ca);
+}));
+document.querySelectorAll('[data-fr]').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('[data-fr]').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); S.fractalMode=parseInt(b.dataset.fr);
+}));
+document.querySelectorAll('[data-rec]').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('[data-rec]').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); S.recMode=parseInt(b.dataset.rec);
+}));
+
+document.getElementById('btn-cam').addEventListener('click',()=>{
+  const v=document.getElementById('cam-sel').value;
+  startCamera(v==='Loading...'?null:v);
+  document.getElementById('btn-cam').textContent='RECONNECT CAM';
+});
+document.getElementById('cam-sel').addEventListener('change',e=>{
+  if(camRunning) startCamera(e.target.value);
+});
+document.getElementById('btn-mic').addEventListener('click',startMic);
+document.getElementById('btn-flip').addEventListener('click',function(){
+  S.flip=S.flip?0:1; this.classList.toggle('on',S.flip===1);
+});
+document.getElementById('btn-clear').addEventListener('click',()=>{ S.clear=1; });
+document.getElementById('btn-freeze').addEventListener('click',function(){
+  S.freeze=S.freeze?0:1;
+  this.textContent=S.freeze?'UNFREEZE':'FREEZE CAPTURE';
+  this.classList.toggle('on',S.freeze===1);
+});
+document.getElementById('btn-fs').addEventListener('click',()=>{
+  if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+});
+
+const uiEl=document.getElementById('ui');
+const togBtn=document.getElementById('tog');
+togBtn.addEventListener('click',()=>{
+  uiEl.classList.toggle('hidden');
+  togBtn.classList.toggle('open',!uiEl.classList.contains('hidden'));
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='h') { uiEl.classList.toggle('hidden'); togBtn.classList.toggle('open',!uiEl.classList.contains('hidden')); }
+  if(e.key==='f') document.getElementById('btn-fs').click();
+  if(e.key==='c') S.clear=1;
+  if(e.key===' '){ e.preventDefault(); document.getElementById('btn-freeze').click(); }
+});
+
+// Pre-warm camera permission
+navigator.mediaDevices.getUserMedia({video:true})
+  .then(s=>{s.getTracks().forEach(t=>t.stop()); listCams();})
+  .catch(()=>listCams());
+</script>
+</body>
+</html>
