@@ -155,7 +155,14 @@ button.on { background:rgba(255,106,0,0.2); border-color:#ff6a00; color:#ffa040;
   </div>
 
   <div class="sec">
-    <button id="btn-fs">FULLSCREEN [F]</button>
+  </div>
+
+  <div class="sec">
+    <h3>Projection</h3>
+    <label><span>Barrel / Pincushion</span><span class="v" id="val-distort">0.00</span></label>
+    <input type="range" id="distort" min="-2" max="2" step="0.01" value="0">
+    <div style="display:flex;justify-content:space-between;font-size:9px;color:#444;margin-top:1px;"><span>◀ pincushion</span><span>barrel ▶</span></div>
+    <button id="btn-fs" style="margin-top:6px;">FULLSCREEN [F]</button>
   </div>
 </div>
 
@@ -198,6 +205,12 @@ uniform int   u_numHexes;
 uniform int   u_hexCols;
 uniform int   u_hexRows;
 uniform float u_time;
+uniform float u_distort;
+
+vec2 distortUV(vec2 uv){
+  vec2 p=uv-.5; float r2=dot(p,p);
+  return clamp(.5+p*(1.+u_distort*r2),0.,1.);
+}
 
 const float PI  = 3.14159265359;
 const float TAU = 6.28318530718;
@@ -383,7 +396,7 @@ float trailFactor(vec2 uv, float armAngle){
 }
 
 void main(){
-  vec2 uv=v_uv;
+  vec2 uv=distortUV(v_uv);
   vec2 pixPos=uv*u_res;
 
   // ---- Apply spin rotation to hex lookup ----
@@ -566,7 +579,7 @@ function getU(p,ns){const U={};ns.forEach(n=>U[n]=gl.getUniformLocation(p,n));re
 const Um=getU(progMain,['u_hex','u_cam','u_scan','u_res','u_hexRes','u_hsize','u_hopac',
   'u_hbrt','u_hpal','u_spinMode','u_spinAngle','u_awidth','u_aglow','u_trail',
   'u_fxMode','u_simrad','u_simthr','u_fxstr','u_copac','u_flip','u_freqLayout',
-  'u_numHexes','u_hexCols','u_hexRows','u_time']);
+  'u_numHexes','u_hexCols','u_hexRows','u_time','u_distort']);
 const Us=getU(progScan,['u_prev','u_cam','u_spinAngle','u_awidth','u_decay','u_flip']);
 
 function mkTex(w,h,filter,data){
@@ -888,6 +901,7 @@ function render(now){
   gl.uniform1i(Um.u_hexCols,hexCols);
   gl.uniform1i(Um.u_hexRows,hexRows);
   gl.uniform1f(Um.u_time,t);
+  gl.uniform1f(Um.u_distort,S.distort||0);
   gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
 
   requestAnimationFrame(render);
@@ -917,6 +931,7 @@ wire('simrad','simrad','v-simrad');
 wire('simthr','simthr','v-simthr');
 wire('fxstr','fxstr','v-fxstr');
 wire('copac','copac','v-copac');
+wire('distort','distort','val-distort');
 
 document.getElementById('hpal').addEventListener('change',e=>S.hpal=parseInt(e.target.value));
 

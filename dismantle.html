@@ -190,6 +190,13 @@ button.danger:hover { background:rgba(255,80,80,0.2); }
     <input type="range" id="bg" min="0" max="1" step="0.01" value="0">
     <label><span>Spark density</span><span class="v" id="v-spark">1.00</span></label>
     <input type="range" id="spark" min="0" max="3" step="0.05" value="1.0">
+  </div>
+
+  <div class="sec">
+    <h3>Projection</h3>
+    <label><span>Barrel / Pincushion</span><span class="v" id="val-distort">0.00</span></label>
+    <input type="range" id="distort" min="-2" max="2" step="0.01" value="0">
+    <div style="display:flex;justify-content:space-between;font-size:9px;color:#444;margin-top:1px;"><span>◀ pincushion</span><span>barrel ▶</span></div>
     <button id="btn-fs" style="margin-top:6px;">FULLSCREEN  [F]</button>
   </div>
 </div>
@@ -368,6 +375,12 @@ uniform float u_eglow;
 uniform float u_bg;
 uniform float u_spark;
 uniform int   u_palette;
+uniform float u_distort;
+
+vec2 distortUV(vec2 uv){
+  vec2 p=uv-.5; float r2=dot(p,p);
+  return clamp(.5+p*(1.+u_distort*r2),0.,1.);
+}
 
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float hash2(vec2 p){return fract(sin(dot(p,vec2(311.7,127.1)))*13758.5453);}
@@ -448,7 +461,7 @@ vec3 applyPalette(vec3 originalCol, float erosion, float age, int pal){
 }
 
 void main(){
-  vec2 uv=v_uv;
+  vec2 uv=distortUV(v_uv);
   vec4 erosData=texture2D(u_erosion,uv);
   float erosion=erosData.r;
   float chipTime=erosData.g * 3600.; // denormalize
@@ -644,7 +657,7 @@ const Ue=getU(progErode,['u_photo','u_erosion','u_res','u_time','u_bass','u_mid'
   'u_paused','u_reset','u_dt']);
 const Ud=getU(progDisp,['u_photo','u_erosion','u_time','u_res','u_bass','u_mid',
   'u_treble','u_amp','u_pfMode','u_fdist','u_plife','u_tglow','u_eglow',
-  'u_bg','u_spark','u_palette']);
+  'u_bg','u_spark','u_palette','u_distort']);
 const Up=getU(progPass,['u_tex']);
 
 // ========== Audio ==========
@@ -807,6 +820,7 @@ function render(now){
   gl.uniform1f(Ud.u_bg,S.bg);
   gl.uniform1f(Ud.u_spark,S.spark);
   gl.uniform1i(Ud.u_palette,S.palette);
+  gl.uniform1f(Ud.u_distort,S.distort||0);
   gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
 
   // Progress estimate
@@ -839,6 +853,7 @@ wire('tglow','tglow','v-tglow');
 wire('eglow','eglow','v-eglow');
 wire('bg','bg','v-bg');
 wire('spark','spark','v-spark');
+wire('distort','distort','val-distort');
 document.getElementById('palette').addEventListener('change',e=>S.palette=parseInt(e.target.value));
 
 document.querySelectorAll('[data-cm]').forEach(b=>b.addEventListener('click',()=>{

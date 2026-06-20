@@ -249,6 +249,12 @@
       <span class="val" id="val-vig">0.0</span>
     </label>
     <input type="range" id="vignette" min="0" max="1.5" step="0.01" value="0">
+    <label>
+      <span>Barrel / Pincushion</span>
+      <span class="val" id="val-distort">0.00</span>
+    </label>
+    <input type="range" id="distort" min="-2" max="2" step="0.01" value="0">
+    <div style="display:flex;justify-content:space-between;font-size:9px;color:#444;margin-top:1px;"><span>◀ pincushion</span><span>barrel ▶</span></div>
     <button id="btn-fullscreen" style="margin-top:8px;">FULLSCREEN</button>
   </div>
 </div>
@@ -284,6 +290,12 @@ uniform float u_bright;
 uniform float u_rotation;
 uniform float u_fisheye;
 uniform float u_vignette;
+uniform float u_distort;  // barrel(+) / pincushion(-) correction
+
+vec2 distortUV(vec2 uv){
+  vec2 p=uv-.5; float r2=dot(p,p);
+  return clamp(.5+p*(1.+u_distort*r2),0.,1.);
+}
 uniform int   u_useCustom;
 
 // ---- Colour palettes ----
@@ -376,7 +388,7 @@ float lyapunov(vec2 c) {
 CUSTOM_COLOR_PLACEHOLDER
 
 void main() {
-  vec2 uv = v_uv * 2.0 - 1.0;
+  vec2 uv = distortUV(v_uv) * 2.0 - 1.0;
   uv.x *= (1280.0/720.0);
 
   // Fisheye warp for ceiling projection
@@ -527,7 +539,7 @@ function rebuildProgram(customGLSL) {
     const uNames = [
       'u_time','u_moon','u_pulse','u_fractal','u_iter','u_zoom',
       'u_cx','u_cy','u_jx','u_jy','u_color','u_cspeed','u_sat',
-      'u_bright','u_rotation','u_fisheye','u_vignette','u_useCustom'
+      'u_bright','u_rotation','u_fisheye','u_vignette','u_distort','u_useCustom'
     ];
     uniforms = {};
     uNames.forEach(n => { uniforms[n] = gl.getUniformLocation(program, n); });
@@ -627,6 +639,7 @@ wire('rotation', 'rotation', 'val-rot');
 wire('pulse', 'pulse', 'val-pulse');
 wire('fisheye', 'fisheye', 'val-fish');
 wire('vignette', 'vignette', 'val-vig');
+wire('distort', 'distort', 'val-distort');
 
 document.getElementById('fractal-type').addEventListener('change', e => {
   state.fractal = parseInt(e.target.value);
@@ -751,6 +764,7 @@ function render(now) {
   gl.uniform1f(uniforms['u_rotation'], state.rotation);
   gl.uniform1f(uniforms['u_fisheye'], state.fisheye);
   gl.uniform1f(uniforms['u_vignette'], state.vignette);
+  gl.uniform1f(uniforms['u_distort'], state.distort||0);
   gl.uniform1i(uniforms['u_useCustom'], state.useCustom);
 
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);

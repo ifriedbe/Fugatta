@@ -215,7 +215,11 @@ button.on { background:rgba(0,200,255,0.15); border-color:#0cf; color:#0df; }
   </div>
 
   <div class="sec">
-    <button id="btn-fs">FULLSCREEN  [F]</button>
+    <h3>Projection</h3>
+    <label><span>Barrel / Pincushion</span><span class="v" id="val-distort">0.00</span></label>
+    <input type="range" id="distort" min="-2" max="2" step="0.01" value="0">
+    <div style="display:flex;justify-content:space-between;font-size:9px;color:#444;margin-top:1px;"><span>◀ pincushion</span><span>barrel ▶</span></div>
+    <button id="btn-fs" style="margin-top:6px;">FULLSCREEN  [F]</button>
   </div>
 </div>
 
@@ -412,6 +416,12 @@ uniform float u_hue;
 uniform float u_glow;
 uniform int   u_palette;
 uniform vec2  u_res;
+uniform float u_distort;
+
+vec2 distortUV(vec2 uv){
+  vec2 p=uv-.5; float r2=dot(p,p);
+  return clamp(.5+p*(1.+u_distort*r2),0.,1.);
+}
 
 vec3 hsv2rgb(vec3 c){
   vec3 p=abs(fract(c.xxx+vec3(1,2./3.,1./3.))*6.-3.);
@@ -473,7 +483,7 @@ vec3 palette(float phase, float energy, float tidal, int pal, float moonHue){
 }
 
 void main(){
-  vec2 uv = v_uv;
+  vec2 uv = distortUV(v_uv);
   vec2 px = 1./u_res;
 
   // Sample all three wave channels
@@ -629,7 +639,7 @@ const Uw=getU(progWave,['u_wave','u_res','u_dt','u_c','u_damp','u_nonlin',
   'u_srcPos','u_srcPos2','u_fade']);
 const Ud=getU(progDisp,['u_wR','u_wG','u_wB','u_time','u_moon','u_moonAngle',
   'u_bass','u_mid','u_treble','u_amp','u_cspeed','u_sat','u_brt',
-  'u_hue','u_glow','u_palette','u_res']);
+  'u_hue','u_glow','u_palette','u_res','u_distort']);
 
 // ===================== Moon Phase Math =====================
 // Meeus "Astronomical Algorithms" Ch.49 simplified
@@ -937,6 +947,7 @@ function render(now){
   gl.uniform1f(Ud.u_glow,S.glow);
   gl.uniform1i(Ud.u_palette,S.palette);
   gl.uniform2f(Ud.u_res,W,H);
+  gl.uniform1f(Ud.u_distort,S.distort||0);
   gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
 
   requestAnimationFrame(render);
@@ -991,6 +1002,7 @@ wire('wspd','witchSpeed','v-wspd');
 wire('wrad','witchRadius','v-wrad');
 wire('wspi','witchSpiral','v-wspi');
 wire('cfade','cycleFade','v-cfade');
+wire('distort','distort','val-distort');
 document.getElementById('btn-clear').addEventListener('click',()=>{
   witchAngle=0; witchLap=0; clearWaves();
 });

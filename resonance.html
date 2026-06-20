@@ -174,6 +174,13 @@
     <button id="btn-freeze">FREEZE</button>
     <button id="btn-fs" style="margin-top:3px;">FULLSCREEN</button>
   </div>
+
+  <div class="sec">
+    <h3>Projection</h3>
+    <label><span>Barrel / Pincushion</span><span class="v" id="val-distort">0.00</span></label>
+    <input type="range" id="distort" min="-2" max="2" step="0.01" value="0">
+    <div style="display:flex;justify-content:space-between;font-size:9px;color:#444;margin-top:1px;"><span>◀ pincushion</span><span>barrel ▶</span></div>
+  </div>
 </div>
 
 <video id="vid" autoplay playsinline muted style="display:none"></video>
@@ -197,6 +204,12 @@ uniform sampler2D u_cam;
 uniform float u_time;
 uniform vec2  u_res;
 uniform int   u_flip;
+uniform float u_distort;
+
+vec2 distortUV(vec2 uv){
+  vec2 p=uv-.5; float r2=dot(p,p);
+  return clamp(.5+p*(1.+u_distort*r2),0.,1.);
+}
 uniform int   u_simMode;   // similarity mode
 uniform float u_thr;       // similarity threshold
 uniform float u_srad;      // sample radius
@@ -393,7 +406,7 @@ float pattern(vec2 uv, float sim, float t){
 }
 
 void main(){
-  vec2 uv = v_uv;
+  vec2 uv = distortUV(v_uv);
   float t = u_time;
 
   // Camera colour at this pixel
@@ -471,7 +484,7 @@ gl.enableVertexAttribArray(posLoc);
 gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
 
 const U = {};
-['u_cam','u_time','u_res','u_flip','u_simMode','u_thr','u_srad',
+['u_cam','u_time','u_res','u_flip','u_distort','u_simMode','u_thr','u_srad',
  'u_pattern','u_pscale','u_pspeed','u_cmplx','u_palette','u_hue',
  'u_sat','u_brt','u_camix','u_fstr','u_prate','u_contrast','u_invert']
   .forEach(n => U[n] = gl.getUniformLocation(prog, n));
@@ -547,6 +560,7 @@ function render(now){
   gl.uniform1f(U.u_time, t);
   gl.uniform2f(U.u_res, canvas.width, canvas.height);
   gl.uniform1i(U.u_flip, S.flip);
+  gl.uniform1f(U.u_distort, S.distort||0);
   gl.uniform1i(U.u_simMode, S.simMode);
   gl.uniform1f(U.u_thr, S.thr);
   gl.uniform1f(U.u_srad, S.srad);
@@ -589,6 +603,7 @@ wire('camix','camix','v-camix');
 wire('fstr','fstr','v-fstr');
 wire('prate','prate','v-prate');
 wire('contrast','contrast','v-contrast');
+wire('distort','distort','val-distort');
 
 document.getElementById('palette').addEventListener('change',e=>S.palette=parseInt(e.target.value));
 
