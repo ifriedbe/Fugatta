@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RESONANCE — Pixel Similarity Patterns</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#000; overflow:hidden; font-family:monospace; color:#fff; }
+  canvas { display:block; width:100vw; height:100vh; }
+
+  #ui {
+    position:fixed; top:0; right:0; width:270px; height:100vh;
+    background:rgba(0,0,0,0.82); border-left:1px solid rgba(255,255,255,0.1);
+    padding:14px; overflow-y:auto; z-index:10;
+    transition:transform .3s ease; font-size:12px;
+  }
+  #ui.hidden { transform:translateX(100%); }
+
+  #tog {
+    position:fixed; top:12px; right:12px; z-index:20;
+    background:rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.3);
+    color:#fff; padding:6px 10px; cursor:pointer; font-family:monospace; font-size:12px;
+  }
+  #tog.open { right:282px; }
+
+  .sec { margin-bottom:16px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px; }
+  .sec:first-child { border-top:none; }
+  h3 { margin-bottom:7px; font-size:10px; letter-spacing:2px; color:#777; text-transform:uppercase; }
+
+  label { display:flex; justify-content:space-between; margin-bottom:4px; align-items:center; }
+  label span { color:#bbb; }
+  .v { color:#fff; min-width:38px; text-align:right; font-size:11px; }
+  input[type=range] { width:100%; margin:2px 0; accent-color:#f0a; }
+
+  select {
+    width:100%; background:rgba(255,255,255,0.07);
+    border:1px solid rgba(255,255,255,0.2); color:#fff;
+    padding:4px 6px; font-family:monospace; font-size:12px; margin-top:3px;
+  }
+  button {
+    width:100%; background:rgba(255,255,255,0.07);
+    border:1px solid rgba(255,255,255,0.2); color:#fff;
+    padding:5px; cursor:pointer; font-family:monospace; font-size:12px; margin-top:3px;
+  }
+  button:hover { background:rgba(255,255,255,0.15); }
+  button.on { background:rgba(255,0,180,0.2); border-color:#f0a; color:#f0a; }
+
+  #title { font-size:14px; letter-spacing:4px; margin-bottom:3px; }
+  #sub { font-size:9px; color:#555; margin-bottom:12px; line-height:1.6; }
+  #status { font-size:10px; color:#f88; margin-top:5px; }
+  #status.ok { color:#8f8; }
+
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:3px; margin-top:4px; }
+  .mb { padding:7px 4px; font-size:10px; border:1px solid rgba(255,255,255,0.12);
+        background:rgba(255,255,255,0.05); color:#888; cursor:pointer; text-align:center; font-family:monospace; }
+  .mb:hover { color:#fff; background:rgba(255,255,255,0.1); }
+  .mb.on { background:rgba(255,0,180,0.15); border-color:#f0a; color:#f0a; }
+
+  .formula-box {
+    font-size:9px; color:#666; background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.1); padding:6px; margin-top:5px; line-height:1.7;
+  }
+  .formula-box .f { color:#f0a; font-size:10px; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<button id="tog" class="open">RESONANCE</button>
+
+<div id="ui">
+  <div id="title">RESONANCE</div>
+  <div id="sub">Pixels that vibrate alike<br>show their hidden pattern</div>
+
+  <div class="sec">
+    <h3>Camera</h3>
+    <button id="btn-start">START CAMERA</button>
+    <div id="status">Camera not started</div>
+    <select id="cam-sel" style="margin-top:6px;"><option>Loading...</option></select>
+    <button id="btn-flip">FLIP</button>
+  </div>
+
+  <div class="sec">
+    <h3>Similarity Mode</h3>
+    <div class="grid2">
+      <div class="mb on" data-m="0">RGB DIST</div>
+      <div class="mb" data-m="1">HUE MATCH</div>
+      <div class="mb" data-m="2">LUMINANCE</div>
+      <div class="mb" data-m="3">VARIANCE</div>
+      <div class="mb" data-m="4">SATURATION</div>
+      <div class="mb" data-m="5">GRADIENT</div>
+    </div>
+    <label style="margin-top:8px;"><span>Similarity threshold</span><span class="v" id="v-thr">0.12</span></label>
+    <input type="range" id="thr" min="0.001" max="0.5" step="0.001" value="0.12">
+    <label><span>Sample radius</span><span class="v" id="v-srad">1.0</span></label>
+    <input type="range" id="srad" min="0.5" max="4" step="0.1" value="1.0">
+  </div>
+
+  <div class="sec">
+    <h3>Pattern</h3>
+    <div class="grid2">
+      <div class="mb on" data-p="0">WAVE RINGS</div>
+      <div class="mb" data-p="1">VORONOI</div>
+      <div class="mb" data-p="2">LISSAJOUS</div>
+      <div class="mb" data-p="3">REACTION</div>
+      <div class="mb" data-p="4">MOIRÉ</div>
+      <div class="mb" data-p="5">MANDALA</div>
+      <div class="mb" data-p="6">FLOW FIELD</div>
+      <div class="mb" data-p="7">CRYSTAL</div>
+    </div>
+    <label style="margin-top:8px;"><span>Pattern scale</span><span class="v" id="v-pscale">4.0</span></label>
+    <input type="range" id="pscale" min="0.5" max="20" step="0.1" value="4.0">
+    <label><span>Pattern speed</span><span class="v" id="v-pspeed">0.5</span></label>
+    <input type="range" id="pspeed" min="0" max="3" step="0.01" value="0.5">
+    <label><span>Complexity</span><span class="v" id="v-cmplx">3.0</span></label>
+    <input type="range" id="cmplx" min="1" max="12" step="0.1" value="3.0">
+  </div>
+
+  <div class="sec">
+    <h3>Color Mapping</h3>
+    <select id="palette">
+      <option value="0">Spectrum Shift</option>
+      <option value="1">Fire & Ice</option>
+      <option value="2">Neon Void</option>
+      <option value="3">Golden Ratio</option>
+      <option value="4">Ultraviolet</option>
+      <option value="5">Bioluminescent</option>
+      <option value="6">Prism</option>
+    </select>
+    <label style="margin-top:7px;"><span>Hue offset</span><span class="v" id="v-hue">0.0</span></label>
+    <input type="range" id="hue" min="0" max="1" step="0.005" value="0">
+    <label><span>Saturation</span><span class="v" id="v-sat">1.2</span></label>
+    <input type="range" id="sat" min="0" max="3" step="0.01" value="1.2">
+    <label><span>Brightness</span><span class="v" id="v-brt">1.0</span></label>
+    <input type="range" id="brt" min="0" max="2" step="0.01" value="1.0">
+    <label><span>Camera mix</span><span class="v" id="v-camix">0.25</span></label>
+    <input type="range" id="camix" min="0" max="1" step="0.01" value="0.25">
+  </div>
+
+  <div class="sec">
+    <h3>Resonance Field</h3>
+    <label><span>Field strength</span><span class="v" id="v-fstr">1.0</span></label>
+    <input type="range" id="fstr" min="0" max="3" step="0.01" value="1.0">
+    <label><span>Pulse rate</span><span class="v" id="v-prate">1.0</span></label>
+    <input type="range" id="prate" min="0" max="5" step="0.01" value="1.0">
+    <label><span>Contrast</span><span class="v" id="v-contrast">1.0</span></label>
+    <input type="range" id="contrast" min="0.1" max="4" step="0.01" value="1.0">
+    <button id="btn-invert">INVERT FIELD</button>
+  </div>
+
+  <div class="sec">
+    <h3>Formula Reference</h3>
+    <div class="formula-box">
+      <div class="f">Wave Rings</div>
+      sin(d·s + t) · similarity<br><br>
+      <div class="f">Voronoi</div>
+      min|p − seedᵢ| tiled grid<br><br>
+      <div class="f">Lissajous</div>
+      sin(a·x + δ) · sin(b·y)<br><br>
+      <div class="f">Reaction-Diff</div>
+      ∇²u − uv² + f(1−u)<br><br>
+      <div class="f">Moiré</div>
+      sin(kx)·sin(ky·cosθ)<br><br>
+      <div class="f">Mandala</div>
+      sin(n·θ)·cos(r·s+t)<br><br>
+      <div class="f">Flow Field</div>
+      curl(noise(p,t))·sim<br><br>
+      <div class="f">Crystal</div>
+      |sin(px)·sin(py)|^γ
+    </div>
+  </div>
+
+  <div class="sec">
+    <button id="btn-freeze">FREEZE</button>
+    <button id="btn-fs" style="margin-top:3px;">FULLSCREEN</button>
+  </div>
+</div>
+
+<video id="vid" autoplay playsinline muted style="display:none"></video>
+
+<!-- ========== VERTEX ========== -->
+<script id="vert" type="x-shader/v">
+attribute vec2 a_pos;
+varying vec2 v_uv;
+void main() {
+  v_uv = vec2(a_pos.x*.5+.5, .5-a_pos.y*.5);
+  gl_Position = vec4(a_pos,0,1);
+}
+</script>
+
+<!-- ========== FRAGMENT ========== -->
+<script id="frag" type="x-shader/f">
+precision highp float;
+varying vec2 v_uv;
+
+uniform sampler2D u_cam;
+uniform float u_time;
+uniform vec2  u_res;
+uniform int   u_flip;
+uniform int   u_simMode;   // similarity mode
+uniform float u_thr;       // similarity threshold
+uniform float u_srad;      // sample radius
+uniform int   u_pattern;   // pattern type
+uniform float u_pscale;    // pattern scale
+uniform float u_pspeed;    // pattern animation speed
+uniform float u_cmplx;     // complexity
+uniform int   u_palette;   // colour palette index
+uniform float u_hue;       // hue offset
+uniform float u_sat;
+uniform float u_brt;
+uniform float u_camix;
+uniform float u_fstr;      // field strength
+uniform float u_prate;     // pulse rate
+uniform float u_contrast;
+uniform int   u_invert;
+
+// ---- helpers ----
+vec4 cam(vec2 uv) {
+  if (u_flip==1) uv.x=1.-uv.x;
+  return texture2D(u_cam, clamp(uv,0.,1.));
+}
+vec3 rgb2hsv(vec3 c){
+  vec4 K=vec4(0.,-1./3.,2./3.,-1.);
+  vec4 p=mix(vec4(c.bg,K.wz),vec4(c.gb,K.xy),step(c.b,c.g));
+  vec4 q=mix(vec4(p.xyw,c.r),vec4(c.r,p.yzx),step(p.x,c.r));
+  float d=q.x-min(q.w,q.y);
+  return vec3(abs(q.z+(q.w-q.y)/(6.*d+1e-10)),d/(q.x+1e-10),q.x);
+}
+vec3 hsv2rgb(vec3 c){
+  vec3 p=abs(fract(c.xxx+vec3(1,2./3.,1./3.))*6.-3.);
+  return c.z*mix(vec3(1.),clamp(p-1.,0.,1.),c.y);
+}
+float luma(vec3 c){ return dot(c,vec3(.299,.587,.114)); }
+float hash(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
+float hash3(vec3 p){ return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453); }
+float noise(vec2 p){
+  vec2 i=floor(p); vec2 f=fract(p); f=f*f*(3.-2.*f);
+  return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),
+             mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);
+}
+float fbm(vec2 p, float oct){
+  float v=0.,a=.5;
+  for(int i=0;i<8;i++){
+    if(float(i)>=oct) break;
+    v+=a*noise(p); p=p*2.1+vec2(1.3,3.7); a*=.5;
+  }
+  return v;
+}
+
+// ---- colour palettes ----
+vec3 palette(float t, int pal, float hue){
+  t = fract(t + hue);
+  if(pal==0){ // Spectrum Shift
+    return .5+.5*cos(6.2832*(t*vec3(1.,.7,.4)+vec3(0.,.15,.3)));
+  } else if(pal==1){ // Fire & Ice
+    float h=mix(.6,.0,t);
+    return hsv2rgb(vec3(h,.9,.5+.5*t));
+  } else if(pal==2){ // Neon Void
+    vec3 a=vec3(.5,.5,.5),b=vec3(.5,.5,.5),c=vec3(1.,1.,1.),d=vec3(.0,.33,.67);
+    return a+b*cos(6.2832*(c*t+d));
+  } else if(pal==3){ // Golden Ratio
+    float phi=1.61803398874;
+    return .5+.5*cos(6.2832*(t*vec3(phi,phi*phi,1.)+vec3(.5,.3,.1)));
+  } else if(pal==4){ // Ultraviolet
+    return .5+.5*cos(6.2832*(t*vec3(.6,.3,1.)+vec3(.8,.5,0.)));
+  } else if(pal==5){ // Bioluminescent
+    vec3 col=vec3(0.);
+    col+=.4*vec3(0.,.8,.4)*smoothstep(.3,.7,sin(t*6.2832));
+    col+=.3*vec3(0.,.3,1.)*smoothstep(.0,.5,cos(t*12.566));
+    col+=.3*vec3(.5,1.,.8)*t;
+    return col;
+  } else { // Prism
+    return vec3(
+      .5+.5*sin(t*6.2832),
+      .5+.5*sin(t*6.2832+2.094),
+      .5+.5*sin(t*6.2832+4.189)
+    );
+  }
+}
+
+// ---- similarity field ----
+// How much do surrounding pixels resemble this pixel? Returns 0–1
+float similarity(vec2 uv, vec3 center){
+  vec2 px = 1./u_res;
+  float score = 0.;
+  float total = 0.;
+  float r = u_srad;
+  // 5×5 kernel weighted by distance
+  for(int i=-3;i<=3;i++){
+    for(int j=-3;j<=3;j++){
+      float d = length(vec2(float(i),float(j)));
+      if(d > 3.5) continue;
+      vec3 nb = cam(uv + vec2(float(i),float(j))*px*r).rgb;
+      float w = 1./(d+.5);
+      float diff;
+      if(u_simMode==0){        // RGB distance
+        diff = length(nb - center);
+      } else if(u_simMode==1){ // Hue match
+        float h1 = rgb2hsv(center).x;
+        float h2 = rgb2hsv(nb).x;
+        diff = min(abs(h1-h2), 1.-abs(h1-h2));
+      } else if(u_simMode==2){ // Luminance
+        diff = abs(luma(nb)-luma(center));
+      } else if(u_simMode==3){ // Variance (low variance = similar)
+        diff = length(nb - center);
+      } else if(u_simMode==4){ // Saturation match
+        float s1 = rgb2hsv(center).y;
+        float s2 = rgb2hsv(nb).y;
+        diff = abs(s1-s2);
+      } else {                  // Gradient (edge-sensitive)
+        float gx = luma(cam(uv+vec2(1,0)*px*r).rgb) - luma(cam(uv-vec2(1,0)*px*r).rgb);
+        float gy = luma(cam(uv+vec2(0,1)*px*r).rgb) - luma(cam(uv-vec2(0,1)*px*r).rgb);
+        float gx2 = luma(cam(uv+vec2(1,0)*px*r+vec2(float(i),float(j))*px).rgb)
+                  - luma(cam(uv-vec2(1,0)*px*r+vec2(float(i),float(j))*px).rgb);
+        float gy2 = luma(cam(uv+vec2(0,1)*px*r+vec2(float(i),float(j))*px).rgb)
+                  - luma(cam(uv-vec2(0,1)*px*r+vec2(float(i),float(j))*px).rgb);
+        diff = length(vec2(gx-gx2,gy-gy2));
+      }
+      float sim = 1. - clamp(diff / (u_thr + .001), 0., 1.);
+      score += sim * w;
+      total += w;
+    }
+  }
+  return clamp(score/total, 0., 1.);
+}
+
+// ---- patterns ----
+float pattern(vec2 uv, float sim, float t){
+  float s = u_pscale;
+  float spd = t * u_pspeed;
+  vec2 p = uv * s;
+
+  if(u_pattern==0){ // Wave rings — concentric waves from similar zones
+    float d = length(uv - .5) * s;
+    return .5 + .5*sin(d*u_cmplx - spd + sim*6.2832);
+
+  } else if(u_pattern==1){ // Voronoi — cells of similar colour
+    vec2 cell = floor(p);
+    float minD = 9999.;
+    for(int i=-1;i<=1;i++) for(int j=-1;j<=1;j++){
+      vec2 c2 = cell + vec2(float(i),float(j));
+      vec2 seed = c2 + vec2(hash(c2+vec2(spd*.1)), hash(c2+vec2(spd*.13,1.7)));
+      float d2 = length(p - seed);
+      minD = min(minD, d2);
+    }
+    return minD * sim;
+
+  } else if(u_pattern==2){ // Lissajous
+    float a = u_cmplx;
+    float b = u_cmplx + 1.;
+    float delta = spd * .5;
+    float lx = sin(a*(uv.x*6.2832*2.)+delta);
+    float ly = sin(b*(uv.y*6.2832*2.));
+    return (.5+.5*lx*ly)*sim;
+
+  } else if(u_pattern==3){ // Reaction-diffusion approximation
+    float u2 = fbm(p + vec2(spd*.2, spd*.15), u_cmplx);
+    float v2 = fbm(p*1.5 - vec2(spd*.18, spd*.22) + u2, u_cmplx*.7);
+    float react = u2 - v2*v2;
+    return clamp(react + sim - .3, 0., 1.);
+
+  } else if(u_pattern==4){ // Moiré
+    float angle = spd * .1;
+    float m1 = sin((p.x*cos(angle) - p.y*sin(angle)) * u_cmplx);
+    float m2 = sin((p.x*cos(angle+.3) + p.y*sin(angle+.3)) * u_cmplx);
+    return (.5+.5*m1*m2)*sim;
+
+  } else if(u_pattern==5){ // Mandala
+    vec2 c2 = uv - .5;
+    float r2 = length(c2);
+    float theta = atan(c2.y, c2.x);
+    float n = floor(u_cmplx);
+    float sym = sin(n*theta + spd) * cos(r2*s*2. - spd*.5);
+    return (.5+.5*sym) * sim * (1./(r2*3.+.3));
+
+  } else if(u_pattern==6){ // Flow field
+    float angle2 = fbm(p*.5 + vec2(spd*.1), u_cmplx) * 6.2832 * 2.;
+    vec2 flow = vec2(cos(angle2), sin(angle2));
+    float stripes = sin(dot(p+flow*spd*.05, vec2(1.))*u_cmplx);
+    return (.5+.5*stripes)*sim;
+
+  } else { // Crystal — interference of sin planes
+    float c2 = 0.;
+    float n2 = u_cmplx;
+    for(int i=0;i<6;i++){
+      if(float(i)>=n2) break;
+      float a2 = float(i)*3.14159/n2;
+      c2 += sin(dot(p, vec2(cos(a2+spd*.02),sin(a2+spd*.02)))*u_cmplx);
+    }
+    c2 /= n2;
+    return abs(c2) * sim;
+  }
+}
+
+void main(){
+  vec2 uv = v_uv;
+  float t = u_time;
+
+  // Camera colour at this pixel
+  vec3 camCol = cam(uv).rgb;
+  float camL = luma(camCol);
+
+  // Compute similarity score
+  float sim = similarity(uv, camCol);
+  if(u_invert==1) sim = 1.-sim;
+
+  // Sharpen with contrast
+  sim = clamp((sim-.5)*u_contrast+.5, 0., 1.);
+
+  // Compute pattern value using similarity as mask/driver
+  float pat = pattern(uv, sim, t);
+
+  // Pulse modulation
+  float pulse = 1. + .3*sin(t*u_prate*3.14159*2.);
+  float energy = pat * sim * u_fstr * pulse;
+
+  // Map to colour
+  vec3 hsv0 = rgb2hsv(camCol);
+  float hueDriver = fract(energy*.5 + hsv0.x + u_hue);
+  vec3 col = palette(hueDriver, u_palette, u_hue);
+  col = hsv2rgb(vec3(rgb2hsv(col).x, rgb2hsv(col).y * u_sat, rgb2hsv(col).z * u_brt));
+
+  // Scale by pattern energy
+  col *= clamp(energy * 2., 0., 1.);
+
+  // Blend with original camera
+  vec3 camMono = mix(camCol, vec3(camL), .5);
+  vec3 out3 = mix(col, camMono, u_camix);
+  out3 += col * (1.-u_camix) * .6;
+
+  gl_FragColor = vec4(clamp(out3,0.,1.), 1.);
+}
+</script>
+
+<script>
+// ---- WebGL init ----
+const canvas = document.getElementById('c');
+const gl = canvas.getContext('webgl');
+const video = document.getElementById('vid');
+
+function resize(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  gl.viewport(0,0,canvas.width,canvas.height);
+}
+window.addEventListener('resize', resize);
+resize();
+
+function compileShader(type, src){
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src);
+  gl.compileShader(s);
+  if(!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw gl.getShaderInfoLog(s);
+  return s;
+}
+const prog = (() => {
+  const p = gl.createProgram();
+  gl.attachShader(p, compileShader(gl.VERTEX_SHADER, document.getElementById('vert').textContent));
+  gl.attachShader(p, compileShader(gl.FRAGMENT_SHADER, document.getElementById('frag').textContent));
+  gl.linkProgram(p);
+  if(!gl.getProgramParameter(p,gl.LINK_STATUS)) throw gl.getProgramInfoLog(p);
+  return p;
+})();
+gl.useProgram(prog);
+
+const buf = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+const posLoc = gl.getAttribLocation(prog, 'a_pos');
+gl.enableVertexAttribArray(posLoc);
+gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
+const U = {};
+['u_cam','u_time','u_res','u_flip','u_simMode','u_thr','u_srad',
+ 'u_pattern','u_pscale','u_pspeed','u_cmplx','u_palette','u_hue',
+ 'u_sat','u_brt','u_camix','u_fstr','u_prate','u_contrast','u_invert']
+  .forEach(n => U[n] = gl.getUniformLocation(prog, n));
+
+const tex = gl.createTexture();
+gl.bindTexture(gl.TEXTURE_2D, tex);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+// ---- State ----
+const S = {
+  running:false, frozen:false, flip:0, invert:0,
+  simMode:0, thr:0.12, srad:1.0,
+  pattern:0, pscale:4.0, pspeed:0.5, cmplx:3.0,
+  palette:0, hue:0, sat:1.2, brt:1.0, camix:0.25,
+  fstr:1.0, prate:1.0, contrast:1.0,
+};
+let t0 = performance.now();
+
+// ---- Camera ----
+async function listCams(){
+  const devs = await navigator.mediaDevices.enumerateDevices().catch(()=>[]);
+  const cams = devs.filter(d=>d.kind==='videoinput');
+  const sel = document.getElementById('cam-sel');
+  sel.innerHTML = '';
+  cams.forEach((d,i)=>{
+    const o = document.createElement('option');
+    o.value=d.deviceId; o.textContent=d.label||`Camera ${i+1}`; sel.appendChild(o);
+  });
+  if(!cams.length) sel.innerHTML='<option>No cameras found</option>';
+}
+
+async function startCamera(deviceId){
+  try {
+    if(video.srcObject) video.srcObject.getTracks().forEach(t=>t.stop());
+    const con = { video: deviceId
+      ? { deviceId:{exact:deviceId}, width:{ideal:1280}, height:{ideal:720} }
+      : { width:{ideal:1280}, height:{ideal:720} } };
+    const stream = await navigator.mediaDevices.getUserMedia(con);
+    video.srcObject = stream;
+    await new Promise(r=>video.onloadedmetadata=r);
+    video.play();
+    S.running = true;
+    const st = document.getElementById('status');
+    st.textContent = `Live — ${video.videoWidth}×${video.videoHeight}`;
+    st.className = 'ok';
+    await listCams();
+    const track = stream.getVideoTracks()[0];
+    const sid = track.getSettings().deviceId;
+    if(sid) document.getElementById('cam-sel').value=sid;
+  } catch(e){
+    const st=document.getElementById('status');
+    st.textContent='Error: '+e.message; st.className='';
+  }
+}
+
+function uploadFrame(){
+  if(!S.running||S.frozen||video.readyState<2) return;
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,video);
+}
+
+// ---- Render ----
+function render(now){
+  uploadFrame();
+  const t = (now-t0)/1000;
+
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.uniform1i(U.u_cam, 0);
+  gl.uniform1f(U.u_time, t);
+  gl.uniform2f(U.u_res, canvas.width, canvas.height);
+  gl.uniform1i(U.u_flip, S.flip);
+  gl.uniform1i(U.u_simMode, S.simMode);
+  gl.uniform1f(U.u_thr, S.thr);
+  gl.uniform1f(U.u_srad, S.srad);
+  gl.uniform1i(U.u_pattern, S.pattern);
+  gl.uniform1f(U.u_pscale, S.pscale);
+  gl.uniform1f(U.u_pspeed, S.pspeed);
+  gl.uniform1f(U.u_cmplx, S.cmplx);
+  gl.uniform1i(U.u_palette, S.palette);
+  gl.uniform1f(U.u_hue, S.hue);
+  gl.uniform1f(U.u_sat, S.sat);
+  gl.uniform1f(U.u_brt, S.brt);
+  gl.uniform1f(U.u_camix, S.camix);
+  gl.uniform1f(U.u_fstr, S.fstr);
+  gl.uniform1f(U.u_prate, S.prate);
+  gl.uniform1f(U.u_contrast, S.contrast);
+  gl.uniform1i(U.u_invert, S.invert);
+
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  requestAnimationFrame(render);
+}
+requestAnimationFrame(render);
+
+// ---- UI wiring ----
+function wire(id, key, vid2){
+  const el=document.getElementById(id);
+  el.addEventListener('input',()=>{
+    S[key]=parseFloat(el.value);
+    document.getElementById(vid2).textContent=S[key].toFixed(2);
+  });
+}
+wire('thr','thr','v-thr');
+wire('srad','srad','v-srad');
+wire('pscale','pscale','v-pscale');
+wire('pspeed','pspeed','v-pspeed');
+wire('cmplx','cmplx','v-cmplx');
+wire('hue','hue','v-hue');
+wire('sat','sat','v-sat');
+wire('brt','brt','v-brt');
+wire('camix','camix','v-camix');
+wire('fstr','fstr','v-fstr');
+wire('prate','prate','v-prate');
+wire('contrast','contrast','v-contrast');
+
+document.getElementById('palette').addEventListener('change',e=>S.palette=parseInt(e.target.value));
+
+document.querySelectorAll('[data-m]').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('[data-m]').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); S.simMode=parseInt(b.dataset.m);
+  });
+});
+document.querySelectorAll('[data-p]').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('[data-p]').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); S.pattern=parseInt(b.dataset.p);
+  });
+});
+
+document.getElementById('btn-start').addEventListener('click',()=>{
+  const v=document.getElementById('cam-sel').value;
+  startCamera(v==='Loading...'?null:v);
+});
+document.getElementById('cam-sel').addEventListener('change',e=>{
+  if(S.running) startCamera(e.target.value);
+});
+document.getElementById('btn-flip').addEventListener('click',function(){
+  S.flip=S.flip?0:1; this.classList.toggle('on',S.flip===1);
+});
+document.getElementById('btn-invert').addEventListener('click',function(){
+  S.invert=S.invert?0:1; this.classList.toggle('on',S.invert===1);
+});
+document.getElementById('btn-freeze').addEventListener('click',function(){
+  S.frozen=!S.frozen;
+  this.textContent=S.frozen?'UNFREEZE':'FREEZE';
+  this.classList.toggle('on',S.frozen);
+});
+document.getElementById('btn-fs').addEventListener('click',()=>{
+  if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+});
+const uiEl=document.getElementById('ui');
+const togBtn=document.getElementById('tog');
+togBtn.addEventListener('click',()=>{
+  uiEl.classList.toggle('hidden');
+  togBtn.classList.toggle('open',!uiEl.classList.contains('hidden'));
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='h'||e.key==='H'){
+    uiEl.classList.toggle('hidden');
+    togBtn.classList.toggle('open',!uiEl.classList.contains('hidden'));
+  }
+  if(e.key==='f') document.getElementById('btn-fs').click();
+  if(e.key===' '){ e.preventDefault(); document.getElementById('btn-freeze').click(); }
+  // number keys 1-8 switch patterns
+  if(e.key>='1'&&e.key<='8'){
+    const p=parseInt(e.key)-1;
+    document.querySelectorAll('[data-p]').forEach(b=>b.classList.toggle('on',parseInt(b.dataset.p)===p));
+    S.pattern=p;
+  }
+});
+
+// pre-warm permission
+navigator.mediaDevices.getUserMedia({video:true})
+  .then(s=>{s.getTracks().forEach(t=>t.stop()); listCams();})
+  .catch(()=>listCams());
+</script>
+</body>
+</html>
