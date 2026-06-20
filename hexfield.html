@@ -81,13 +81,36 @@ button.on { background:rgba(255,106,0,0.2); border-color:#ff6a00; color:#ffa040;
   </div>
 
   <div class="sec">
+    <h3>Trail &amp; Flow</h3>
+    <label><span>Trail length</span><span class="v" id="v-trailFade">0.88</span></label>
+    <input type="range" id="trailFade" min="0" max="0.98" step="0.005" value="0.88">
+    <div style="display:flex;justify-content:space-between;font-size:9px;color:#444;margin-top:1px;"><span>off</span><span>short</span><span>long</span></div>
+    <label style="margin-top:5px;"><span>Freq flow speed</span><span class="v" id="v-flowSpeed">0.00</span></label>
+    <input type="range" id="flowSpeed" min="0" max="3" step="0.01" value="0">
+    <label><span>Noise shimmer</span><span class="v" id="v-noiseMix">0.00</span></label>
+    <input type="range" id="noiseMix" min="0" max="1" step="0.01" value="0">
+  </div>
+
+  <div class="sec">
+    <h3>Network / WiFi</h3>
+    <button id="btn-net">SCAN NETWORK</button>
+    <div style="margin-top:6px;font-size:9px;line-height:1.9;color:#666;">
+      <div style="display:flex;justify-content:space-between;"><span>Type</span><span id="net-type" style="color:#aaa;">—</span></div>
+      <div style="display:flex;justify-content:space-between;"><span>RTT (API)</span><span id="net-rtt" style="color:#aaa;">—</span></div>
+      <div style="display:flex;justify-content:space-between;"><span>Downlink</span><span id="net-dl" style="color:#aaa;">—</span></div>
+      <div style="display:flex;justify-content:space-between;"><span>Fetch ping</span><span id="net-ping" style="color:#aaa;">—</span></div>
+    </div>
+    <div style="margin-top:5px;font-size:9px;color:#555;">Signal strength</div>
+    <div style="background:rgba(255,255,255,0.06);height:4px;border-radius:2px;margin-top:2px;">
+      <div id="net-strength" style="height:100%;background:linear-gradient(to right,#f60,#ff0);border-radius:2px;width:0%;transition:width .5s;"></div>
+    </div>
+    <div style="font-size:9px;color:#444;margin-top:3px;">Boosts hex brightness &amp; glow when signal is strong</div>
+  </div>
+
+  <div class="sec">
     <h3>Hexagon Grid</h3>
     <label><span>Hex size</span><span class="v" id="v-hsize">28</span></label>
     <input type="range" id="hsize" min="10" max="80" step="1" value="28">
-    <label><span>Decay time (sec)</span><span class="v" id="v-decay">1.20</span></label>
-    <input type="range" id="decay" min="0.05" max="8" step="0.05" value="1.2">
-    <label><span>Trigger threshold</span><span class="v" id="v-thr">0.08</span></label>
-    <input type="range" id="thr" min="0.01" max="0.5" step="0.005" value="0.08">
     <label><span>Brightness</span><span class="v" id="v-hbrt">1.00</span></label>
     <input type="range" id="hbrt" min="0" max="2" step="0.01" value="1.0">
     <label><span>Hex opacity</span><span class="v" id="v-hopac">0.85</span></label>
@@ -531,6 +554,29 @@ void main(){
 }
 </script>
 
+<!-- ===== TRAIL ACCUMULATION ===== -->
+<script id="frag-trail" type="x-shader/f">
+precision mediump float;
+varying vec2 v_uv;
+uniform sampler2D u_prev;
+uniform sampler2D u_cur;
+uniform float u_trailFade;
+void main(){
+  vec4 p=texture2D(u_prev,v_uv)*u_trailFade;
+  vec4 c=texture2D(u_cur,v_uv);
+  // Additive accumulation — new frame sits on top of fading trail
+  gl_FragColor=clamp(p+c*(1.-u_trailFade*.4),0.,1.);
+}
+</script>
+
+<!-- ===== BLIT PASS-THROUGH ===== -->
+<script id="frag-blit" type="x-shader/f">
+precision mediump float;
+varying vec2 v_uv;
+uniform sampler2D u_tex;
+void main(){ gl_FragColor=texture2D(u_tex,v_uv); }
+</script>
+
 <script>
 // ===================== WebGL setup =====================
 const canvas=document.getElementById('c');
@@ -545,6 +591,7 @@ window.addEventListener('resize',()=>{
   gl.viewport(0,0,W,H);
   rebuildGrid();
   buildScanFBOs();
+  buildTrailFBOs();
 });
 
 function mkShader(t,s){
@@ -562,8 +609,10 @@ function mkProg(fs){
   if(!gl.getProgramParameter(p,gl.LINK_STATUS)){console.error(gl.getProgramInfoLog(p));return null;}
   return p;
 }
-const progMain=mkProg(document.getElementById('frag-main').textContent);
-const progScan=mkProg(document.getElementById('frag-scan').textContent);
+const progMain =mkProg(document.getElementById('frag-main').textContent);
+const progScan =mkProg(document.getElementById('frag-scan').textContent);
+const progTrail=mkProg(document.getElementById('frag-trail').textContent);
+const progBlit =mkProg(document.getElementById('frag-blit').textContent);
 
 const qbuf=gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER,qbuf);
@@ -580,7 +629,9 @@ const Um=getU(progMain,['u_hex','u_cam','u_scan','u_res','u_hexRes','u_hsize','u
   'u_hbrt','u_hpal','u_spinMode','u_spinAngle','u_awidth','u_aglow','u_trail',
   'u_fxMode','u_simrad','u_simthr','u_fxstr','u_copac','u_flip','u_freqLayout',
   'u_numHexes','u_hexCols','u_hexRows','u_time','u_distort']);
-const Us=getU(progScan,['u_prev','u_cam','u_spinAngle','u_awidth','u_decay','u_flip']);
+const Us=getU(progScan, ['u_prev','u_cam','u_spinAngle','u_awidth','u_decay','u_flip']);
+const Ut=getU(progTrail,['u_prev','u_cur','u_trailFade']);
+const Ub=getU(progBlit,  ['u_tex']);
 
 function mkTex(w,h,filter,data){
   const t=gl.createTexture();
@@ -608,6 +659,14 @@ function buildScanFBOs(){
   scanA=mkFBO(W,H); scanB=mkFBO(W,H); scanPP=0;
 }
 buildScanFBOs();
+
+// Trail ping-pong FBOs + temp render target
+let trailA,trailB,trailPP=0,tempFBO;
+function buildTrailFBOs(){
+  trailA=mkFBO(W,H); trailB=mkFBO(W,H); trailPP=0;
+  tempFBO=mkFBO(W,H);
+}
+buildTrailFBOs();
 
 // Camera texture
 let camTex=mkTex(1,1,true,new Uint8Array([0,0,0,255]));
@@ -750,38 +809,37 @@ function uploadCam(){
 }
 
 // ===================== Hex state update =====================
+let freqFlowOffset=0; // slowly shifts which bins map to which hexes
+
 function updateHexes(now){
-  const decay=S.decay;
-  const thr=S.thr;
   const arm=S.spinAngle;
   const armW=S.awidth*Math.PI;
+  const smooth=0.18; // how fast hex brightness follows frequency (lower=smoother)
+  const netBoost=1+netStrength*0.6; // network signal boosts brightness
 
   for(let i=0;i<hexes.length;i++){
     const h=hexes[i];
-    const freq=freqSmooth[h.freqBin]||0;
-    const age=(now-h.lastTrigger)*0.001;
+    // Frequency flow: offset the bin lookup over time
+    const flowedBin=Math.floor((h.freqBin+freqFlowOffset)%256);
+    const freq=(freqSmooth[flowedBin]||0)*netBoost;
+    // Noise mix: adds slight random shimmer
+    const noise=S.noiseMix*(Math.random()*0.15);
 
-    // Radar mode: only trigger hexes in the arm's sweep sector
-    if(S.spinMode===1){
+    if(S.spinMode===1){ // RADAR: only sample in arm sweep
       const hexAngle=Math.atan2(h.py-H*.5, h.px-W*.5);
-      const diff=((arm-hexAngle)%(Math.PI*2)+Math.PI*2)%( Math.PI*2);
+      const diff=((arm-hexAngle)%(Math.PI*2)+Math.PI*2)%(Math.PI*2);
       const inArm=(diff<armW)||(diff>Math.PI*2-armW);
-      if(inArm && freq>thr){
-        h.lastTrigger=now;
-        h.brightness=freq;
+      if(inArm){
+        h.brightness=h.brightness*(1-smooth)+Math.max(freq,noise)*smooth;
+      } else {
+        h.brightness*=0.97; // slow fade outside arm
       }
     } else {
-      // Normal trigger: any time frequency is loud enough
-      if(freq>thr){
-        h.lastTrigger=now;
-        h.brightness=Math.max(h.brightness,freq);
-      }
+      // Continuous: brightness directly tracks frequency amplitude + noise
+      h.brightness=h.brightness*(1-smooth)+Math.max(freq,noise)*smooth;
     }
 
-    // Decay
-    h.brightness=Math.max(0, 1 - age/decay)*h.brightness;
-    if(freq>thr) h.brightness=Math.max(h.brightness,freq*0.8);
-    h.age=Math.min(1, age/decay);
+    h.age=1-h.brightness;
   }
 }
 
@@ -817,33 +875,76 @@ function drawFreqMap(){
   }
 }
 
+// ===================== Network monitoring =====================
+let netStrength=0; // 0-1, used to boost visuals
+
+function startNetMonitor(){
+  const conn=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+  function updateNetUI(rtt,dl,type,ping){
+    document.getElementById('net-type').textContent=type||'?';
+    document.getElementById('net-rtt').textContent=(rtt||0)+'ms';
+    document.getElementById('net-dl').textContent=(dl||0).toFixed(1)+'Mb/s';
+    document.getElementById('net-ping').textContent=ping!=null?(ping.toFixed(0)+'ms'):'…';
+    // Strength: lower RTT = stronger. Clamp 10ms–400ms → 1..0
+    const effectiveRtt=ping!=null?ping:(rtt||200);
+    netStrength=Math.max(0,Math.min(1,1-effectiveRtt/400));
+    document.getElementById('net-strength').style.width=(netStrength*100)+'%';
+  }
+  if(conn){
+    conn.addEventListener('change',()=>updateNetUI(conn.rtt,conn.downlink,conn.effectiveType||conn.type,null));
+    updateNetUI(conn.rtt,conn.downlink,conn.effectiveType||conn.type,null);
+  }
+  // Periodic fetch-ping
+  async function doPing(){
+    try{
+      const t0=performance.now();
+      await fetch(location.href,{method:'HEAD',cache:'no-store'});
+      const ping=performance.now()-t0;
+      const rtt=conn?conn.rtt:0;
+      const dl=conn?conn.downlink:0;
+      const type=conn?(conn.effectiveType||conn.type||'unknown'):'unknown';
+      updateNetUI(rtt,dl,type,ping);
+    }catch(e){ netStrength=0; }
+  }
+  doPing();
+  setInterval(doPing,4000);
+}
+
 // ===================== State =====================
 const S={
-  hsize:28, decay:1.2, thr:0.08, hbrt:1.0, hopac:0.85,
+  hsize:28, hbrt:1.0, hopac:0.85,
   freqLayout:0, hpal:0,
   spinMode:0, spinAngle:0, srpm:6, awidth:0.04, aglow:1, trail:0.6, spinDir:1,
   fxMode:0, simrad:3, simthr:0.12, fxstr:0.8, copac:0.5,
+  trailFade:0.88, flowSpeed:0.0, noiseMix:0.0,
 };
 let t0=performance.now();
 
 rebuildGrid();
 
 // ===================== Render loop =====================
+let lastRenderT=performance.now();
 function render(now){
+  const wallDt=Math.min((now-lastRenderT)/1000,0.05);
+  lastRenderT=now;
   const t=(now-t0)*0.001;
 
   updateAudio();
   uploadCam();
 
-  // Advance spin angle
-  S.spinAngle=(S.spinAngle+S.spinDir*S.srpm/60*2*Math.PI*(16.67/1000))%(2*Math.PI);
+  // Advance spin angle (use actual frame dt for accuracy)
+  const framedt=Math.min(wallDt||0.016,0.05);
+  S.spinAngle=(S.spinAngle+S.spinDir*S.srpm/60*2*Math.PI*framedt)%(2*Math.PI);
+
+  // Frequency flow offset
+  freqFlowOffset=(freqFlowOffset+S.flowSpeed*0.4)%256;
 
   // Update hex states in JS
   updateHexes(now);
   packHexTexture();
   drawFreqMap();
 
-  // --- Scanner pass ---
+  // --- Scanner pass (spin mode 2) ---
   if(S.spinMode===2){
     const scanSrc=scanPP===0?scanA:scanB;
     const scanDst=scanPP===0?scanB:scanA;
@@ -857,52 +958,82 @@ function render(now){
     gl.uniform1i(Us.u_cam,1);
     gl.uniform1f(Us.u_spinAngle,S.spinAngle);
     gl.uniform1f(Us.u_awidth,S.awidth);
-    gl.uniform1f(Us.u_decay,0.998); // very slow fade between revolutions
+    gl.uniform1f(Us.u_decay,0.998);
     gl.uniform1i(Us.u_flip,camFlip);
     gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
     scanPP^=1;
-    gl.bindFramebuffer(gl.FRAMEBUFFER,null);
-    gl.viewport(0,0,W,H);
   }
 
-  // --- Main render ---
-  gl.bindFramebuffer(gl.FRAMEBUFFER,null);
-  gl.viewport(0,0,W,H);
-  gl.useProgram(progMain);
-  bindQ(progMain);
+  // Helper: set common main-shader uniforms on a bound framebuffer
+  function drawMain(targetFBO){
+    gl.bindFramebuffer(gl.FRAMEBUFFER,targetFBO);
+    gl.viewport(0,0,W,H);
+    gl.useProgram(progMain);
+    bindQ(progMain);
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,hexStateTex);
+    gl.uniform1i(Um.u_hex,0);
+    gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,camTex);
+    gl.uniform1i(Um.u_cam,1);
+    const scanTex=(S.spinMode===2)?(scanPP===0?scanA:scanB).tex:camTex;
+    gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D,scanTex);
+    gl.uniform1i(Um.u_scan,2);
+    gl.uniform2f(Um.u_res,W,H);
+    gl.uniform2f(Um.u_hexRes,hexTexW,hexTexH);
+    gl.uniform1f(Um.u_hsize,S.hsize);
+    gl.uniform1f(Um.u_hopac,S.hopac);
+    gl.uniform1f(Um.u_hbrt,S.hbrt);
+    gl.uniform1i(Um.u_hpal,S.hpal);
+    gl.uniform1i(Um.u_spinMode,S.spinMode);
+    gl.uniform1f(Um.u_spinAngle,S.spinAngle);
+    gl.uniform1f(Um.u_awidth,S.awidth);
+    gl.uniform1f(Um.u_aglow,S.aglow);
+    gl.uniform1f(Um.u_trail,S.trail);
+    gl.uniform1i(Um.u_fxMode,S.fxMode);
+    gl.uniform1f(Um.u_simrad,S.simrad);
+    gl.uniform1f(Um.u_simthr,S.simthr);
+    gl.uniform1f(Um.u_fxstr,S.fxstr);
+    gl.uniform1f(Um.u_copac,S.copac);
+    gl.uniform1i(Um.u_flip,camFlip);
+    gl.uniform1i(Um.u_freqLayout,S.freqLayout);
+    gl.uniform1i(Um.u_numHexes,hexes.length);
+    gl.uniform1i(Um.u_hexCols,hexCols);
+    gl.uniform1i(Um.u_hexRows,hexRows);
+    gl.uniform1f(Um.u_time,t);
+    gl.uniform1f(Um.u_distort,S.distort||0);
+    gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+  }
 
-  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,hexStateTex);
-  gl.uniform1i(Um.u_hex,0);
-  gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,camTex);
-  gl.uniform1i(Um.u_cam,1);
-  const scanTex=(S.spinMode===2)?(scanPP===0?scanA:scanB).tex:camTex;
-  gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D,scanTex);
-  gl.uniform1i(Um.u_scan,2);
+  if(S.trailFade>0.01){
+    // Pass 1: render hex+camera into tempFBO
+    drawMain(tempFBO.fbo);
 
-  gl.uniform2f(Um.u_res,W,H);
-  gl.uniform2f(Um.u_hexRes,hexTexW,hexTexH);
-  gl.uniform1f(Um.u_hsize,S.hsize);
-  gl.uniform1f(Um.u_hopac,S.hopac);
-  gl.uniform1f(Um.u_hbrt,S.hbrt);
-  gl.uniform1i(Um.u_hpal,S.hpal);
-  gl.uniform1i(Um.u_spinMode,S.spinMode);
-  gl.uniform1f(Um.u_spinAngle,S.spinAngle);
-  gl.uniform1f(Um.u_awidth,S.awidth);
-  gl.uniform1f(Um.u_aglow,S.aglow);
-  gl.uniform1f(Um.u_trail,S.trail);
-  gl.uniform1i(Um.u_fxMode,S.fxMode);
-  gl.uniform1f(Um.u_simrad,S.simrad);
-  gl.uniform1f(Um.u_simthr,S.simthr);
-  gl.uniform1f(Um.u_fxstr,S.fxstr);
-  gl.uniform1f(Um.u_copac,S.copac);
-  gl.uniform1i(Um.u_flip,camFlip);
-  gl.uniform1i(Um.u_freqLayout,S.freqLayout);
-  gl.uniform1i(Um.u_numHexes,hexes.length);
-  gl.uniform1i(Um.u_hexCols,hexCols);
-  gl.uniform1i(Um.u_hexRows,hexRows);
-  gl.uniform1f(Um.u_time,t);
-  gl.uniform1f(Um.u_distort,S.distort||0);
-  gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+    // Pass 2: trail accumulation (fade prev + add new)
+    const tSrc=trailPP===0?trailA:trailB;
+    const tDst=trailPP===0?trailB:trailA;
+    gl.bindFramebuffer(gl.FRAMEBUFFER,tDst.fbo);
+    gl.viewport(0,0,W,H);
+    gl.useProgram(progTrail);
+    bindQ(progTrail);
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,tSrc.tex);
+    gl.uniform1i(Ut.u_prev,0);
+    gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,tempFBO.tex);
+    gl.uniform1i(Ut.u_cur,1);
+    gl.uniform1f(Ut.u_trailFade,S.trailFade);
+    gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+    trailPP^=1;
+
+    // Pass 3: blit accumulated trail to screen
+    gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+    gl.viewport(0,0,W,H);
+    gl.useProgram(progBlit);
+    bindQ(progBlit);
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,tDst.tex);
+    gl.uniform1i(Ub.u_tex,0);
+    gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+  } else {
+    // No trail: render directly to screen
+    drawMain(null);
+  }
 
   requestAnimationFrame(render);
 }
@@ -918,9 +1049,10 @@ function wire(id,key,vid2,rebuild){
     if(rebuild) rebuildGrid();
   });
 }
+wire('trailFade','trailFade','v-trailFade');
+wire('flowSpeed','flowSpeed','v-flowSpeed');
+wire('noiseMix','noiseMix','v-noiseMix');
 wire('hsize','hsize','v-hsize',true);
-wire('decay','decay','v-decay');
-wire('thr','thr','v-thr');
 wire('hbrt','hbrt','v-hbrt');
 wire('hopac','hopac','v-hopac');
 wire('srpm','srpm','v-srpm');
@@ -952,7 +1084,8 @@ document.getElementById('btn-dir').addEventListener('click',function(){
   S.spinDir*=-1;
   this.textContent='DIRECTION: '+(S.spinDir>0?'CW':'CCW');
 });
-document.getElementById('btn-mic').addEventListener('click',startMic);
+document.getElementById('btn-mic').addEventListener('click',()=>startMic(false));
+document.getElementById('btn-net').addEventListener('click',startNetMonitor);
 document.getElementById('btn-cam').addEventListener('click',()=>{
   const v=document.getElementById('cam-sel').value;
   startCamera(v==='Loading...'||v===''?null:v, false);
@@ -978,9 +1111,10 @@ document.addEventListener('keydown',e=>{
   if(e.key==='f') document.getElementById('btn-fs').click();
 });
 
-// Auto-start mic and camera on load
+// Auto-start mic, camera, and network monitor
 startMic(true);
 startCamera(null, true);
+startNetMonitor();
 </script>
 </body>
 </html>
