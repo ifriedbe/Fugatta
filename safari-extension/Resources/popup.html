@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Tab Logbook</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header>
+    <img src="icons/icon-32.png" alt="" />
+    <h1>Tab Logbook</h1>
+  </header>
+
+  <section class="stats">
+    <div class="stat">
+      <span class="stat-value" id="stat-open">0</span>
+      <span class="stat-label">open</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value" id="stat-closed">0</span>
+      <span class="stat-label">closed</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value" id="stat-total">0</span>
+      <span class="stat-label">total</span>
+    </div>
+  </section>
+
+  <section class="actions">
+    <button id="export-btn" class="primary">Export to Excel</button>
+    <button id="clear-btn" class="secondary">Clear Log</button>
+  </section>
+
+  <p id="status" class="status"></p>
+
+  <section class="preview">
+    <h2>Recent tabs</h2>
+    <div id="table-wrap">
+      <table id="preview-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Opened</th>
+            <th>Closed</th>
+          </tr>
+        </thead>
+        <tbody id="preview-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <script src="vendor/exceljs.min.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
