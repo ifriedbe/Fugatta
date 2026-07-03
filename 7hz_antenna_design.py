@@ -226,6 +226,194 @@ def generate_coil_former_stl(filename='7hz_coil_former.stl'):
 
     return filename, len(triangles)
 
+
+def generate_segmented_stl(num_segments=4, prefix='7hz_coil_quarter'):
+    """
+    Generate the coil former split into arc segments that each fit on a
+    Prusa MK4S bed (250 x 210 mm).  Each segment is a quarter-arc with
+    dovetail tabs on one cut face and matching slots on the other, so the
+    pieces interlock when assembled.
+
+    Returns a list of (filename, triangle_count) tuples.
+    """
+    r_inner  = COIL_RADIUS - WINDING_DEPTH / 2 - FORMER_WALL
+    r_barrel = COIL_RADIUS - WINDING_DEPTH / 2
+    r_flange = COIL_RADIUS + WINDING_DEPTH / 2 + FORMER_FLANGE
+
+    half_len     = WINDING_LEN / 2 + FORMER_FLANGE
+    flange_inner = WINDING_LEN / 2
+
+    s = 1000.0  # metres -> mm for STL
+    ri = r_inner * s
+    rb = r_barrel * s
+    rf = r_flange * s
+    hl = half_len * s
+    fi = flange_inner * s
+    wall = FORMER_WALL * s
+
+    arc = 2 * PI / num_segments
+    n_arc = NUM_SEGMENTS // num_segments  # polygon facets per segment
+
+    # Dovetail tab dimensions (mm)
+    tab_w = 4.0   # width along Z
+    tab_d = 3.0   # depth into wall (radial)
+    tab_h = 8.0   # height along the cut face tangent
+    tab_taper = 1.5  # wider at base than tip for dovetail grip
+    # Place tabs at 1/3 and 2/3 of the arc height
+    tab_positions = [-hl * 0.4, hl * 0.4]
+
+    results = []
+
+    for seg in range(num_segments):
+        triangles = []
+        a_start = seg * arc
+        a_end   = a_start + arc
+
+        def seg_ring(r, z_lo, z_hi, outer=True):
+            for i in range(n_arc):
+                a0 = a_start + arc * i / n_arc
+                a1 = a_start + arc * (i + 1) / n_arc
+                c0, s0 = math.cos(a0), math.sin(a0)
+                c1, s1 = math.cos(a1), math.sin(a1)
+                p0 = (r*c0, r*s0, z_lo)
+                p1 = (r*c1, r*s1, z_lo)
+                p2 = (r*c1, r*s1, z_hi)
+                p3 = (r*c0, r*s0, z_hi)
+                if outer:
+                    triangles.append(_triangle(p0, p1, p2))
+                    triangles.append(_triangle(p0, p2, p3))
+                else:
+                    triangles.append(_triangle(p0, p2, p1))
+                    triangles.append(_triangle(p0, p3, p2))
+
+        def seg_annulus(r_in, r_out, z, up=True):
+            for i in range(n_arc):
+                a0 = a_start + arc * i / n_arc
+                a1 = a_start + arc * (i + 1) / n_arc
+                c0, s0 = math.cos(a0), math.sin(a0)
+                c1, s1 = math.cos(a1), math.sin(a1)
+                pi_ = (r_in*c0,  r_in*s0,  z)
+                po  = (r_out*c0, r_out*s0, z)
+                pi1 = (r_in*c1,  r_in*s1,  z)
+                po1 = (r_out*c1, r_out*s1, z)
+                if up:
+                    triangles.append(_triangle(pi_, po, po1))
+                    triangles.append(_triangle(pi_, po1, pi1))
+                else:
+                    triangles.append(_triangle(pi_, po1, po))
+                    triangles.append(_triangle(pi_, pi1, po1))
+
+        def cut_face(angle, facing_cw=True):
+            """Close the radial cut face as a flat wall."""
+            ca, sa = math.cos(angle), math.sin(angle)
+            p_ri_lo = (ri*ca, ri*sa, -hl)
+            p_ri_hi = (ri*ca, ri*sa,  hl)
+            p_rb_lo = (rb*ca, rb*sa, -hl)
+            p_rb_hi = (rb*ca, rb*sa,  hl)
+            p_rf_lo_bot = (rf*ca, rf*sa, -hl)
+            p_rf_hi_bot = (rf*ca, rf*sa, -fi)
+            p_rf_lo_top = (rf*ca, rf*sa,  fi)
+            p_rf_hi_top = (rf*ca, rf*sa,  hl)
+
+            # Barrel wall face (ri to rb, full height)
+            if facing_cw:
+                triangles.append(_triangle(p_ri_lo, p_rb_lo, p_rb_hi))
+                triangles.append(_triangle(p_ri_lo, p_rb_hi, p_ri_hi))
+            else:
+                triangles.append(_triangle(p_ri_lo, p_rb_hi, p_rb_lo))
+                triangles.append(_triangle(p_ri_lo, p_ri_hi, p_rb_hi))
+
+            # Bottom flange face (rb to rf)
+            pA = (rb*ca, rb*sa, -hl)
+            pB = (rf*ca, rf*sa, -hl)
+            pC = (rf*ca, rf*sa, -fi)
+            pD = (rb*ca, rb*sa, -fi)
+            if facing_cw:
+                triangles.append(_triangle(pA, pB, pC))
+                triangles.append(_triangle(pA, pC, pD))
+            else:
+                triangles.append(_triangle(pA, pC, pB))
+                triangles.append(_triangle(pA, pD, pC))
+
+            # Top flange face (rb to rf)
+            pA = (rb*ca, rb*sa,  fi)
+            pB = (rf*ca, rf*sa,  fi)
+            pC = (rf*ca, rf*sa,  hl)
+            pD = (rb*ca, rb*sa,  hl)
+            if facing_cw:
+                triangles.append(_triangle(pA, pB, pC))
+                triangles.append(_triangle(pA, pC, pD))
+            else:
+                triangles.append(_triangle(pA, pC, pB))
+                triangles.append(_triangle(pA, pD, pC))
+
+        # Barrel outer & inner
+        seg_ring(rb, -hl, hl, outer=True)
+        seg_ring(ri, -hl, hl, outer=False)
+
+        # Flanges
+        for sign in (-1, 1):
+            z_outer = sign * hl
+            z_inner = sign * fi
+            seg_ring(rf, min(z_outer, z_inner), max(z_outer, z_inner), outer=True)
+            seg_annulus(rb, rf, z_outer, up=(sign > 0))
+            seg_annulus(rb, rf, z_inner, up=(sign < 0))
+
+        # End caps
+        seg_annulus(ri, rb, -hl, up=False)
+        seg_annulus(ri, rb,  hl, up=True)
+
+        # Cut faces
+        cut_face(a_start, facing_cw=False)
+        cut_face(a_end, facing_cw=True)
+
+        # Dovetail alignment tabs on the a_end face
+        for tz in tab_positions:
+            ca, sa = math.cos(a_end), math.sin(a_end)
+            # Tab normal is tangential: perpendicular to radial at a_end
+            nx, ny = -sa, ca
+            r_mid = (ri + rb) / 2
+            cx_t = r_mid * ca
+            cy_t = r_mid * sa
+            hw = tab_w / 2
+            # Trapezoidal tab (wider at base for dovetail)
+            base_half = tab_h / 2 + tab_taper
+            tip_half  = tab_h / 2
+            pts = [
+                (cx_t + nx * base_half, cy_t + ny * base_half, tz - hw),
+                (cx_t + nx * tip_half,  cy_t + ny * tip_half,  tz - hw),
+                (cx_t - nx * tip_half,  cy_t - ny * tip_half,  tz - hw),
+                (cx_t - nx * base_half, cy_t - ny * base_half, tz - hw),
+                (cx_t + nx * base_half, cy_t + ny * base_half, tz + hw),
+                (cx_t + nx * tip_half,  cy_t + ny * tip_half,  tz + hw),
+                (cx_t - nx * tip_half,  cy_t - ny * tip_half,  tz + hw),
+                (cx_t - nx * base_half, cy_t - ny * base_half, tz + hw),
+            ]
+            # Extrude outward by tab_d
+            rd = ca * tab_d
+            sd = sa * tab_d
+            outer_pts = [(p[0]+rd, p[1]+sd, p[2]) for p in pts]
+
+            # 6 faces of the tab box
+            faces = [
+                (0,1,5,4), (1,2,6,5), (2,3,7,6), (3,0,4,7),
+                (0,3,2,1), (4,5,6,7)
+            ]
+            for f in faces:
+                triangles.append(_triangle(outer_pts[f[0]], outer_pts[f[1]], outer_pts[f[2]]))
+                triangles.append(_triangle(outer_pts[f[0]], outer_pts[f[2]], outer_pts[f[3]]))
+
+        fname = f'{prefix}_{seg+1}.stl'
+        with open(fname, 'wb') as f:
+            f.write(b'\x00' * 80)
+            f.write(struct.pack('<I', len(triangles)))
+            for tri in triangles:
+                f.write(tri)
+        results.append((fname, len(triangles)))
+
+    return results
+
+
 # ---------------------------------------------------------------------------
 # Report
 # ---------------------------------------------------------------------------
@@ -300,7 +488,9 @@ def print_report():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='7 Hz ELF antenna designer')
-    parser.add_argument('--stl', action='store_true', help='Generate STL file')
+    parser.add_argument('--stl', action='store_true', help='Generate full STL file')
+    parser.add_argument('--split', action='store_true',
+                        help='Generate segmented STL files (4 quarters for Prusa MK4S)')
     args = parser.parse_args()
 
     print_report()
@@ -308,3 +498,13 @@ if __name__ == '__main__':
     if args.stl:
         fname, ntri = generate_coil_former_stl()
         print(f"\n  STL written: {fname}  ({ntri} triangles)")
+
+    if args.split:
+        print("\n  Generating segmented STL files for Prusa MK4S (250x210 mm bed)...")
+        segs = generate_segmented_stl(num_segments=4)
+        for fname, ntri in segs:
+            print(f"    {fname}  ({ntri} triangles)")
+        print(f"\n  Each quarter spans a {COIL_RADIUS*1000:.0f} mm radius arc.")
+        bounding = 2 * (COIL_RADIUS + WINDING_DEPTH/2 + FORMER_FLANGE) * 1000
+        print(f"  Bounding box per piece: ~{bounding/2:.0f} x {bounding/2:.0f} mm — fits MK4S bed.")
+        print("  Assembly: interlock dovetail tabs, secure with CA glue.")
