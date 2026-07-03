@@ -1,0 +1,891 @@
+<title>7 Hz ELF Magnetic Loop Antenna</title>
+<style>
+  :root {
+    --ground: #0B1420;
+    --ground-raised: #111E2E;
+    --ground-inset: #071018;
+    --copper: #C4863A;
+    --copper-dim: #9A6A2E;
+    --copper-glow: #E8A84C;
+    --teal: #4A9EAA;
+    --teal-dim: #2D6B75;
+    --bone: #D8CFC0;
+    --bone-dim: #8A8378;
+    --steel: #5E7080;
+    --alert: #C45A5A;
+    --formula-bg: #0D1926;
+    --border: #1E2E40;
+    --success: #5AAA6A;
+  }
+
+  :root[data-theme="light"] {
+    --ground: #F0EDE8;
+    --ground-raised: #FFFFFF;
+    --ground-inset: #E4DFD8;
+    --copper: #9A6420;
+    --copper-dim: #B8843A;
+    --copper-glow: #7A4E14;
+    --teal: #2A7A88;
+    --teal-dim: #3A8E9A;
+    --bone: #2A2420;
+    --bone-dim: #6A6258;
+    --steel: #6A7A88;
+    --alert: #A83A3A;
+    --formula-bg: #E8E4DE;
+    --border: #D0C8BE;
+    --success: #3A8A4A;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --ground: #F0EDE8;
+      --ground-raised: #FFFFFF;
+      --ground-inset: #E4DFD8;
+      --copper: #9A6420;
+      --copper-dim: #B8843A;
+      --copper-glow: #7A4E14;
+      --teal: #2A7A88;
+      --teal-dim: #3A8E9A;
+      --bone: #2A2420;
+      --bone-dim: #6A6258;
+      --steel: #6A7A88;
+      --alert: #A83A3A;
+      --formula-bg: #E8E4DE;
+      --border: #D0C8BE;
+      --success: #3A8A4A;
+    }
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--ground);
+    color: var(--bone);
+    font-family: 'SF Mono', 'Cascadia Code', 'JetBrains Mono', 'Fira Code', Menlo, monospace;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  /* ---- Hero ---- */
+  .hero {
+    padding: 3rem 0 2rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2.5rem;
+    position: relative;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 0.75rem;
+  }
+
+  .hero h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(1.8rem, 4.5vw, 2.6rem);
+    font-weight: 400;
+    color: var(--bone);
+    line-height: 1.15;
+    text-wrap: balance;
+    letter-spacing: -0.02em;
+  }
+
+  .hero h1 span {
+    color: var(--copper);
+    font-style: italic;
+  }
+
+  .hero-sub {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    color: var(--bone-dim);
+    max-width: 52ch;
+    line-height: 1.65;
+  }
+
+  .hero-wavelength {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+    padding: 0.4rem 0.75rem;
+    background: var(--ground-inset);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    font-size: 0.7rem;
+    color: var(--steel);
+  }
+
+  .hero-wavelength strong {
+    font-size: 1rem;
+    color: var(--copper);
+    font-weight: 600;
+  }
+
+  /* ---- Canvas ---- */
+  .viz-container {
+    margin-bottom: 2.5rem;
+  }
+
+  .viz-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--steel);
+    margin-bottom: 0.5rem;
+  }
+
+  canvas {
+    width: 100%;
+    height: 320px;
+    display: block;
+    background: var(--ground-inset);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+  }
+
+  /* ---- Section ---- */
+  .section {
+    margin-bottom: 2.5rem;
+  }
+
+  .section-head {
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--teal);
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1.25rem;
+  }
+
+  /* ---- Parameter Grid ---- */
+  .param-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  @media (max-width: 560px) {
+    .param-grid { grid-template-columns: 1fr; }
+  }
+
+  .param-card {
+    background: var(--ground-raised);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1rem;
+  }
+
+  .param-card label {
+    display: block;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--steel);
+    margin-bottom: 0.6rem;
+  }
+
+  .param-card .value {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--copper);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .param-card .unit {
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: var(--bone-dim);
+    margin-left: 0.25rem;
+  }
+
+  .param-card input[type="range"] {
+    width: 100%;
+    margin-top: 0.6rem;
+    accent-color: var(--copper);
+    cursor: pointer;
+  }
+
+  /* ---- Results ---- */
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+
+  @media (max-width: 560px) {
+    .results-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  .result-cell {
+    background: var(--ground-raised);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0.75rem;
+  }
+
+  .result-cell .rlabel {
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--steel);
+    margin-bottom: 0.35rem;
+  }
+
+  .result-cell .rval {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--bone);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .result-cell .runit {
+    font-size: 0.6rem;
+    color: var(--bone-dim);
+    margin-left: 0.15rem;
+    font-weight: 400;
+  }
+
+  .result-cell.highlight .rval { color: var(--copper); }
+  .result-cell.warn .rval { color: var(--alert); }
+
+  /* ---- Formulas ---- */
+  .formula-block {
+    background: var(--formula-bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1.25rem 1.5rem;
+    overflow-x: auto;
+    margin-bottom: 0.75rem;
+  }
+
+  .formula-block .fname {
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--teal-dim);
+    margin-bottom: 0.4rem;
+  }
+
+  .formula-block .fexpr {
+    font-size: 0.95rem;
+    color: var(--bone);
+    white-space: nowrap;
+  }
+
+  .formula-block .fexpr .var { color: var(--copper); font-style: italic; }
+  .formula-block .fexpr .op { color: var(--steel); }
+  .formula-block .fexpr .const { color: var(--teal); }
+
+  .formula-note {
+    font-size: 0.7rem;
+    color: var(--bone-dim);
+    line-height: 1.6;
+    margin-top: 0.3rem;
+  }
+
+  /* ---- Former Diagram ---- */
+  .former-specs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  @media (max-width: 560px) {
+    .former-specs { grid-template-columns: 1fr; }
+  }
+
+  .spec-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.75rem;
+  }
+
+  .spec-row .sk { color: var(--steel); }
+  .spec-row .sv { color: var(--bone); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  /* ---- Assembly ---- */
+  .steps {
+    counter-reset: step;
+    list-style: none;
+  }
+
+  .steps li {
+    counter-increment: step;
+    position: relative;
+    padding: 0.75rem 0 0.75rem 2.5rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.78rem;
+    color: var(--bone-dim);
+    line-height: 1.55;
+  }
+
+  .steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 0.7rem;
+    width: 1.6rem;
+    height: 1.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--copper);
+    border: 1px solid var(--copper-dim);
+    border-radius: 50%;
+  }
+
+  .steps li strong {
+    color: var(--bone);
+    font-weight: 600;
+  }
+
+  /* ---- Efficiency callout ---- */
+  .callout {
+    background: var(--ground-inset);
+    border-left: 3px solid var(--alert);
+    padding: 1rem 1.25rem;
+    margin-top: 1.5rem;
+    font-size: 0.75rem;
+    color: var(--bone-dim);
+    line-height: 1.6;
+  }
+
+  .callout strong { color: var(--alert); }
+
+  /* ---- Footer ---- */
+  .foot {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.6rem;
+    color: var(--steel);
+    text-align: center;
+    letter-spacing: 0.04em;
+  }
+</style>
+
+<div class="page">
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="hero-eyebrow">Extremely Low Frequency Antenna Design</div>
+    <h1>Magnetic Loop Coil<br>for <span>7 Hz</span> Reception</h1>
+    <p class="hero-sub">
+      A 3D-printable coil former for winding an air-core magnetic loop
+      sensitive to ELF signals near the first Schumann resonance.
+      The printed structure holds 1,000 turns of magnet wire tuned
+      to resonate at 7 Hz with a parallel capacitor.
+    </p>
+    <div class="hero-wavelength">
+      free-space wavelength <strong>&lambda; = 42,857 km</strong>
+      &mdash; conventional antennas are not feasible
+    </div>
+  </header>
+
+  <!-- Visualization -->
+  <div class="viz-container">
+    <div class="viz-label">Coil Cross-Section &amp; Magnetic Field</div>
+    <canvas id="coilCanvas"></canvas>
+  </div>
+
+  <!-- Input Parameters -->
+  <div class="section">
+    <div class="section-head">Design Parameters</div>
+    <div class="param-grid">
+      <div class="param-card">
+        <label>Number of turns</label>
+        <div><span class="value" id="vTurns">1000</span></div>
+        <input type="range" id="sTurns" min="200" max="3000" step="50" value="1000">
+      </div>
+      <div class="param-card">
+        <label>Mean coil radius</label>
+        <div><span class="value" id="vRadius">15.0</span><span class="unit">cm</span></div>
+        <input type="range" id="sRadius" min="5" max="25" step="0.5" value="15">
+      </div>
+      <div class="param-card">
+        <label>Winding layers</label>
+        <div><span class="value" id="vLayers">10</span></div>
+        <input type="range" id="sLayers" min="2" max="20" step="1" value="10">
+      </div>
+      <div class="param-card">
+        <label>Wire gauge (AWG)</label>
+        <div><span class="value" id="vAWG">24</span><span class="unit" id="vWireDia">0.51 mm</span></div>
+        <input type="range" id="sAWG" min="20" max="30" step="1" value="24">
+      </div>
+    </div>
+  </div>
+
+  <!-- Computed Results -->
+  <div class="section">
+    <div class="section-head">Computed Electrical Properties</div>
+    <div class="results-grid">
+      <div class="result-cell highlight">
+        <div class="rlabel">Inductance</div>
+        <div class="rval" id="rL">480.1<span class="runit">mH</span></div>
+      </div>
+      <div class="result-cell highlight">
+        <div class="rlabel">Tuning Cap</div>
+        <div class="rval" id="rC">1076.6<span class="runit">&micro;F</span></div>
+      </div>
+      <div class="result-cell">
+        <div class="rlabel">DC Resistance</div>
+        <div class="rval" id="rR">80.6<span class="runit">&Omega;</span></div>
+      </div>
+      <div class="result-cell">
+        <div class="rlabel">Q Factor</div>
+        <div class="rval" id="rQ">0.26</div>
+      </div>
+      <div class="result-cell warn">
+        <div class="rlabel">Rad. Resistance</div>
+        <div class="rval" id="rRrad">4.6e-23<span class="runit">&Omega;</span></div>
+      </div>
+      <div class="result-cell">
+        <div class="rlabel">Wire Length</div>
+        <div class="rval" id="rWire">942<span class="runit">m</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulas -->
+  <div class="section">
+    <div class="section-head">Governing Equations</div>
+
+    <div class="formula-block">
+      <div class="fname">Faraday's Law &mdash; Induced EMF</div>
+      <div class="fexpr">
+        <span class="var">V</span><sub>emf</sub> <span class="op">=</span>
+        <span class="var">N</span> <span class="op">&middot;</span>
+        <span class="var">A</span> <span class="op">&middot;</span>
+        <span class="const">&mu;<sub>0</sub></span> <span class="op">&middot;</span>
+        <span class="var">&omega;</span> <span class="op">&middot;</span>
+        <span class="var">H</span><sub>peak</sub>
+      </div>
+      <div class="formula-note">
+        N = turns, A = loop area [m&sup2;], &omega; = 2&pi;f, H = magnetic field intensity [A/m]
+      </div>
+    </div>
+
+    <div class="formula-block">
+      <div class="fname">Wheeler Approximation &mdash; Solenoid Inductance</div>
+      <div class="fexpr">
+        <span class="var">L</span> <span class="op">=</span>
+        <span class="const">&mu;<sub>0</sub></span> <span class="op">&middot;</span>
+        <span class="var">N</span>&sup2; <span class="op">&middot;</span>
+        <span class="var">A</span> <span class="op">/</span>
+        <span class="op">(</span><span class="var">l</span> <span class="op">+</span>
+        <span class="const">0.9</span> <span class="op">&middot;</span>
+        <span class="var">r</span><span class="op">)</span>
+      </div>
+      <div class="formula-note">
+        l = winding length [m], r = mean coil radius [m]
+      </div>
+    </div>
+
+    <div class="formula-block">
+      <div class="fname">Resonance &mdash; Tuning Capacitance</div>
+      <div class="fexpr">
+        <span class="var">C</span> <span class="op">=</span>
+        <span class="const">1</span> <span class="op">/</span>
+        <span class="op">(</span><span class="op">(</span><span class="const">2&pi;</span>
+        <span class="var">f</span><span class="op">)</span>&sup2; <span class="op">&middot;</span>
+        <span class="var">L</span><span class="op">)</span>
+      </div>
+    </div>
+
+    <div class="formula-block">
+      <div class="fname">Small Loop &mdash; Radiation Resistance</div>
+      <div class="fexpr">
+        <span class="var">R</span><sub>rad</sub> <span class="op">=</span>
+        <span class="const">320&pi;<sup>4</sup></span> <span class="op">&middot;</span>
+        <span class="op">(</span><span class="var">N</span> <span class="op">&middot;</span>
+        <span class="var">A</span> <span class="op">/</span>
+        <span class="var">&lambda;</span>&sup2;<span class="op">)</span>&sup2;
+      </div>
+      <div class="formula-note">
+        &lambda; = c / f &asymp; 42,857 km. The vanishingly small R<sub>rad</sub> reflects
+        why ELF transmission from a small loop is impractical.
+      </div>
+    </div>
+
+    <div class="formula-block">
+      <div class="fname">Magnetic Moment (Transmit)</div>
+      <div class="fexpr">
+        <span class="var">m</span> <span class="op">=</span>
+        <span class="var">N</span> <span class="op">&middot;</span>
+        <span class="var">I</span> <span class="op">&middot;</span>
+        <span class="var">A</span>
+        &emsp;&emsp;
+        <span class="op">[</span>A&middot;m&sup2;<span class="op">]</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3D Print Former -->
+  <div class="section">
+    <div class="section-head">3D-Printed Coil Former</div>
+    <canvas id="formerCanvas" style="height:220px;margin-bottom:1rem;"></canvas>
+    <div class="former-specs">
+      <div>
+        <div class="spec-row"><span class="sk">Inner bore radius</span><span class="sv" id="fBore">144.5 mm</span></div>
+        <div class="spec-row"><span class="sk">Barrel outer radius</span><span class="sv" id="fBarrel">147.5 mm</span></div>
+        <div class="spec-row"><span class="sk">Flange outer radius</span><span class="sv" id="fFlange">157.5 mm</span></div>
+      </div>
+      <div>
+        <div class="spec-row"><span class="sk">Total length</span><span class="sv" id="fLength">60.0 mm</span></div>
+        <div class="spec-row"><span class="sk">Wall thickness</span><span class="sv">3.0 mm</span></div>
+        <div class="spec-row"><span class="sk">Material</span><span class="sv">PLA / PETG</span></div>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top:1.25rem;">
+      <strong>Print note:</strong> At 15 cm radius the former is ~315 mm in diameter.
+      If your bed is smaller, the Python script can generate a segmented version
+      that prints in halves and clips together. Adjust <code>COIL_RADIUS</code>
+      in <code>7hz_antenna_design.py</code>.
+    </div>
+  </div>
+
+  <!-- Assembly -->
+  <div class="section">
+    <div class="section-head">Assembly</div>
+    <ol class="steps">
+      <li><strong>Print the coil former</strong> &mdash; PLA at 0.2 mm layer height, 20% infill. Orient vertically for best cylindrical accuracy.</li>
+      <li><strong>Wind the coil</strong> &mdash; Feed AWG 24 magnet wire through the channel. Wind <span id="aTPL">100</span> turns per layer, <span id="aLayers">10</span> layers, keeping tension even.</li>
+      <li><strong>Secure the winding</strong> &mdash; Apply polyurethane varnish or wrap with Kapton tape to prevent unravelling.</li>
+      <li><strong>Add tuning capacitor</strong> &mdash; Connect <span id="aCap">~1077 &micro;F</span> in parallel across the coil terminals. Use a film or electrolytic cap rated for low-frequency AC.</li>
+      <li><strong>Connect preamp</strong> &mdash; Feed into a low-noise instrumentation amplifier (gain ~60 dB) with a 1&ndash;20 Hz band-pass filter.</li>
+      <li><strong>Orient and measure</strong> &mdash; Point the loop axis toward the signal source. For Schumann resonances, orient vertically with the axis pointing N&ndash;S.</li>
+    </ol>
+
+    <div class="callout">
+      <strong>Transmit efficiency is ~10<sup>&minus;23</sup>.</strong>
+      At 7 Hz, practical transmission requires kilometre-scale ground electrodes
+      (as used by military ELF stations). This coil is designed as a
+      <em>receiver</em> for natural ELF phenomena &mdash; Schumann resonances,
+      sferic signatures, and geomagnetic micropulsations.
+    </div>
+  </div>
+
+  <footer class="foot">
+    7 Hz ELF Antenna Design &middot; generated by 7hz_antenna_design.py &middot; all formulas from classical electromagnetics
+  </footer>
+</div>
+
+<script>
+const PI = Math.PI;
+const MU_0 = 4 * PI * 1e-7;
+const C_LIGHT = 2.998e8;
+const FREQ = 7.0;
+const OMEGA = 2 * PI * FREQ;
+const LAMBDA = C_LIGHT / FREQ;
+
+const awgDiameters = {
+  20: 0.000812, 21: 0.000723, 22: 0.000644, 23: 0.000573,
+  24: 0.000511, 25: 0.000455, 26: 0.000405, 27: 0.000361,
+  28: 0.000321, 29: 0.000286, 30: 0.000255
+};
+
+function compute() {
+  const N = +document.getElementById('sTurns').value;
+  const R = +document.getElementById('sRadius').value / 100;
+  const layers = +document.getElementById('sLayers').value;
+  const awg = +document.getElementById('sAWG').value;
+  const wireDia = awgDiameters[awg];
+  const tpl = Math.ceil(N / layers);
+  const A = PI * R * R;
+  const windLen = tpl * wireDia;
+  const windDepth = layers * wireDia;
+
+  const L = (MU_0 * N * N * A) / (windLen + 0.9 * R);
+  const C = 1 / ((2 * PI * FREQ) ** 2 * L);
+  const Rrad = 320 * PI ** 4 * (N * A / LAMBDA ** 2) ** 2;
+  const wireLen = N * 2 * PI * R;
+  const wireArea = PI * (wireDia / 2) ** 2;
+  const Rwire = 1.68e-8 * wireLen / wireArea;
+  const Q = OMEGA * L / Rwire;
+
+  document.getElementById('vTurns').textContent = N;
+  document.getElementById('vRadius').textContent = (R * 100).toFixed(1);
+  document.getElementById('vLayers').textContent = layers;
+  document.getElementById('vAWG').textContent = awg;
+  document.getElementById('vWireDia').textContent = (wireDia * 1000).toFixed(2) + ' mm';
+
+  document.getElementById('rL').innerHTML = (L * 1000).toFixed(1) + '<span class="runit">mH</span>';
+  document.getElementById('rC').innerHTML = (C * 1e6).toFixed(1) + '<span class="runit">&micro;F</span>';
+  document.getElementById('rR').innerHTML = Rwire.toFixed(1) + '<span class="runit">&Omega;</span>';
+  document.getElementById('rQ').textContent = Q.toFixed(2);
+  document.getElementById('rRrad').innerHTML = Rrad.toExponential(1) + '<span class="runit">&Omega;</span>';
+  document.getElementById('rWire').innerHTML = Math.round(wireLen) + '<span class="runit">m</span>';
+
+  const wall = 0.003;
+  const flange = 0.005;
+  const rBore = (R - windDepth / 2 - wall) * 1000;
+  const rBarrel = (R - windDepth / 2) * 1000;
+  const rFlange = (R + windDepth / 2 + flange) * 1000;
+  const totalLen = (windLen + 2 * flange) * 1000;
+
+  document.getElementById('fBore').textContent = rBore.toFixed(1) + ' mm';
+  document.getElementById('fBarrel').textContent = rBarrel.toFixed(1) + ' mm';
+  document.getElementById('fFlange').textContent = rFlange.toFixed(1) + ' mm';
+  document.getElementById('fLength').textContent = totalLen.toFixed(1) + ' mm';
+
+  document.getElementById('aTPL').textContent = tpl;
+  document.getElementById('aLayers').textContent = layers;
+  document.getElementById('aCap').textContent = '~' + Math.round(C * 1e6) + ' µF';
+
+  return { N, R, A, layers, tpl, wireDia, windLen, windDepth, L, C, Rwire, Q, Rrad, wireLen, wall, flange };
+}
+
+// ---- Field Visualization ----
+const canvas = document.getElementById('coilCanvas');
+const ctx = canvas.getContext('2d');
+
+function isDark() {
+  const dt = document.documentElement.getAttribute('data-theme');
+  if (dt === 'dark') return true;
+  if (dt === 'light') return false;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
+let animT = 0;
+
+function drawCoil() {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const W = rect.width, H = rect.height;
+
+  const dark = isDark();
+  ctx.fillStyle = dark ? '#071018' : '#E4DFD8';
+  ctx.fillRect(0, 0, W, H);
+
+  const p = compute();
+  const cx = W / 2, cy = H / 2;
+  const scale = Math.min(W, H) * 0.35 / (p.R * 1000);
+
+  const rI = (p.R - p.windDepth / 2) * 1000 * scale;
+  const rO = (p.R + p.windDepth / 2) * 1000 * scale;
+  const halfL = (p.windLen / 2) * 1000 * scale;
+
+  // Field lines (dipole approximation)
+  const copper = dark ? '#C4863A' : '#9A6420';
+  const copperDim = dark ? 'rgba(196,134,58,0.12)' : 'rgba(154,100,32,0.08)';
+  const teal = dark ? '#4A9EAA' : '#2A7A88';
+  const fieldAlpha = dark ? 0.3 : 0.2;
+
+  for (let i = 0; i < 8; i++) {
+    const phase = animT * 0.02 + i * PI / 4;
+    const spread = 1 + 0.3 * Math.sin(phase);
+    ctx.beginPath();
+    for (let t = -PI; t <= PI; t += 0.05) {
+      const r = rO * spread * (1 + 0.6 * Math.cos(t));
+      const x = cx + r * Math.sin(t);
+      const y = cy + r * Math.cos(t) * 0.6;
+      t === -PI ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = `rgba(${dark ? '74,158,170' : '42,122,136'},${fieldAlpha * (0.5 + 0.5 * Math.sin(phase))})`;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // Coil cross-section (left half)
+  function drawWinding(xc, yc) {
+    ctx.fillStyle = copperDim;
+    ctx.fillRect(xc - (rO - rI) / 2, yc - halfL, rO - rI, halfL * 2);
+
+    ctx.strokeStyle = copper;
+    ctx.lineWidth = 1;
+    ctx.strokeRect(xc - (rO - rI) / 2, yc - halfL, rO - rI, halfL * 2);
+
+    // Wire dots
+    const rows = Math.min(p.layers, 8);
+    const cols = Math.min(p.tpl, 12);
+    const dx = (rO - rI) / (rows + 1);
+    const dy = (halfL * 2) / (cols + 1);
+    for (let r = 1; r <= rows; r++) {
+      for (let c = 1; c <= cols; c++) {
+        const wx = xc - (rO - rI) / 2 + r * dx;
+        const wy = yc - halfL + c * dy;
+        ctx.beginPath();
+        ctx.arc(wx, wy, Math.min(dx, dy) * 0.25, 0, 2 * PI);
+        ctx.fillStyle = copper;
+        ctx.fill();
+      }
+    }
+  }
+
+  // Left winding
+  drawWinding(cx - (rI + rO) / 2, cy);
+  // Right winding
+  drawWinding(cx + (rI + rO) / 2, cy);
+
+  // Core/barrel
+  ctx.strokeStyle = dark ? '#1E2E40' : '#C0B8AE';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([4, 3]);
+  ctx.beginPath();
+  ctx.moveTo(cx - rI, cy - halfL - 8);
+  ctx.lineTo(cx - rI, cy + halfL + 8);
+  ctx.moveTo(cx + rI, cy - halfL - 8);
+  ctx.lineTo(cx + rI, cy + halfL + 8);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Labels
+  ctx.font = '10px "SF Mono", monospace';
+  ctx.fillStyle = dark ? '#5E7080' : '#6A7A88';
+  ctx.textAlign = 'center';
+  ctx.fillText(`r = ${(p.R * 100).toFixed(1)} cm`, cx, cy + halfL + 30);
+  ctx.fillText(`${p.N} turns`, cx, cy - halfL - 14);
+
+  // Dimension arrows
+  ctx.strokeStyle = dark ? '#5E7080' : '#6A7A88';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(cx - rO - 10, cy - halfL);
+  ctx.lineTo(cx - rO - 10, cy + halfL);
+  ctx.stroke();
+  ctx.fillText(`${(p.windLen * 100).toFixed(1)} cm`, cx - rO - 30, cy + 3);
+
+  animT++;
+  requestAnimationFrame(drawCoil);
+}
+
+// ---- Former Cross-Section ----
+const fCanvas = document.getElementById('formerCanvas');
+const fCtx = fCanvas.getContext('2d');
+
+function drawFormer() {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = fCanvas.getBoundingClientRect();
+  fCanvas.width = rect.width * dpr;
+  fCanvas.height = rect.height * dpr;
+  fCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const W = rect.width, H = rect.height;
+
+  const dark = isDark();
+  fCtx.fillStyle = dark ? '#071018' : '#E4DFD8';
+  fCtx.fillRect(0, 0, W, H);
+
+  const p = compute();
+  const wall = 3, flangeD = 5;
+  const cx = W / 2, cy = H / 2;
+
+  const rBore = (p.R * 1000 - p.windDepth * 500 - wall);
+  const rBarrel = (p.R * 1000 - p.windDepth * 500);
+  const rFlange = (p.R * 1000 + p.windDepth * 500 + flangeD);
+  const halfLen = (p.windLen * 500 + flangeD);
+  const flangeInner = p.windLen * 500;
+
+  const maxDim = Math.max(rFlange, halfLen);
+  const sc = Math.min(W * 0.4, H * 0.4) / maxDim;
+
+  const copper = dark ? 'rgba(196,134,58,0.15)' : 'rgba(154,100,32,0.1)';
+  const copperStroke = dark ? '#C4863A' : '#9A6420';
+  const partFill = dark ? '#1E2E40' : '#C8C0B4';
+  const partStroke = dark ? '#3A5068' : '#8A8278';
+
+  function sym(draw) { draw(1); draw(-1); }
+
+  // Winding channel fill
+  sym(s => {
+    fCtx.fillStyle = copper;
+    fCtx.fillRect(
+      cx + s * rBarrel * sc - (s > 0 ? (rFlange - rBarrel) * sc : 0),
+      cy - flangeInner * sc,
+      (rFlange - rBarrel) * sc,
+      flangeInner * 2 * sc
+    );
+  });
+
+  // Former body (cross section)
+  sym(s => {
+    // Barrel
+    fCtx.fillStyle = partFill;
+    fCtx.strokeStyle = partStroke;
+    fCtx.lineWidth = 1.5;
+    fCtx.fillRect(
+      cx + s * rBore * sc - (s > 0 ? wall * sc : 0),
+      cy - halfLen * sc,
+      wall * sc,
+      halfLen * 2 * sc
+    );
+    fCtx.strokeRect(
+      cx + s * rBore * sc - (s > 0 ? wall * sc : 0),
+      cy - halfLen * sc,
+      wall * sc,
+      halfLen * 2 * sc
+    );
+
+    // Flanges (top and bottom)
+    for (const fSign of [-1, 1]) {
+      const fy = cy + fSign * flangeInner * sc;
+      const fh = (halfLen - flangeInner) * sc * fSign;
+      fCtx.fillRect(
+        cx + s * rBarrel * sc - (s > 0 ? (rFlange - rBarrel + wall) * sc : wall * sc),
+        Math.min(fy, fy + fh),
+        (rFlange - rBarrel + wall) * sc,
+        Math.abs(fh)
+      );
+      fCtx.strokeRect(
+        cx + s * rBarrel * sc - (s > 0 ? (rFlange - rBarrel + wall) * sc : wall * sc),
+        Math.min(fy, fy + fh),
+        (rFlange - rBarrel + wall) * sc,
+        Math.abs(fh)
+      );
+    }
+  });
+
+  // Labels
+  fCtx.font = '9px "SF Mono", monospace';
+  fCtx.fillStyle = dark ? '#5E7080' : '#6A7A88';
+  fCtx.textAlign = 'center';
+  fCtx.fillText('bore', cx, cy + halfLen * sc + 16);
+  fCtx.fillText('flange', cx + rFlange * sc + 6, cy - halfLen * sc - 6);
+  fCtx.fillText('winding channel', cx + (rBarrel + rFlange) / 2 * sc, cy);
+
+  // Dimension line
+  fCtx.strokeStyle = copperStroke;
+  fCtx.lineWidth = 0.75;
+  fCtx.setLineDash([2, 2]);
+  fCtx.beginPath();
+  fCtx.moveTo(cx, cy - halfLen * sc - 2);
+  fCtx.lineTo(cx + rFlange * sc, cy - halfLen * sc - 2);
+  fCtx.stroke();
+  fCtx.setLineDash([]);
+}
+
+// ---- Bind sliders ----
+['sTurns', 'sRadius', 'sLayers', 'sAWG'].forEach(id => {
+  document.getElementById(id).addEventListener('input', () => {
+    drawFormer();
+  });
+});
+
+// ---- Theme change detection ----
+const mq = window.matchMedia('(prefers-color-scheme: dark)');
+mq.addEventListener('change', () => { drawFormer(); });
+new MutationObserver(() => { drawFormer(); })
+  .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+// ---- Init ----
+drawCoil();
+drawFormer();
+</script>
