@@ -486,22 +486,43 @@ def print_report():
     print("=" * 70)
 
 
+def recalculate(freq):
+    """Recalculate all derived values for a given frequency."""
+    global FREQ, OMEGA, WAVELENGTH, L_coil, C_tune, R_rad, R_wire, V_emf, Q_factor
+    FREQ = freq
+    OMEGA = 2 * PI * FREQ
+    WAVELENGTH = C_LIGHT / FREQ
+    L_coil = inductance_wheeler(N_TURNS, LOOP_AREA, WINDING_LEN, COIL_RADIUS)
+    C_tune = tuning_capacitance(FREQ, L_coil)
+    R_rad  = radiation_resistance(N_TURNS, LOOP_AREA, WAVELENGTH)
+    R_wire = wire_resistance(N_TURNS, COIL_RADIUS)
+    V_emf  = induced_voltage(N_TURNS, LOOP_AREA, OMEGA)
+    Q_factor = OMEGA * L_coil / R_wire
+
+
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='7 Hz ELF antenna designer')
+    parser = argparse.ArgumentParser(description='ELF antenna designer')
+    parser.add_argument('--freq', type=float, default=7.0,
+                        help='Target frequency in Hz (default: 7)')
     parser.add_argument('--stl', action='store_true', help='Generate full STL file')
     parser.add_argument('--split', action='store_true',
                         help='Generate segmented STL files (4 quarters for Prusa MK4S)')
     args = parser.parse_args()
 
+    recalculate(args.freq)
     print_report()
 
+    freq_tag = f'{args.freq:.0f}hz'
+
     if args.stl:
-        fname, ntri = generate_coil_former_stl()
+        fname = f'{freq_tag}_coil_former.stl'
+        fname, ntri = generate_coil_former_stl(filename=fname)
         print(f"\n  STL written: {fname}  ({ntri} triangles)")
 
     if args.split:
-        print("\n  Generating segmented STL files for Prusa MK4S (250x210 mm bed)...")
-        segs = generate_segmented_stl(num_segments=4)
+        prefix = f'{freq_tag}_coil_quarter'
+        print(f"\n  Generating segmented STL files for Prusa MK4S (250x210 mm bed)...")
+        segs = generate_segmented_stl(num_segments=4, prefix=prefix)
         for fname, ntri in segs:
             print(f"    {fname}  ({ntri} triangles)")
         print(f"\n  Each quarter spans a {COIL_RADIUS*1000:.0f} mm radius arc.")
