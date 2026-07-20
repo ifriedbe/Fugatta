@@ -1,0 +1,1174 @@
+<title>7.83 Hz Schumann Resonance Antenna — Build Guide</title>
+<style>
+  :root {
+    --ground: #1A1612;
+    --raised: #2A241E;
+    --inset: #12100D;
+    --copper: #C67B3A;
+    --copper-soft: rgba(198,123,58,0.15);
+    --green: #3B6E5A;
+    --green-soft: rgba(59,110,90,0.12);
+    --stone: #A89882;
+    --stone-dim: #6E6356;
+    --bone: #D4C9B8;
+    --border: #352E26;
+    --alert: #B85C4A;
+    --highlight-bg: #2A221A;
+  }
+
+  :root[data-theme="light"] {
+    --ground: #E8DFD2;
+    --raised: #FFFFFF;
+    --inset: #DCD3C5;
+    --copper: #9A5E22;
+    --copper-soft: rgba(154,94,34,0.1);
+    --green: #2D5A46;
+    --green-soft: rgba(45,90,70,0.08);
+    --stone: #5A4E42;
+    --stone-dim: #8A7E72;
+    --bone: #2A2218;
+    --border: #CCC2B2;
+    --alert: #943A2A;
+    --highlight-bg: #F2ECE2;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --ground: #E8DFD2;
+      --raised: #FFFFFF;
+      --inset: #DCD3C5;
+      --copper: #9A5E22;
+      --copper-soft: rgba(154,94,34,0.1);
+      --green: #2D5A46;
+      --green-soft: rgba(45,90,70,0.08);
+      --stone: #5A4E42;
+      --stone-dim: #8A7E72;
+      --bone: #2A2218;
+      --border: #CCC2B2;
+      --alert: #943A2A;
+      --highlight-bg: #F2ECE2;
+    }
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--ground);
+    color: var(--bone);
+    font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+
+  /* ---- Header ---- */
+  .header {
+    margin-bottom: 2.5rem;
+  }
+
+  .header-freq {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(2.4rem, 6vw, 3.2rem);
+    font-weight: 400;
+    color: var(--copper);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  .header-freq small {
+    font-size: 0.45em;
+    color: var(--stone-dim);
+    letter-spacing: 0.02em;
+    vertical-align: baseline;
+  }
+
+  .header-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.15rem;
+    font-weight: 400;
+    color: var(--bone);
+    margin-top: 0.35rem;
+    text-wrap: balance;
+  }
+
+  .header-sub {
+    font-size: 0.8rem;
+    color: var(--stone-dim);
+    margin-top: 0.6rem;
+    max-width: 52ch;
+  }
+
+  /* ---- Spec card ---- */
+  .spec-card {
+    background: var(--raised);
+    border: 1px solid var(--border);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .spec-card-title {
+    font-family: 'SF Mono', 'Cascadia Code', Menlo, monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 0.9rem;
+  }
+
+  .spec-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem 2rem;
+  }
+
+  @media (max-width: 480px) { .spec-grid { grid-template-columns: 1fr; } }
+
+  .spec-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.25rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.8rem;
+  }
+
+  .spec-row .sk {
+    color: var(--stone-dim);
+    font-family: 'SF Mono', 'Cascadia Code', Menlo, monospace;
+    font-size: 0.7rem;
+  }
+
+  .spec-row .sv {
+    color: var(--bone);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    font-family: 'SF Mono', 'Cascadia Code', Menlo, monospace;
+    font-size: 0.75rem;
+  }
+
+  .spec-row .sv .unit {
+    font-weight: 400;
+    color: var(--stone-dim);
+    font-size: 0.65rem;
+    margin-left: 0.15rem;
+  }
+
+  /* ---- BOM ---- */
+  .bom {
+    margin-bottom: 2.5rem;
+  }
+
+  .section-label {
+    font-family: 'SF Mono', 'Cascadia Code', Menlo, monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--green);
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1rem;
+  }
+
+  .bom-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+  }
+
+  .bom-table th {
+    text-align: left;
+    font-family: 'SF Mono', 'Cascadia Code', Menlo, monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--stone-dim);
+    padding: 0.4rem 0.75rem 0.4rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .bom-table td {
+    padding: 0.55rem 0.75rem 0.55rem 0;
+    border-bottom: 1px solid var(--border);
+    color: var(--bone);
+    vertical-align: top;
+  }
+
+  .bom-table td:first-child {
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--copper);
+  }
+
+  .bom-table td:last-child {
+    color: var(--stone-dim);
+    font-size: 0.75rem;
+  }
+
+  .bom-table .qty {
+    font-family: 'SF Mono', 'Cascadia Code', Menlo, monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.75rem;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .bom-wrap { overflow-x: auto; }
+
+  /* ---- Steps ---- */
+  .steps-section {
+    margin-bottom: 2rem;
+  }
+
+  .step {
+    margin-bottom: 2.5rem;
+    position: relative;
+  }
+
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .step-num {
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--copper);
+    border: 1.5px solid var(--copper);
+    border-radius: 50%;
+  }
+
+  .step-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.05rem;
+    color: var(--bone);
+    font-weight: 400;
+  }
+
+  .step-body {
+    padding-left: 2.75rem;
+    font-size: 0.85rem;
+    color: var(--stone);
+    line-height: 1.7;
+  }
+
+  .step-body p { margin-bottom: 0.75rem; }
+  .step-body p:last-child { margin-bottom: 0; }
+
+  .step-body strong { color: var(--bone); font-weight: 600; }
+  .step-body code {
+    font-family: 'SF Mono', 'Cascadia Code', Menlo, monospace;
+    font-size: 0.78rem;
+    background: var(--highlight-bg);
+    padding: 0.1em 0.35em;
+    border: 1px solid var(--border);
+    color: var(--copper);
+  }
+
+  .step-canvas {
+    width: 100%;
+    height: 200px;
+    display: block;
+    background: var(--inset);
+    border: 1px solid var(--border);
+    margin-top: 1rem;
+  }
+
+  .step-canvas.tall { height: 280px; }
+
+  /* ---- Tip/Warning ---- */
+  .tip {
+    background: var(--green-soft);
+    border-left: 3px solid var(--green);
+    padding: 0.75rem 1rem;
+    margin-top: 1rem;
+    font-size: 0.78rem;
+    color: var(--stone);
+    line-height: 1.6;
+  }
+
+  .tip strong { color: var(--green); }
+
+  .warn {
+    background: var(--copper-soft);
+    border-left: 3px solid var(--alert);
+    padding: 0.75rem 1rem;
+    margin-top: 1rem;
+    font-size: 0.78rem;
+    color: var(--stone);
+    line-height: 1.6;
+  }
+
+  .warn strong { color: var(--alert); }
+
+  /* ---- Formula ---- */
+  .formula-inline {
+    display: inline-block;
+    background: var(--highlight-bg);
+    border: 1px solid var(--border);
+    padding: 0.2rem 0.6rem;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    font-size: 0.9rem;
+    color: var(--bone);
+    margin: 0.25rem 0;
+  }
+
+  .formula-inline .var { color: var(--copper); }
+  .formula-inline .num { color: var(--green); font-style: normal;
+    font-family: 'SF Mono', 'Cascadia Code', Menlo, monospace; font-size: 0.8rem; }
+
+  /* ---- Wiring Diagram Section ---- */
+  .wiring-canvas {
+    width: 100%;
+    height: 220px;
+    display: block;
+    background: var(--inset);
+    border: 1px solid var(--border);
+    margin-top: 0.75rem;
+  }
+
+  /* ---- Footer ---- */
+  .foot {
+    margin-top: 3rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.6rem;
+    color: var(--stone-dim);
+    text-align: center;
+    font-family: 'SF Mono', 'Cascadia Code', Menlo, monospace;
+    letter-spacing: 0.03em;
+  }
+
+  /* ---- Print ---- */
+  @media print {
+    body { background: #fff; color: #222; }
+    .page { max-width: none; padding: 1cm; }
+    canvas { border: 1px solid #ccc; }
+  }
+</style>
+
+<div class="page">
+
+  <header class="header">
+    <div class="header-freq">7.83 <small>Hz</small></div>
+    <h1 class="header-title">Schumann Resonance Magnetic Loop Antenna</h1>
+    <p class="header-sub">
+      Complete build guide for a 3D-printed, circular coil antenna tuned to
+      the fundamental Schumann resonance of the Earth-ionosphere cavity.
+      Prints in four quarter-segments on a Prusa MK4S.
+    </p>
+  </header>
+
+  <!-- Spec card -->
+  <div class="spec-card">
+    <div class="spec-card-title">Design Summary</div>
+    <div class="spec-grid">
+      <div class="spec-row"><span class="sk">Frequency</span><span class="sv">7.83<span class="unit">Hz</span></span></div>
+      <div class="spec-row"><span class="sk">Wavelength</span><span class="sv">38,289<span class="unit">km</span></span></div>
+      <div class="spec-row"><span class="sk">Turns</span><span class="sv">1,000</span></div>
+      <div class="spec-row"><span class="sk">Wire</span><span class="sv">AWG 24<span class="unit">0.51mm</span></span></div>
+      <div class="spec-row"><span class="sk">Coil radius</span><span class="sv">150<span class="unit">mm</span></span></div>
+      <div class="spec-row"><span class="sk">Layers</span><span class="sv">10</span></div>
+      <div class="spec-row"><span class="sk">Inductance</span><span class="sv">480.1<span class="unit">mH</span></span></div>
+      <div class="spec-row"><span class="sk">Tuning cap</span><span class="sv">860<span class="unit">&micro;F</span></span></div>
+      <div class="spec-row"><span class="sk">Wire length</span><span class="sv">942<span class="unit">m</span></span></div>
+      <div class="spec-row"><span class="sk">DC resistance</span><span class="sv">80.6<span class="unit">&Omega;</span></span></div>
+      <div class="spec-row"><span class="sk">Former dia.</span><span class="sv">315<span class="unit">mm</span></span></div>
+      <div class="spec-row"><span class="sk">Segments</span><span class="sv">4 quarters</span></div>
+    </div>
+  </div>
+
+  <!-- BOM -->
+  <div class="bom">
+    <div class="section-label">Bill of Materials</div>
+    <div class="bom-wrap">
+    <table class="bom-table">
+      <thead>
+        <tr><th>Part</th><th>Spec</th><th class="qty">Qty</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Coil former</td>
+          <td>3D printed PLA/PETG</td>
+          <td class="qty">4 pcs</td>
+          <td>Quarter segments, 0.2mm layer, 20% infill</td>
+        </tr>
+        <tr>
+          <td>Magnet wire</td>
+          <td>AWG 24, polyurethane enamel</td>
+          <td class="qty">1 kg</td>
+          <td>~950 m needed; buy 1 kg spool (~1200 m)</td>
+        </tr>
+        <tr>
+          <td>Tuning capacitor</td>
+          <td>860 &micro;F film or electrolytic</td>
+          <td class="qty">1</td>
+          <td>Parallel combination OK (e.g. 2&times;470 &micro;F). Low ESR preferred.</td>
+        </tr>
+        <tr>
+          <td>CA glue</td>
+          <td>Cyanoacrylate, medium viscosity</td>
+          <td class="qty">1</td>
+          <td>For joining quarter segments</td>
+        </tr>
+        <tr>
+          <td>Kapton tape</td>
+          <td>12 mm width</td>
+          <td class="qty">1 roll</td>
+          <td>Layer insulation and winding retention</td>
+        </tr>
+        <tr>
+          <td>Terminal block</td>
+          <td>2-position screw terminal</td>
+          <td class="qty">1</td>
+          <td>For connecting coil leads to capacitor and preamp</td>
+        </tr>
+        <tr>
+          <td>Shielded cable</td>
+          <td>2-conductor, foil shielded</td>
+          <td class="qty">1&ndash;2 m</td>
+          <td>Coil output to preamp/ADC</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <!-- Steps -->
+  <div class="steps-section">
+    <div class="section-label">Build Procedure</div>
+
+    <!-- Step 1 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">1</div>
+        <div class="step-title">Print the four quarter-segments</div>
+      </div>
+      <div class="step-body">
+        <p>
+          Load each <code>8hz_coil_quarter_N.stl</code> into PrusaSlicer.
+          Orient each piece with the <strong>flat cut face down</strong> on the bed.
+          Each quarter is approximately <strong>158 &times; 158 mm</strong>,
+          fitting well within the MK4S build area.
+        </p>
+        <p>
+          Settings: <strong>0.2 mm layer height</strong>, <strong>3 perimeters</strong>,
+          <strong>20% gyroid infill</strong>, no supports needed.
+          Print time is roughly 2.5 hours per segment.
+        </p>
+        <canvas class="step-canvas" id="cPrint"></canvas>
+        <div class="tip">
+          <strong>Material:</strong> PLA is fine for indoor use. For outdoor
+          installations, use PETG &mdash; it handles UV and humidity better.
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">2</div>
+        <div class="step-title">Assemble the circular former</div>
+      </div>
+      <div class="step-body">
+        <p>
+          Dry-fit all four quarters into a complete ring. The <strong>dovetail tabs</strong>
+          on each cut face interlock with the flat face of the adjacent segment.
+          Check alignment &mdash; the flanges should form continuous ridges.
+        </p>
+        <p>
+          Apply CA glue to each joint, hold for 30 seconds. For a stronger bond,
+          run a bead of epoxy along the inner seam after the CA sets.
+          The assembled ring should be <strong>315 mm in diameter, 60 mm long</strong>.
+        </p>
+        <canvas class="step-canvas" id="cAssemble"></canvas>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">3</div>
+        <div class="step-title">Wind the first layer (100 turns)</div>
+      </div>
+      <div class="step-body">
+        <p>
+          Anchor the wire start through a small hole or tape it to the flange.
+          Leave a <strong>15 cm tail</strong> for later connection.
+          Wind <strong>100 turns</strong> in a single layer, keeping the wire
+          taut and each turn snug against the previous one.
+        </p>
+        <p>
+          The winding channel between flanges is <strong>50 mm wide</strong>.
+          At 0.51 mm wire diameter, 100 turns fills 51 mm &mdash; a tight but
+          manageable fit. Aim for neat, even coverage.
+        </p>
+        <canvas class="step-canvas tall" id="cWind"></canvas>
+        <div class="tip">
+          <strong>Tension:</strong> Moderate and consistent. Too loose and turns
+          shift; too tight and you risk cracking the printed flanges. A hand-crank
+          coil winder makes this much easier.
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">4</div>
+        <div class="step-title">Complete all 10 layers</div>
+      </div>
+      <div class="step-body">
+        <p>
+          After each layer of 100 turns, apply a strip of <strong>Kapton tape</strong>
+          over the winding to prevent the next layer from slipping into gaps.
+          Then wind the next 100 turns on top.
+        </p>
+        <p>
+          Repeat for all <strong>10 layers &times; 100 turns = 1,000 turns</strong> total.
+          The finished winding stack is approximately <strong>5 mm deep</strong>
+          (10 layers &times; 0.51 mm). Leave a <strong>15 cm tail</strong> at the finish.
+        </p>
+        <p>
+          Total wire used: approximately <strong>942 metres</strong>.
+          At ~30 seconds per turn, expect 8&ndash;10 hours of winding time.
+        </p>
+        <div class="warn">
+          <strong>Don't rush layers 8&ndash;10.</strong> The winding gets harder
+          as it builds up &mdash; the channel gets tighter and wire tension
+          becomes more critical. Take breaks.
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 5 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">5</div>
+        <div class="step-title">Seal the winding</div>
+      </div>
+      <div class="step-body">
+        <p>
+          Wrap the finished coil with a final layer of Kapton tape.
+          For extra security, brush on a thin coat of <strong>polyurethane
+          varnish</strong> over the outer winding &mdash; this locks the turns
+          in place and prevents vibration noise.
+        </p>
+        <p>
+          Allow to dry fully (24 hours) before electrical connection.
+        </p>
+      </div>
+    </div>
+
+    <!-- Step 6 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">6</div>
+        <div class="step-title">Connect the tuning capacitor</div>
+      </div>
+      <div class="step-body">
+        <p>
+          Solder or screw the two wire tails to a terminal block.
+          Connect the <strong>860 &micro;F capacitor in parallel</strong>
+          across the coil terminals. This tunes the LC circuit to resonate
+          at exactly 7.83 Hz:
+        </p>
+        <div class="formula-inline">
+          <span class="var">f</span> = 1 / (2&pi;&radic;(<span class="var">L</span><span class="var">C</span>))
+          &nbsp;&nbsp;&rarr;&nbsp;&nbsp;
+          <span class="var">C</span> = <span class="num">860</span> &micro;F
+        </div>
+        <p style="margin-top:0.75rem;">
+          If you can't find an 860 &micro;F cap, combine values in parallel:
+          <strong>680 + 180 = 860 &micro;F</strong>, or
+          <strong>470 + 390 = 860 &micro;F</strong>.
+          Film capacitors are preferred for low loss; electrolytics work but add ESR.
+        </p>
+        <canvas class="wiring-canvas" id="cWiring"></canvas>
+      </div>
+    </div>
+
+    <!-- Step 7 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">7</div>
+        <div class="step-title">Connect the signal chain</div>
+      </div>
+      <div class="step-body">
+        <p>
+          The coil output is extremely weak (picovolts to nanovolts).
+          You need a <strong>low-noise preamplifier</strong> with:
+        </p>
+        <p>
+          &bull; Gain: <strong>60&ndash;80 dB</strong> (1,000&ndash;10,000&times;)<br>
+          &bull; Input noise: <strong>&lt; 1 nV/&radic;Hz</strong><br>
+          &bull; Bandwidth: <strong>1&ndash;50 Hz</strong> band-pass<br>
+          &bull; Good candidates: INA217, AD797, OPA1612
+        </p>
+        <p>
+          Feed the amplified signal into a <strong>24-bit ADC</strong>
+          (ADS1256 or similar) sampling at <strong>100&ndash;200 Hz</strong>,
+          connected to a Raspberry Pi or similar logger.
+        </p>
+        <div class="tip">
+          <strong>50/60 Hz rejection:</strong> Add a twin-T notch filter at
+          your local mains frequency. Schumann signals live at 7.83, 14.3,
+          20.8, 27.3, 33.8 Hz &mdash; well below mains, but the mains
+          fundamental will saturate your preamp without a notch.
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 8 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">8</div>
+        <div class="step-title">Position and orient the antenna</div>
+      </div>
+      <div class="step-body">
+        <p>
+          The magnetic loop is sensitive along the <strong>axis perpendicular
+          to the coil plane</strong>. For Schumann resonances, orient the
+          coil <strong>vertically</strong> with its axis pointing
+          <strong>magnetic North&ndash;South</strong>.
+        </p>
+        <p>
+          Place the antenna as far as possible from:
+        </p>
+        <p>
+          &bull; Power lines and transformers (50/60 Hz EMI)<br>
+          &bull; Electric motors, inverters, switching supplies<br>
+          &bull; Computer monitors and WiFi routers<br>
+          &bull; Metal structures (they distort the field)
+        </p>
+        <p>
+          Ideally, run the antenna outdoors in a rural or suburban location.
+          Even a back garden 30+ metres from the house significantly reduces
+          interference.
+        </p>
+        <canvas class="step-canvas tall" id="cOrient"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Harmonic reference -->
+  <div class="bom" style="margin-top:1rem;">
+    <div class="section-label">Schumann Harmonics &mdash; Capacitor Reference</div>
+    <div class="bom-wrap">
+    <table class="bom-table">
+      <thead>
+        <tr><th>Mode</th><th>Frequency</th><th class="qty">Cap Value</th><th>Combo Suggestion</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1st</td><td>7.83 Hz</td><td class="qty">860 &micro;F</td><td>680 + 180 &micro;F</td></tr>
+        <tr><td>2nd</td><td>14.3 Hz</td><td class="qty">258 &micro;F</td><td>220 + 33 + 4.7 &micro;F</td></tr>
+        <tr><td>3rd</td><td>20.8 Hz</td><td class="qty">122 &micro;F</td><td>100 + 22 &micro;F</td></tr>
+        <tr><td>4th</td><td>27.3 Hz</td><td class="qty">71 &micro;F</td><td>47 + 22 + 2.2 &micro;F</td></tr>
+        <tr><td>5th</td><td>33.8 Hz</td><td class="qty">46 &micro;F</td><td>33 + 10 + 3.3 &micro;F</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="tip" style="margin-top:1rem;">
+      <strong>Same coil, different cap.</strong> To scan all Schumann harmonics,
+      build a switchbox with 5 capacitor banks and a rotary selector.
+    </div>
+  </div>
+
+  <footer class="foot">
+    Schumann Resonance Antenna Build Guide &middot; Coil former generated by 7hz_antenna_design.py --freq 7.83 --split
+  </footer>
+</div>
+
+<script>
+const PI = Math.PI;
+
+function isDark() {
+  const dt = document.documentElement.getAttribute('data-theme');
+  if (dt === 'dark') return true;
+  if (dt === 'light') return false;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
+function tokens() {
+  const d = isDark();
+  return {
+    bg: d ? '#12100D' : '#DCD3C5',
+    copper: d ? '#C67B3A' : '#9A5E22',
+    copperSoft: d ? 'rgba(198,123,58,0.25)' : 'rgba(154,94,34,0.15)',
+    green: d ? '#3B6E5A' : '#2D5A46',
+    greenSoft: d ? 'rgba(59,110,90,0.3)' : 'rgba(45,90,70,0.2)',
+    stone: d ? '#A89882' : '#5A4E42',
+    dim: d ? '#6E6356' : '#8A7E72',
+    bone: d ? '#D4C9B8' : '#2A2218',
+    border: d ? '#352E26' : '#CCC2B2',
+    raised: d ? '#2A241E' : '#FFFFFF',
+  };
+}
+
+function setupCanvas(id) {
+  const c = document.getElementById(id);
+  if (!c) return null;
+  const dpr = window.devicePixelRatio || 1;
+  const r = c.getBoundingClientRect();
+  c.width = r.width * dpr;
+  c.height = r.height * dpr;
+  const ctx = c.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, W: r.width, H: r.height };
+}
+
+function drawAll() {
+  const t = tokens();
+
+  // -- Step 1: Print layout --
+  {
+    const s = setupCanvas('cPrint');
+    if (s) {
+      const { ctx, W, H } = s;
+      ctx.fillStyle = t.bg;
+      ctx.fillRect(0, 0, W, H);
+
+      const sz = Math.min(W / 5, H * 0.45);
+      const y = H / 2;
+      const gap = W / 5;
+
+      for (let i = 0; i < 4; i++) {
+        const x = gap * (i + 0.5) + gap * 0.25;
+        // Quarter arc
+        ctx.beginPath();
+        ctx.arc(x, y, sz * 0.7, -PI / 2 + (PI / 2) * i, -PI / 2 + (PI / 2) * (i + 1));
+        ctx.arc(x, y, sz * 0.45, -PI / 2 + (PI / 2) * (i + 1), -PI / 2 + (PI / 2) * i, true);
+        ctx.closePath();
+        ctx.fillStyle = t.copperSoft;
+        ctx.fill();
+        ctx.strokeStyle = t.copper;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.font = '11px "SF Mono", monospace';
+        ctx.fillStyle = t.dim;
+        ctx.textAlign = 'center';
+        ctx.fillText(`Q${i + 1}`, x, y + sz + 12);
+      }
+
+      // Bed outline
+      ctx.strokeStyle = t.border;
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 3]);
+      for (let i = 0; i < 4; i++) {
+        const x = gap * (i + 0.5) + gap * 0.25;
+        ctx.strokeRect(x - sz * 0.9, y - sz * 0.85, sz * 1.8, sz * 1.7);
+      }
+      ctx.setLineDash([]);
+
+      ctx.font = '9px "SF Mono", monospace';
+      ctx.fillStyle = t.dim;
+      ctx.textAlign = 'center';
+      ctx.fillText('250 × 210 mm bed (each)', W / 2, H - 10);
+    }
+  }
+
+  // -- Step 2: Assembly ring --
+  {
+    const s = setupCanvas('cAssemble');
+    if (s) {
+      const { ctx, W, H } = s;
+      ctx.fillStyle = t.bg;
+      ctx.fillRect(0, 0, W, H);
+
+      const cx = W / 2, cy = H / 2;
+      const rOuter = Math.min(W, H) * 0.38;
+      const rInner = rOuter * 0.72;
+
+      for (let i = 0; i < 4; i++) {
+        const a0 = (PI / 2) * i - PI / 4;
+        const a1 = a0 + PI / 2;
+        ctx.beginPath();
+        ctx.arc(cx, cy, rOuter, a0, a1);
+        ctx.arc(cx, cy, rInner, a1, a0, true);
+        ctx.closePath();
+        ctx.fillStyle = i % 2 === 0 ? t.copperSoft : t.greenSoft;
+        ctx.fill();
+        ctx.strokeStyle = t.copper;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+
+      // Joint lines
+      ctx.strokeStyle = t.copper;
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3, 3]);
+      for (let i = 0; i < 4; i++) {
+        const a = (PI / 2) * i - PI / 4;
+        ctx.beginPath();
+        ctx.moveTo(cx + rInner * Math.cos(a), cy + rInner * Math.sin(a));
+        ctx.lineTo(cx + (rOuter + 8) * Math.cos(a), cy + (rOuter + 8) * Math.sin(a));
+        ctx.stroke();
+      }
+      ctx.setLineDash([]);
+
+      // Labels
+      ctx.font = '10px "SF Mono", monospace';
+      ctx.fillStyle = t.dim;
+      ctx.textAlign = 'center';
+      ctx.fillText('315 mm assembled diameter', cx, cy + rOuter + 22);
+
+      // Dovetail indicators
+      ctx.font = '8px "SF Mono", monospace';
+      ctx.fillStyle = t.copper;
+      for (let i = 0; i < 4; i++) {
+        const a = (PI / 2) * i - PI / 4;
+        const r = rOuter + 14;
+        ctx.save();
+        ctx.translate(cx + r * Math.cos(a), cy + r * Math.sin(a));
+        ctx.rotate(a + PI / 2);
+        ctx.textAlign = 'center';
+        ctx.fillText('joint', 0, 0);
+        ctx.restore();
+      }
+    }
+  }
+
+  // -- Step 3: Winding cross-section --
+  {
+    const s = setupCanvas('cWind');
+    if (s) {
+      const { ctx, W, H } = s;
+      ctx.fillStyle = t.bg;
+      ctx.fillRect(0, 0, W, H);
+
+      const cx = W / 2, cy = H * 0.48;
+      const channelW = W * 0.5;
+      const channelH = H * 0.45;
+      const flangeH = 18;
+      const wallW = 8;
+
+      // Barrel
+      ctx.fillStyle = t.raised;
+      ctx.strokeStyle = t.border;
+      ctx.lineWidth = 1.5;
+
+      // Left wall
+      ctx.fillRect(cx - channelW / 2 - wallW, cy - channelH / 2 - flangeH, wallW, channelH + flangeH * 2);
+      ctx.strokeRect(cx - channelW / 2 - wallW, cy - channelH / 2 - flangeH, wallW, channelH + flangeH * 2);
+
+      // Right wall
+      ctx.fillRect(cx + channelW / 2, cy - channelH / 2 - flangeH, wallW, channelH + flangeH * 2);
+      ctx.strokeRect(cx + channelW / 2, cy - channelH / 2 - flangeH, wallW, channelH + flangeH * 2);
+
+      // Bottom
+      ctx.fillRect(cx - channelW / 2 - wallW, cy + channelH / 2, channelW + wallW * 2, wallW);
+      ctx.strokeRect(cx - channelW / 2 - wallW, cy + channelH / 2, channelW + wallW * 2, wallW);
+
+      // Top flanges
+      ctx.fillRect(cx - channelW / 2 - wallW - 12, cy - channelH / 2 - flangeH, wallW + 12, flangeH);
+      ctx.strokeRect(cx - channelW / 2 - wallW - 12, cy - channelH / 2 - flangeH, wallW + 12, flangeH);
+      ctx.fillRect(cx + channelW / 2, cy - channelH / 2 - flangeH, wallW + 12, flangeH);
+      ctx.strokeRect(cx + channelW / 2, cy - channelH / 2 - flangeH, wallW + 12, flangeH);
+
+      // Bottom flanges
+      ctx.fillRect(cx - channelW / 2 - wallW - 12, cy + channelH / 2, wallW + 12, flangeH);
+      ctx.strokeRect(cx - channelW / 2 - wallW - 12, cy + channelH / 2, wallW + 12, flangeH);
+      ctx.fillRect(cx + channelW / 2, cy + channelH / 2, wallW + 12, flangeH);
+      ctx.strokeRect(cx + channelW / 2, cy + channelH / 2, wallW + 12, flangeH);
+
+      // Wire turns (layer 1)
+      const cols = 20;
+      const rows = 1;
+      const wdx = channelW / (cols + 1);
+      const wdy = channelH * 0.08;
+      const wireR = Math.min(wdx, wdy) * 0.4;
+
+      ctx.fillStyle = t.copper;
+      for (let c = 1; c <= cols; c++) {
+        const wx = cx - channelW / 2 + c * wdx;
+        const wy = cy + channelH / 2 - wdy;
+        ctx.beginPath();
+        ctx.arc(wx, wy, wireR, 0, 2 * PI);
+        ctx.fill();
+      }
+
+      // Arrow showing winding direction
+      const arrY = cy + channelH / 2 - wdy;
+      ctx.strokeStyle = t.copper;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(cx - channelW / 2 + wdx - 4, arrY - wdy * 2);
+      ctx.lineTo(cx + channelW / 2 - wdx + 4, arrY - wdy * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(cx + channelW / 2 - wdx - 2, arrY - wdy * 2 - 4);
+      ctx.lineTo(cx + channelW / 2 - wdx + 4, arrY - wdy * 2);
+      ctx.lineTo(cx + channelW / 2 - wdx - 2, arrY - wdy * 2 + 4);
+      ctx.fill();
+
+      // Labels
+      ctx.font = '10px "SF Mono", monospace';
+      ctx.fillStyle = t.dim;
+      ctx.textAlign = 'center';
+      ctx.fillText('winding direction', cx, arrY - wdy * 2 - 8);
+      ctx.fillText('layer 1: 100 turns', cx, cy + channelH / 2 + wallW + 22);
+
+      // Dimension
+      ctx.strokeStyle = t.dim;
+      ctx.lineWidth = 0.75;
+      ctx.beginPath();
+      ctx.moveTo(cx - channelW / 2, cy + channelH / 2 + wallW + 34);
+      ctx.lineTo(cx + channelW / 2, cy + channelH / 2 + wallW + 34);
+      ctx.stroke();
+      ctx.fillText('50 mm channel', cx, cy + channelH / 2 + wallW + 48);
+
+      ctx.textAlign = 'left';
+      ctx.fillStyle = t.copper;
+      ctx.fillText('flange', cx - channelW / 2 - wallW - 14, cy - channelH / 2 - flangeH - 6);
+      ctx.textAlign = 'right';
+      ctx.fillText('flange', cx + channelW / 2 + wallW + 14, cy - channelH / 2 - flangeH - 6);
+    }
+  }
+
+  // -- Step 6: Wiring diagram --
+  {
+    const s = setupCanvas('cWiring');
+    if (s) {
+      const { ctx, W, H } = s;
+      ctx.fillStyle = t.bg;
+      ctx.fillRect(0, 0, W, H);
+
+      const cy = H / 2;
+
+      // Coil symbol
+      const coilX = W * 0.18;
+      ctx.strokeStyle = t.copper;
+      ctx.lineWidth = 2;
+      for (let i = 0; i < 6; i++) {
+        ctx.beginPath();
+        ctx.arc(coilX + i * 12, cy, 10, PI, 0);
+        ctx.stroke();
+      }
+      ctx.font = '10px "SF Mono", monospace';
+      ctx.fillStyle = t.bone;
+      ctx.textAlign = 'center';
+      ctx.fillText('COIL', coilX + 30, cy + 28);
+      ctx.fillStyle = t.dim;
+      ctx.fillText('480 mH', coilX + 30, cy + 42);
+
+      // Wires from coil
+      const wireEndX = coilX + 72;
+      const juncX = W * 0.52;
+
+      ctx.strokeStyle = t.copper;
+      ctx.lineWidth = 1.5;
+      // Top wire
+      ctx.beginPath();
+      ctx.moveTo(coilX - 6, cy);
+      ctx.lineTo(coilX - 6, cy - 40);
+      ctx.lineTo(juncX, cy - 40);
+      ctx.stroke();
+      // Bottom wire
+      ctx.beginPath();
+      ctx.moveTo(wireEndX, cy);
+      ctx.lineTo(wireEndX, cy + 40);
+      ctx.lineTo(juncX, cy + 40);
+      ctx.stroke();
+
+      // Capacitor symbol
+      const capX = juncX;
+      ctx.strokeStyle = t.green;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(capX, cy - 40);
+      ctx.lineTo(capX, cy - 8);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(capX - 14, cy - 8);
+      ctx.lineTo(capX + 14, cy - 8);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(capX - 14, cy + 8);
+      ctx.lineTo(capX + 14, cy + 8);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(capX, cy + 8);
+      ctx.lineTo(capX, cy + 40);
+      ctx.stroke();
+
+      ctx.font = '10px "SF Mono", monospace';
+      ctx.fillStyle = t.bone;
+      ctx.textAlign = 'center';
+      ctx.fillText('CAP', capX + 32, cy - 2);
+      ctx.fillStyle = t.dim;
+      ctx.fillText('860 µF', capX + 32, cy + 14);
+
+      // Output to preamp
+      const outX = W * 0.78;
+      ctx.strokeStyle = t.copper;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(juncX, cy - 40);
+      ctx.lineTo(outX, cy - 40);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(juncX, cy + 40);
+      ctx.lineTo(outX, cy + 40);
+      ctx.stroke();
+
+      // Preamp box
+      ctx.fillStyle = t.raised;
+      ctx.strokeStyle = t.border;
+      ctx.lineWidth = 1.5;
+      ctx.fillRect(outX, cy - 48, 60, 96);
+      ctx.strokeRect(outX, cy - 48, 60, 96);
+
+      // Triangle (amp symbol)
+      ctx.beginPath();
+      ctx.moveTo(outX + 15, cy - 20);
+      ctx.lineTo(outX + 15, cy + 20);
+      ctx.lineTo(outX + 45, cy);
+      ctx.closePath();
+      ctx.strokeStyle = t.copper;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      ctx.font = '10px "SF Mono", monospace';
+      ctx.fillStyle = t.bone;
+      ctx.textAlign = 'center';
+      ctx.fillText('PREAMP', outX + 30, cy + 62);
+      ctx.fillStyle = t.dim;
+      ctx.fillText('60 dB', outX + 30, cy + 76);
+
+      // Junction dots
+      ctx.fillStyle = t.copper;
+      for (const [x, y] of [[juncX, cy - 40], [juncX, cy + 40]]) {
+        ctx.beginPath();
+        ctx.arc(x, y, 3, 0, 2 * PI);
+        ctx.fill();
+      }
+    }
+  }
+
+  // -- Step 8: Orientation --
+  {
+    const s = setupCanvas('cOrient');
+    if (s) {
+      const { ctx, W, H } = s;
+      ctx.fillStyle = t.bg;
+      ctx.fillRect(0, 0, W, H);
+
+      const cx = W / 2, cy = H * 0.5;
+      const rOuter = Math.min(W * 0.2, H * 0.35);
+      const rInner = rOuter * 0.75;
+
+      // Ground line
+      ctx.strokeStyle = t.border;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(W * 0.1, H * 0.82);
+      ctx.lineTo(W * 0.9, H * 0.82);
+      ctx.stroke();
+
+      // Hatch ground
+      ctx.strokeStyle = t.dim;
+      ctx.lineWidth = 0.5;
+      for (let x = W * 0.1; x < W * 0.9; x += 8) {
+        ctx.beginPath();
+        ctx.moveTo(x, H * 0.82);
+        ctx.lineTo(x - 5, H * 0.87);
+        ctx.stroke();
+      }
+
+      // Stand
+      ctx.strokeStyle = t.border;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy + rOuter + 4);
+      ctx.lineTo(cx, H * 0.82);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(cx - 20, H * 0.82);
+      ctx.lineTo(cx + 20, H * 0.82);
+      ctx.stroke();
+
+      // Coil (edge-on ellipse for vertical orientation)
+      ctx.strokeStyle = t.copper;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, rOuter, rOuter * 0.15, 0, 0, 2 * PI);
+      ctx.stroke();
+      ctx.strokeStyle = t.copperSoft;
+      ctx.lineWidth = rOuter - rInner;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, (rOuter + rInner) / 2, (rOuter + rInner) / 2 * 0.15, 0, 0, 2 * PI);
+      ctx.stroke();
+
+      // Axis arrow (N-S)
+      ctx.strokeStyle = t.green;
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(cx - rOuter - 40, cy);
+      ctx.lineTo(cx + rOuter + 40, cy);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Arrowhead
+      ctx.fillStyle = t.green;
+      ctx.beginPath();
+      ctx.moveTo(cx + rOuter + 40, cy);
+      ctx.lineTo(cx + rOuter + 32, cy - 5);
+      ctx.lineTo(cx + rOuter + 32, cy + 5);
+      ctx.closePath();
+      ctx.fill();
+
+      // N/S labels
+      ctx.font = '12px Georgia, serif';
+      ctx.fillStyle = t.green;
+      ctx.textAlign = 'center';
+      ctx.fillText('N', cx + rOuter + 54, cy + 5);
+      ctx.fillText('S', cx - rOuter - 50, cy + 5);
+
+      // Field lines
+      ctx.strokeStyle = t.dim;
+      ctx.lineWidth = 0.75;
+      for (let i = -2; i <= 2; i++) {
+        if (i === 0) continue;
+        const yOff = i * 22;
+        ctx.beginPath();
+        ctx.moveTo(cx - rOuter - 30, cy + yOff);
+        const cp1x = cx - rOuter * 0.5;
+        const cp2x = cx + rOuter * 0.5;
+        const cpY = cy + yOff + (i > 0 ? 15 : -15);
+        ctx.bezierCurveTo(cp1x, cpY, cp2x, cpY, cx + rOuter + 30, cy + yOff);
+        ctx.stroke();
+      }
+
+      ctx.font = '9px "SF Mono", monospace';
+      ctx.fillStyle = t.dim;
+      ctx.textAlign = 'center';
+      ctx.fillText('coil axis → magnetic North', cx, cy - rOuter - 18);
+      ctx.fillText('vertical orientation', cx, H * 0.82 + 18);
+    }
+  }
+}
+
+drawAll();
+
+window.addEventListener('resize', drawAll);
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', drawAll);
+new MutationObserver(drawAll)
+  .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+</script>
